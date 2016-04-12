@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     'configurator',
     'rest_framework',
     'compressor',
+    'sass_processor',
 ]
 
 MIDDLEWARE_CLASSES = [

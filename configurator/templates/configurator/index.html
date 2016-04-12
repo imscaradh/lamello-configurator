@@ -7,7 +7,45 @@
 
 {% block content %}
 <div class="page-header">
-  <h1>Configurator</h1>
+    <h1>Configurator</h1>
 </div>
+
+<form class="form">
+    <div class="row">
+	<div class="col-md-6">
+	    <div class="preview">
+		< preview >
+	    </div>
+	</div>
+	<div class="col-md-6">
+	    <div class="btn-group" data-toggle="buttons">
+		<label class="btn btn-default active">
+		    <input type="radio" id="q156" name="..." value="1" active/>milimeters
+		</label> 
+		<label class="btn btn-default">
+		    <input type="radio" id="q157" name="..." value="2" />inches
+		</label> 
+	    </div>
+	    <div class="field">
+		<label>Materialstärke I:</label>
+		<input type="text" placeholder="0.00">
+		<span class="unit">mm</span>
+		<span class="help-block"></span>
+	    </div>
+	    <div class="field">
+		<label>Materialstärke II:</label>
+		<input type="text" placeholder="0.00">
+		<span class="unit">mm</span>
+		<span class="help-block"></span>
+	    </div>
+	    <div class="field">
+		<label>Winkel:</label>
+		<input type="text" placeholder="0">
+		<span class="unit">°</span>
+		<span class="help-block"></span>
+	    </div>
+	</div>
+    </div>
+</form>
 
 {% endblock %}

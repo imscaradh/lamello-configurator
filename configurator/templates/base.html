@@ -1,5 +1,6 @@
 {% load staticfiles %}
 {% load compress %}
+{% load sass_tags %}
 {% load i18n %}
 
 <!DOCTYPE html>
@@ -14,7 +15,7 @@
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap-theme.min.css">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css">
     {% compress css %}
-        <link href="{% static "configurator/styles.less" %}" media="all" rel="stylesheet" type="text/less"/>
+        <link href="{% sass_src "configurator/styles.sass" %}" media="all" rel="stylesheet" type="text/less"/>
     {% endcompress %}
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>

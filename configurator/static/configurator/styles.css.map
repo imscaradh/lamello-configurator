@@ -1,0 +1,9 @@
+{
+	"version": 3,
+	"file": "../../home/zinggpa/git/bfh/lamelloconfigurator/configurator/static/configurator/styles.css",
+	"sources": [
+		"../../home/zinggpa/git/bfh/lamelloconfigurator/configurator/static/configurator/styles.sass"
+	],
+	"mappings": "AAAA,AAAA,eAAe,CAAC;EACd,UAAU,EAAE,IAAK,GAAG;;AAEtB,AACE,eADa,CACb,IAAI,CAAC;EACH,KAAK,EAAE,IAAK;EACZ,OAAO,EAAE,MAAO,GAAG;;AAHvB,AAIqB,eAJN,CAIb,KAAK,CAAA,AAAA,IAAC,CAAK,QAAQ,AAAb,EAAe;EACnB,UAAU,EAAE,IAAK;EACjB,MAAM,EAAE,IAAK;EACb,KAAK,EAAE,KAAM;EACb,cAAc,EAAE,SAAU,GAAG;;AAEjC,AACE,KADG,CACH,QAAQ,CAAC;EACP,gBAAgB,EAAE,KAAM;EACxB,KAAK,EAAE,KAAM;EACb,UAAU,EAAE,MAAO;EACnB,MAAM,EAAE,KAAM;EACd,WAAW,EAAE,KAAM,GAAG;;AAN1B,AAOE,KAPG,CAOH,UAAU,CAAC;EACT,aAAa,EAAE,IAAK,GAAG;;AAR3B,AAUI,KAVC,CASH,MAAM,CACJ,KAAK,CAAC;EACJ,KAAK,EAAE,KAAM,GAAG",
+	"names": []
+}
