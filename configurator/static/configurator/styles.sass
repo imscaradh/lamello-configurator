@@ -18,12 +18,22 @@
     text-align: center
     height: 300px
     line-height: 300px
-  .btn-group
+  .btn-group, .dropdown
     margin-bottom: 30px
   .field
     label
       width: 180px
-  .dropdown
-    margin-bottom: 30px
+    .form-control
+      display: inline
+      width: auto
+      &.right
+        text-align: right
+    &.connection
+      margin-bottom: 20px
+      .dropdown
+        display: inline
+        button
+          width: 178px
+
 
 

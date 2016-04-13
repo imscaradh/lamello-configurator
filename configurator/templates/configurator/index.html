@@ -26,34 +26,37 @@
 		    <input type="radio" id="q157" name="..." value="2" />inches
 		</label> 
 	    </div>
-        <div class="dropdown">
-            <button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
-                Situation
-                <span class="caret"></span>
-            </button>
-            <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
-                <li><a href="#">Stumpfe Eckverbindung</a></li>
-                <li><a href="#">Winkelhalbierende</a></li>
-                <li><a href="#">Gehrung</a></li>
-                <li><a href="#">T-Verbindung</a></li>
-                <li><a href="#">Mittelwand</a></li>
-            </ul>
-        </div>
+	    <div class="field connection">
+		<label>Verbindung:</label>
+		<div class="dropdown">
+		    <button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+			<span class="selected-text">Situation</span>
+			<span class="caret"></span>
+		    </button>
+		    <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
+			<li><a href="#">Stumpfe Eckverbindung</a></li>
+			<li><a href="#">Winkelhalbierende</a></li>
+			<li><a href="#">Gehrung</a></li>
+			<li><a href="#">T-Verbindung</a></li>
+			<li><a href="#">Mittelwand</a></li>
+		    </ul>
+		</div>
+	    </div>
 	    <div class="field">
 		<label>Materialstärke I:</label>
-		<input type="text" placeholder="0.00">
+		<input class="form-control right" type="text" placeholder="0" pattern="^[0-9]+$">
 		<span class="unit">mm</span>
 		<span class="help-block"></span>
 	    </div>
 	    <div class="field">
 		<label>Materialstärke II:</label>
-		<input type="text" placeholder="0.00">
+		<input class="form-control right" type="text" placeholder="0" pattern="^[0-9]+$">
 		<span class="unit">mm</span>
 		<span class="help-block"></span>
 	    </div>
 	    <div class="field">
 		<label>Winkel:</label>
-		<input type="text" placeholder="0">
+		<input class="form-control right" type="text" placeholder="0">
 		<span class="unit">°</span>
 		<span class="help-block"></span>
 	    </div>
