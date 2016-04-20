@@ -26,20 +26,16 @@
     </head>
 
     <body role="document" class="{{ request.session.color }}">
-        <ul class="nav navbar-nav navbar-right">
-            <li class="nav navbar-nav">
-                <div class="lang-selection">
-                    {% get_available_languages as languages %}
-                    {% for lang_code, lang_name in languages %}
-                    <form action="{% url 'set_language' %}" method="POST">
-                        {% csrf_token %}
-                        <input type="submit" name="language" value="{{ lang_code }}"/>
-                    </form>
-                    {% endfor %}
-                </div>
-            </li>
-        </ul>
         <div class="container theme-showcase" role="main">
+            <div class="lang-selection">
+                {% get_available_languages as languages %}
+                {% for lang_code, lang_name in languages %}
+                <form action="{% url 'set_language' %}" method="POST">
+                    {% csrf_token %}
+                    <input type="submit" name="language" value="{{ lang_code }}"/>
+                </form>
+                {% endfor %}
+            </div>
             {% block content %}{% endblock %}
         </div>
 

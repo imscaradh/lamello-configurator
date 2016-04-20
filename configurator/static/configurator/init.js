@@ -1,12 +1,17 @@
 $(function () {
-    initCanvas();
+
     initSituationPreview();
+
+    $( window ).resize(function() {
+        initCanvas();
+    });
 
     function initCanvas() {
         var canvas = $("#connectionPreview");
 
         // Resizing the canvas dynamically
         var ctx = ctx = canvas[0].getContext('2d');
+        console.debug("Resized canvas: " + $(".preview").width() + "x" + $(".preview").height());
         ctx.canvas.width = $(".preview").width();
         ctx.canvas.height = $(".preview").height();
 
