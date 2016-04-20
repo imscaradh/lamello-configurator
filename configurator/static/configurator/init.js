@@ -73,7 +73,6 @@ $(function () {
                 });
                 break;
         }
-
     }
 
     function initSituationPreview() {
