@@ -6,9 +6,10 @@ from .models import ConnectionType
 def main(request):
     connection_types = ConnectionType.objects.all()
     if len(connection_types) == 0:
+        ConnectionType.objects.all().delete()
         c1 = ConnectionType(name="Stumb Edge")
         c1.save()
-        c2 = ConnectionType(name="BisecSeptumtrix")
+        c2 = ConnectionType(name="Bisectrix")
         c2.save()
         c3 = ConnectionType(name="Miter")
         c3.save()
