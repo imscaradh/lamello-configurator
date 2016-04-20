@@ -60,4 +60,5 @@ db.sqlite3
 *.iml
 
 styles.css
+*.css.map
 CACHE
