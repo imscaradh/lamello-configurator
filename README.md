@@ -13,9 +13,10 @@ Run the following command to install all required dependencies automatically:
 pip install -r requirements.txt
 ```
 
-To create the database, run the following command:
+To create the database, run the following commands:
 
 ```bash
+./manage.py makemigrations
 ./manage.py migrate
 ```
 
