@@ -15,6 +15,13 @@ $(function () {
         initCanvas();
     });
 
+    $( "#m1 input" ).blur(function() {
+        var m2 = $("#m2 input");
+        if(m2.val() == "") {
+            m2.val($(this).val()); 
+        }
+    });
+
 
     // -----------------------------------------------
     // 			function declarations	
@@ -30,7 +37,6 @@ $(function () {
 
     function drawShape(num) {
         canvas.clearCanvas();
-        console.info("Index: " + num);
 
         var data = {{ connection_types_json|safe }};
         var model = data[num].fields;
