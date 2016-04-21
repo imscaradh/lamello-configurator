@@ -62,3 +62,5 @@ db.sqlite3
 styles.css
 *.css.map
 CACHE
+.tern-port
+configurator/migrations/
