@@ -1,7 +1,6 @@
 web:
   build: .
-  # Perhaps it's not the best location to compile the messages here
-  command: bash -c "(cd app; django-admin compilemessages); python manage.py makemigrations; python manage.py migrate; python manage.py runserver 0.0.0.0:8000"
+  command: bash -c "./entrypoint.sh"
   volumes:
     - .:/code
   ports:
