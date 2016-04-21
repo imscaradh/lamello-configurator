@@ -20,8 +20,16 @@ $(function () {
         if(m2.val() == "") {
             m2.val($(this).val()); 
         }
+        updateMaterial1($(this).val());
     });
 
+    $( "#m2 input" ).blur(function() {
+        updateMaterial2($(this).val());
+    });
+
+    $( "#angle input" ).blur(function() {
+        rotateMaterial2($(this).val());
+    });
 
     // -----------------------------------------------
     // 			function declarations	
@@ -41,12 +49,14 @@ $(function () {
         var data = {{ connection_types_json|safe }};
         var model = data[num].fields;
 
-        drawMaterial(model.x1, model.y1, model.width1, model.height1);
-        drawMaterial(model.x2, model.y2, model.width2, model.height2);
+        drawMaterial('m1', model.x1, model.y1, model.width1, model.height1);
+        drawMaterial('m2', model.x2, model.y2, model.width2, model.height2);
     }
 
-    function drawMaterial(x, y, width, height) {
+    function drawMaterial(name, x, y, width, height) {
         canvas.drawRect({
+            layer: true,
+            name: name,
             strokeStyle: '#000',
             strokeWidth: 2,
             x: x, 
@@ -54,6 +64,38 @@ $(function () {
             width: width,
             height: height 
         });
+    }
+
+    function updateMaterial1(width) {
+        var m1 = canvas.getLayer('m1');
+        var offsetX = m1.x - (width - m1.width);
+        canvas.setLayer('m1', {
+            width: width,
+            x: offsetX
+        })
+        .drawLayers(); 
+    }
+
+    function updateMaterial2(height) {
+        var m2 = canvas.getLayer('m2');
+        var offsetY = m2.y - (height- m2.height);
+        canvas.setLayer('m2', {
+            height: height
+            //y: offsetY
+        })
+        .drawLayers(); 
+    }
+
+    function rotateMaterial2(angle) {
+        var m2 = canvas.getLayer('m2');
+        //FIXME: Improve
+        var originY = 40;
+        var offsetY = originY - Math.sin(angle/180*Math.PI) * m2.width;
+        canvas.setLayer('m2', {
+            rotate: -angle,
+            y: offsetY
+        })
+        .drawLayers(); 
     }
 
     function initSituationPreview() {
