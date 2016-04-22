@@ -19,6 +19,7 @@ $(function () {
         var m2 = $("#m2 input");
         if(m2.val() == "") {
             m2.val($(this).val()); 
+            updateMaterial2($(this).val());
         }
         updateMaterial1($(this).val());
     });
@@ -55,8 +56,7 @@ $(function () {
 
     function drawMaterial(name, x, y, width, height) {
         canvas.drawRect({
-            layer: true,
-            name: name,
+            layer: true, name: name,
             strokeStyle: '#000',
             strokeWidth: 2,
             x: x, 
@@ -81,7 +81,6 @@ $(function () {
         var offsetY = m2.y - (height- m2.height);
         canvas.setLayer('m2', {
             height: height
-            //y: offsetY
         })
         .drawLayers(); 
     }
