@@ -3,34 +3,20 @@ $(function () {
     // -----------------------------------------------
     // 			function calls and configuration
     // -----------------------------------------------
+    var data = {{ connection_types_json|safe }};
     var canvas = $("#connectionPreview");
     $.jCanvas.defaults.fromCenter = false;
 
     // functions called on page load
     initSituationPreview();
     initCanvas();
+    initFormActions();
 
     // functions called on page resize
     $( window ).resize(function() {
         initCanvas();
     });
 
-    $( "#m1 input" ).blur(function() {
-        var m2 = $("#m2 input");
-        if(m2.val() == "") {
-            m2.val($(this).val()); 
-            updateMaterial2($(this).val());
-        }
-        updateMaterial1($(this).val());
-    });
-
-    $( "#m2 input" ).blur(function() {
-        updateMaterial2($(this).val());
-    });
-
-    $( "#angle input" ).blur(function() {
-        rotateMaterial2($(this).val());
-    });
 
     // -----------------------------------------------
     // 			function declarations	
@@ -44,10 +30,28 @@ $(function () {
         ctx.canvas.height = $(".preview").height();
     }
 
-    function drawShape(num) {
-        canvas.clearCanvas();
+    function initFormActions() {
+        $( "#m1 input" ).blur(function() {
+            var m2 = $("#m2 input");
+            if(m2.val() == "") {
+                m2.val($(this).val()); 
+                scaleMaterial2($(this).val());
+            }
+            scaleMaterial1($(this).val());
+        });
 
-        var data = {{ connection_types_json|safe }};
+        $( "#m2 input" ).blur(function() {
+            scaleMaterial2($(this).val());
+        });
+
+        $( "#angle input" ).blur(function() {
+            //rotateMaterial2($(this).val());
+        });
+    }
+
+    function drawShape(num) {
+        canvas.removeLayers().drawLayers();
+
         var model = data[num].fields;
 
         drawMaterial('m1', model.x1, model.y1, model.width1, model.height1);
@@ -56,7 +60,8 @@ $(function () {
 
     function drawMaterial(name, x, y, width, height) {
         canvas.drawRect({
-            layer: true, name: name,
+            layer: true, 
+            name: name,
             strokeStyle: '#000',
             strokeWidth: 2,
             x: x, 
@@ -66,21 +71,22 @@ $(function () {
         });
     }
 
-    function updateMaterial1(width) {
+    function scaleMaterial1(width) {
         var m1 = canvas.getLayer('m1');
+        var m2 = canvas.getLayer('m2');
         var offsetX = m1.x - (width - m1.width);
         canvas.setLayer('m1', {
             width: width,
             x: offsetX
-        })
-        .drawLayers(); 
+        }).drawLayers(); 
     }
 
-    function updateMaterial2(height) {
+    function scaleMaterial2(height) {
         var m2 = canvas.getLayer('m2');
-        var offsetY = m2.y - (height- m2.height);
+        var offsetY = m2.y - (height - m2.height);
         canvas.setLayer('m2', {
-            height: height
+            height: height,
+            y: offsetY
         })
         .drawLayers(); 
     }
@@ -105,15 +111,9 @@ $(function () {
         });
 
         $('.connection a').click(function(e) {
-            $('.connection .selected-text').html($(e.target).text());
+            var targetText = $(e.target).text();
+            $('.connection .selected-text').html(targetText);
+            $('input#connection_type').val(targetText);
         });
-    }
-
-    function isConnectionPossible(m1, m2, angle) {
-        console.info("Material 1: " + m1);
-        console.info("Material 2: " + m2);
-        console.info("Angle: " + angle);
-
-        //TODO: Calculation
     }
 });
