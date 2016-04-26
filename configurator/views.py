@@ -1,11 +1,11 @@
 from django.shortcuts import render
-from django.template import RequestContext
 from .models import ConnectionType
 from django.core import serializers
 
 
-def main(request):
+def main(request, calc_result=None):
     connection_types = ConnectionType.objects.all()
+    # uncommented for debugging
     # if len(connection_types) == 0:
     ConnectionType.objects.all().delete()
     c1 = ConnectionType(name="Stumb Edge", x1=40, y1=40, width1=40, height1=200, x2=80, y2=200, width2=200, height2=40)
@@ -25,13 +25,14 @@ def main(request):
         {
             'connection_types': connection_types,
             'connection_types_json': json_serialized,
+            'calc_result': calc_result,
         }
     )
 
 
 def calc(request):
-    import pdb
-    pdb.set_trace()
     m1_width = request.POST['m1']
     m2_width = request.POST['m2']
-    main(request)
+    angle = request.POST['angle']
+    calc_result = {'width1': m1_width, 'width2': m2_width, 'angle': angle, }
+    return main(request, calc_result)
