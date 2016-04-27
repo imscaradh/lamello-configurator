@@ -1,6 +1,7 @@
 from django.shortcuts import render
 from .models import ConnectionType
 from django.core import serializers
+from .services import calc_bisec
 
 
 def main(request, calc_result=None):
@@ -34,5 +35,12 @@ def calc(request):
     m1_width = request.POST['m1']
     m2_width = request.POST['m2']
     angle = request.POST['angle']
-    calc_result = {'width1': m1_width, 'width2': m2_width, 'angle': angle, }
-    return main(request, calc_result)
+
+    m1_width = float(m1_width)
+    m2_width = float(m2_width)
+    angle = float(angle)
+
+    calc_result = calc_bisec(m1_width, m2_width, angle)
+
+    # Maybe a subrendering cloud be performed
+    return main(request, {'conn_cnc': calc_result})
