@@ -1,6 +1,11 @@
 from django.shortcuts import render
 from django.http import HttpResponse
 from reportlab.pdfgen import canvas
+<<<<<<< 95e77885346bc0d143245b58baeaa8214d591b76
+=======
+from reportlab.lib.pagesizes import A4
+
+>>>>>>> PDF Prototype
 from .models import ConnectionType
 from django.core import serializers
 from .services import BisecService
@@ -61,6 +66,13 @@ def calc(request):
 
 
 def pdf(request):
+    m1 = 10
+    m2 = 15
+    angle = 90
+    situation = "Winkelhalbierende"
+    conDesc = "Hier wird der Verbinder beschrieben."
+    assDesc = "Beschrieb der Montage. Ob mit Handfraese oder CNC."
+
     # Create the HttpResponse object with the appropriate PDF headers.
     response = HttpResponse(content_type='application/pdf')
     response['Content-Disposition'] = 'attachment; filename="somefilename.pdf"'
@@ -77,13 +89,23 @@ def pdf(request):
     p.setFont("Courier", 15)
     p.drawString(100, 725, "Verbinder: xyz")
 
-    p.drawString(100, 700, "Situation:")
+    p.drawString(100, 700, "Situation: %s" % situation)
 
-    p.rect(100, 480, 300, 200)
+    p.rect(100, 480, 250, 200)
+    p.setFont("Courier", 12)
+    p.drawString(370, 670, "Materialstärke I:  %d mm" % m1)
+    p.drawString(370, 650, "Materialstärke II: %d mm" % m2)
+    p.drawString(370, 630, "Winkel:            %d°" % angle)
 
+    p.setFont("Courier", 15)
     p.drawString(100, 450, "Beschreibung Verbinder:")
+    p.setFont("Courier", 12)
+    p.drawString(100, 430, "%s" % conDesc)
 
+    p.setFont("Courier", 15)
     p.drawString(100, 300, "Beschreibung Montage:")
+    p.setFont("Courier", 12)
+    p.drawString(100, 280, "%s" % assDesc)
 
     # Close the PDF object cleanly, and we're done.
     p.showPage()
