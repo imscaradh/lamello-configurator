@@ -43,7 +43,8 @@ def calc(request):
         m2_width = float(m2_width)
         angle = float(angle)
 
-        calc_result = BisecService.calc_h(m1_width, m2_width, angle)
+        bisec = BisecService(m1_width, m2_width, angle)
+        calc_result = bisec.check()
 
         return HttpResponse(
             json.dumps(calc_result),
