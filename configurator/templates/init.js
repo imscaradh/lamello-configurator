@@ -65,6 +65,7 @@ $(function () {
 
         $('.connection a').click(function(e) {
             $('.connection .selected-text').html($(e.target).text());
+            $('.connection #connection_type').html($(e.target).text());
         });
     }
 

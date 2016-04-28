@@ -10,7 +10,8 @@
     <h1>Configurator</h1>
 </div>
 
-<form class="form">
+<form id="pdf-gen-form" class="form" action="{% url 'pdf' %}" method="POST">
+    {% csrf_token %}
     <div class="row">
         <div class="col-md-6">
             <div class="preview">
@@ -20,16 +21,17 @@
         <div class="col-md-6">
             <div class="btn-group" data-toggle="buttons">
                 <label class="btn btn-default active">
-                    <input type="radio" id="q156" name="..." value="1" active/>milimeters
-                </label> 
+                    <input type="radio" id="q156" name="measurement" value="1" active/>milimeters
+                </label>
                 <label class="btn btn-default">
-                    <input type="radio" id="q157" name="..." value="2" />inches
-                </label> 
+                    <input type="radio" id="q157" name="measurement" value="2" />inches
+                </label>
             </div>
             <div class="field connection">
                 <label>Verbindung:</label>
                 <div class="dropdown">
-                    <button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+                    <input type="hidden" value="" name="connection_type" id="connection_type">
+                    <button class="btn btn-default dropdown-toggle" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
                         <span class="selected-text">Situation</span>
                         <span class="caret"></span>
                     </button>
@@ -42,19 +44,19 @@
             </div>
             <div id="m1" class="field">
                 <label>Materialstärke I:</label>
-                <input class="form-control right" type="text" placeholder="0" pattern="^[0-9]+$">
+                <input class="form-control right" name="m1" type="text" placeholder="0" pattern="^[0-9]+$">
                 <span class="unit">mm</span>
                 <span class="help-block"></span>
             </div>
             <div id="m2" class="field">
                 <label>Materialstärke II:</label>
-                <input class="form-control right" type="text" placeholder="0" pattern="^[0-9]+$">
+                <input class="form-control right" name="m2" type="text" placeholder="0" pattern="^[0-9]+$">
                 <span class="unit">mm</span>
                 <span class="help-block"></span>
             </div>
-            <div class="field">
+            <div id="angle" class="field">
                 <label>Winkel:</label>
-                <input class="form-control right" type="text" placeholder="0">
+                <input class="form-control right" name="angle" type="text" placeholder="0">
                 <span class="unit">°</span>
                 <span class="help-block"></span>
             </div>
