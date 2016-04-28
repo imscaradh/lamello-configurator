@@ -1,13 +1,11 @@
 from django.shortcuts import render
 from django.http import HttpResponse
-from reportlab.pdfgen import canvas
-<<<<<<< 95e77885346bc0d143245b58baeaa8214d591b76
-=======
 from reportlab.lib.pagesizes import A4
-
->>>>>>> PDF Prototype
-from .models import ConnectionType
 from django.core import serializers
+from reportlab.lib.pagesizes import portrait
+from reportlab.lib.styles import getSampleStyleSheet
+from reportlab.platypus import Paragraph, SimpleDocTemplate
+from .models import ConnectionType
 from .services import BisecService
 import json
 
@@ -66,48 +64,34 @@ def calc(request):
 
 
 def pdf(request):
+    response = HttpResponse(content_type='application/pdf')
+    response['Content-Disposition'] = 'attachment; filename=Lamello_Configurator.pdf'
+    p = SimpleDocTemplate(response, pagesize=portrait(A4))
+
     m1 = 10
     m2 = 15
     angle = 90
     situation = "Winkelhalbierende"
-    conDesc = "Hier wird der Verbinder beschrieben."
-    assDesc = "Beschrieb der Montage. Ob mit Handfraese oder CNC."
+    connector = "Verbinder"
+    condesc = "Hier wird der Verbinder beschrieben."
+    assdesc = "Beschrieb der Montage. Ob mit Handfraese oder CNC."
+    data = "img-base64-string"
+    style = getSampleStyleSheet()
 
-    # Create the HttpResponse object with the appropriate PDF headers.
-    response = HttpResponse(content_type='application/pdf')
-    response['Content-Disposition'] = 'attachment; filename="somefilename.pdf"'
+    story = []
 
-    # Create the PDF object, using the response object as its "file."
-    p = canvas.Canvas(response)
+    story.append(Paragraph("Lamello", style['Title']))
+    story.append(Paragraph("Situation: %s" % situation, style['Heading2']))
+    story.append(Paragraph("Verbinder: %s" % connector, style['Heading2']))
+    # story.append(img)
+    story.append(Paragraph("Materialstärke  I: %d" % m1, style['BodyText']))
+    story.append(Paragraph("Materialstärke II: %d" % m2, style['BodyText']))
+    story.append(Paragraph("Winkel: %d" % angle, style['BodyText']))
+    story.append(Paragraph("Beschreibung Verbinder:", style['Heading2']))
+    story.append(Paragraph("%s:" % condesc, style['BodyText']))
+    story.append(Paragraph("Beschreibung Montage:", style['Heading2']))
+    story.append(Paragraph("%s:" % assdesc, style['BodyText']))
 
-    # Draw things on the PDF. Here's where the PDF generation happens.
-    # See the ReportLab documentation for the full list of functionality.
-    p.setFont("Courier", 20)
-    p.drawString(100, 750, "Lamello")
-    p.line(100, 748, 525, 748)
+    p.build(story)
 
-    p.setFont("Courier", 15)
-    p.drawString(100, 725, "Verbinder: xyz")
-
-    p.drawString(100, 700, "Situation: %s" % situation)
-
-    p.rect(100, 480, 250, 200)
-    p.setFont("Courier", 12)
-    p.drawString(370, 670, "Materialstärke I:  %d mm" % m1)
-    p.drawString(370, 650, "Materialstärke II: %d mm" % m2)
-    p.drawString(370, 630, "Winkel:            %d°" % angle)
-
-    p.setFont("Courier", 15)
-    p.drawString(100, 450, "Beschreibung Verbinder:")
-    p.setFont("Courier", 12)
-    p.drawString(100, 430, "%s" % conDesc)
-
-    p.setFont("Courier", 15)
-    p.drawString(100, 300, "Beschreibung Montage:")
-    p.setFont("Courier", 12)
-    p.drawString(100, 280, "%s" % assDesc)
-
-    # Close the PDF object cleanly, and we're done.
-    p.showPage()
-    p.save()
     return response
