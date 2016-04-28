@@ -1,5 +1,5 @@
 from django.test import TestCase
-from .services import calc_bisec
+from .services import BisecService
 import math
 
 
@@ -14,6 +14,8 @@ class ServicesTestCase(TestCase):
         m2 = 17
         angle = 90
 
-        result = calc_bisec(m1, m2, angle)
+        bisec = BisecService()
+        result = bisec.calc_h(m1, m2, angle)
+        print(result)
         is_close = math.isclose(result, 7.88, rel_tol=1e-3)
         self.assertTrue(is_close)

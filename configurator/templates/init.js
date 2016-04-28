@@ -11,6 +11,7 @@ $(function () {
     initSituationPreview();
     initCanvas();
     initFormActions();
+    initFormSubmitActions();
 
     // functions called on page resize
     $( window ).resize(function() {
@@ -48,6 +49,36 @@ $(function () {
             //rotateMaterial2($(this).val());
         });
     }
+
+    function initFormSubmitActions() {
+        // Submit post on submit
+        $('#calculationForm').on('submit', function(event){
+            event.preventDefault();
+            create_post();
+        });
+    }
+
+    // AJAX for posting
+    function create_post() {
+        var serializedForm = $("#calculationForm").serialize();
+        console.log("ajax submit with data [" + serializedForm + "] is in progress..."); 
+        $.ajax({
+            url : "calc/",
+            type : "POST",
+            data : serializedForm,
+
+            // handle a successful response
+            success : function(json) {
+                console.log(json); // log the returned json to the console
+                $(".cnc p#cncNum").html(json);
+            },
+
+            // handle a non-successful response
+            error : function(xhr,errmsg,err) {
+                console.log(xhr.status + ": " + xhr.responseText); // provide a bit more info about the error to the console
+            }
+        });
+    };
 
     function drawShape(num) {
         canvas.removeLayers().drawLayers();
