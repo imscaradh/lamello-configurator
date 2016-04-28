@@ -1,7 +1,9 @@
 from django.shortcuts import render
+from django.http import HttpResponse
 from .models import ConnectionType
 from django.core import serializers
-from .services import calc_bisec
+from .services import BisecService
+import json
 
 
 def main(request, calc_result=None):
@@ -32,15 +34,23 @@ def main(request, calc_result=None):
 
 
 def calc(request):
-    m1_width = request.POST['m1']
-    m2_width = request.POST['m2']
-    angle = request.POST['angle']
+    if request.method == 'POST':
+        m1_width = request.POST['m1']
+        m2_width = request.POST['m2']
+        angle = request.POST['angle']
 
-    m1_width = float(m1_width)
-    m2_width = float(m2_width)
-    angle = float(angle)
+        m1_width = float(m1_width)
+        m2_width = float(m2_width)
+        angle = float(angle)
 
-    calc_result = calc_bisec(m1_width, m2_width, angle)
+        calc_result = BisecService.calc_h(m1_width, m2_width, angle)
 
-    # Maybe a subrendering cloud be performed
-    return main(request, {'conn_cnc': calc_result})
+        return HttpResponse(
+            json.dumps(calc_result),
+            content_type="application/json"
+        )
+    else:
+        return HttpResponse(
+            json.dumps({"nothing to see": "this isn't happening"}),
+            content_type="application/json"
+        )

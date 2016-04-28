@@ -10,7 +10,7 @@
     <h1>Configurator</h1>
 </div>
 
-<form class="form" action="{% url 'calc' %}" method="POST">
+<form id="calculationForm" class="form" action="{% url 'calc' %}" method="POST">
     {% csrf_token %}
     <div class="row">
         <div class="col-md-6">
@@ -67,7 +67,11 @@
     </div>
 </form>
 
-CNC Connection:
-{{ calc_result.conn_cnc }} 
+<div class="results">
+    <div class="cnc">
+        <p>CNC-Connection:</p>
+        <p id="cncNum"></p>
+    </div>
+</div>
 
 {% endblock %}
