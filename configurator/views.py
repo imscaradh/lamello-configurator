@@ -64,34 +64,40 @@ def calc(request):
 
 
 def pdf(request):
-    response = HttpResponse(content_type='application/pdf')
-    response['Content-Disposition'] = 'attachment; filename=Lamello_Configurator.pdf'
-    p = SimpleDocTemplate(response, pagesize=portrait(A4))
+    if request.method == 'POST':
+        m1 = request.POST['m1']
+        m2 = request.POST['m2']
+        angle = request.POST['angle']
+        situation = request.POST['connection_type']
 
-    m1 = 10
-    m2 = 15
-    angle = 90
-    situation = "Winkelhalbierende"
-    connector = "Verbinder"
-    condesc = "Hier wird der Verbinder beschrieben."
-    assdesc = "Beschrieb der Montage. Ob mit Handfraese oder CNC."
-    data = "img-base64-string"
-    style = getSampleStyleSheet()
+        response = HttpResponse(content_type='application/pdf')
+        response['Content-Disposition'] = 'attachment; filename=Lamello_Configurator.pdf'
+        p = SimpleDocTemplate(response, pagesize=portrait(A4))
 
-    story = []
+        connector = "Verbinder"
+        condesc = "Hier wird der Verbinder beschrieben."
+        assdesc = "Beschrieb der Montage. Ob mit Handfraese oder CNC."
+        data = "img-base64-string"
+        style = getSampleStyleSheet()
 
-    story.append(Paragraph("Lamello", style['Title']))
-    story.append(Paragraph("Situation: %s" % situation, style['Heading2']))
-    story.append(Paragraph("Verbinder: %s" % connector, style['Heading2']))
-    # story.append(img)
-    story.append(Paragraph("Materialstärke  I: %d" % m1, style['BodyText']))
-    story.append(Paragraph("Materialstärke II: %d" % m2, style['BodyText']))
-    story.append(Paragraph("Winkel: %d" % angle, style['BodyText']))
-    story.append(Paragraph("Beschreibung Verbinder:", style['Heading2']))
-    story.append(Paragraph("%s:" % condesc, style['BodyText']))
-    story.append(Paragraph("Beschreibung Montage:", style['Heading2']))
-    story.append(Paragraph("%s:" % assdesc, style['BodyText']))
+        story = []
 
-    p.build(story)
+        story.append(Paragraph("Lamello", style['Title']))
+        story.append(Paragraph("Situation: %s" % situation, style['Heading2']))
+        story.append(Paragraph("Verbinder: %s" % connector, style['Heading2']))
+        # story.append(img)
+        story.append(Paragraph("Materialstärke  I: %s" % m1, style['BodyText']))
+        story.append(Paragraph("Materialstärke II: %s" % m2, style['BodyText']))
+        story.append(Paragraph("Winkel: %s°" % angle, style['BodyText']))
+        story.append(Paragraph("Beschreibung Verbinder:", style['Heading2']))
+        story.append(Paragraph("%s:" % condesc, style['BodyText']))
+        story.append(Paragraph("Beschreibung Montage:", style['Heading2']))
+        story.append(Paragraph("%s:" % assdesc, style['BodyText']))
 
-    return response
+        p.build(story)
+
+        return response
+    else:
+        return HttpResponse(
+
+        )
