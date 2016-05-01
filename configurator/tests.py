@@ -14,8 +14,9 @@ class ServicesTestCase(TestCase):
         m2 = 17
         angle = 90
 
-        bisec = BisecService()
-        result = bisec.calc_h(m1, m2, angle)
+        bisec = BisecService(m1, m2, angle)
+        result = bisec.check()
         print(result)
-        is_close = math.isclose(result, 7.88, rel_tol=1e-3)
+        is_close = math.isclose(result['cnc']['position'], 7.87, rel_tol=1e-3)
+        self.assertTrue(result['cnc']['possible'])
         self.assertTrue(is_close)

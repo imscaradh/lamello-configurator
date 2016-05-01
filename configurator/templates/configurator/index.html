@@ -37,7 +37,7 @@
                     </button>
                     <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
                         {% for connection in connection_types %}
-                            <li><a href="#">{{ connection.name }}</a></li>
+                        <li><a href="#">{{ connection.name }}</a></li>
                         {% endfor %}
                     </ul>
                 </div>
@@ -68,10 +68,32 @@
 </form>
 
 <div class="results">
-    <div class="cnc">
-        <p>CNC-Connection:</p>
-        <p id="cncNum"></p>
-    </div>
+    <table class="connectors">
+        <thead>
+            <th class="conn-name">Verbindername</th> 
+            <th class="conn-export">Export</th> 
+        </thead>
+        <tbody>
+        <tr class="p10">
+            <td>P-10</td>
+            <td>
+                <input class="btn btn-default" type="submit" value="Export"/>
+            </td>
+        </tr>
+        <tr class="p14">
+            <td>P-14</td>
+            <td>
+                <input class="btn btn-default" type="submit" value="Export"/>
+            </td>
+        </tr>
+        <tr class="p1014">
+            <td>P-10/P-14</td>
+            <td>
+                <input class="btn btn-default" type="submit" value="Export"/>
+            </td>
+        </tr>
+        </tbody>
+    </table> 
 </div>
 
 {% endblock %}
