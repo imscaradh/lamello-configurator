@@ -142,14 +142,9 @@ $(function () {
         });
 
         $('.connection a').click(function(e) {
-<<<<<<< HEAD
-            $('.connection .selected-text').html($(e.target).text());
-            $('.connection #connection_type').html($(e.target).text());
-=======
             var targetText = $(e.target).text();
             $('.connection .selected-text').html(targetText);
             $('input#connection_type').val(targetText);
->>>>>>> ef406e00ca47151bf2b4bbbef67071860ce2a3e2
         });
     }
 });

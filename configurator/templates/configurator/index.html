@@ -10,11 +10,7 @@
     <h1>Configurator</h1>
 </div>
 
-<<<<<<< HEAD
-<form id="pdf-gen-form" class="form" action="{% url 'pdf' %}" method="POST">
-=======
 <form id="calculationForm" class="form" action="{% url 'calc' %}" method="POST">
->>>>>>> ef406e00ca47151bf2b4bbbef67071860ce2a3e2
     {% csrf_token %}
     <div class="row">
         <div class="col-md-6">
@@ -26,11 +22,7 @@
             <div class="btn-group" data-toggle="buttons">
                 <label class="btn btn-default active">
                     <input type="radio" id="q156" name="measurement" value="1" active/>milimeters
-<<<<<<< HEAD
                 </label>
-=======
-                </label> 
->>>>>>> ef406e00ca47151bf2b4bbbef67071860ce2a3e2
                 <label class="btn btn-default">
                     <input type="radio" id="q157" name="measurement" value="2" />inches
                 </label>
@@ -38,11 +30,7 @@
             <div class="field connection">
                 <label>Verbindung:</label>
                 <div class="dropdown">
-<<<<<<< HEAD
-                    <input type="hidden" value="" name="connection_type" id="connection_type">
-=======
                     <input type="hidden" name="connection_type" id="connection_type"/>
->>>>>>> ef406e00ca47151bf2b4bbbef67071860ce2a3e2
                     <button class="btn btn-default dropdown-toggle" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
                         <span class="selected-text">Situation</span>
                         <span class="caret"></span>
@@ -72,13 +60,8 @@
                 <span class="unit">°</span>
                 <span class="help-block"></span>
             </div>
-<<<<<<< HEAD
-            <div id="pdf_gen" class="button">
-                <input class="btn btn-default" type="submit" value="PDF export"/>
-=======
             <div id="calc" class="button">
                 <input class="btn btn-default" type="submit" value="Submit"/>
->>>>>>> ef406e00ca47151bf2b4bbbef67071860ce2a3e2
             </div>
         </div>
     </div>

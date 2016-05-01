@@ -19,12 +19,8 @@ from configurator import views
 
 urlpatterns = [
     url(r'^$', views.main),
-<<<<<<< HEAD
-    url(r'^pdf/$', views.pdf, name='pdf'),
-=======
     url(r'^calc/$', views.calc, name='calc'),
     url(r'^pdf/$', views.pdf),
->>>>>>> ef406e00ca47151bf2b4bbbef67071860ce2a3e2
     url(r'^admin/', admin.site.urls),
     url(r'^i18n/', include('django.conf.urls.i18n')),
 ]
