@@ -3,11 +3,21 @@ from django.db import models
 
 class ConnectionType(models.Model):
     name = models.CharField(max_length=30)
-    width1 = models.IntegerField()
-    height1 = models.IntegerField()
-    x1 = models.IntegerField()
-    y1 = models.IntegerField()
-    width2 = models.IntegerField()
-    height2 = models.IntegerField()
-    x2 = models.IntegerField()
-    y2 = models.IntegerField()
+    width1 = models.IntegerField(default=0)
+    height1 = models.IntegerField(default=0)
+    x1 = models.IntegerField(default=0)
+    y1 = models.IntegerField(default=0)
+    width2 = models.IntegerField(default=0)
+    height2 = models.IntegerField(default=0)
+    x2 = models.IntegerField(default=0)
+    y2 = models.IntegerField(default=0)
+
+
+class Connector(models.Model):
+    connections = ["P10", "P14", "P1014"]
+
+    name = models.CharField(max_length=30)
+    p1 = models.DecimalField(max_digits=19, decimal_places=3)
+    p2 = models.DecimalField(max_digits=19, decimal_places=3)
+    p3 = models.DecimalField(max_digits=19, decimal_places=3)
+    p4 = models.DecimalField(max_digits=19, decimal_places=3)

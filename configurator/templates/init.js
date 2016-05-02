@@ -5,6 +5,7 @@ $(function () {
     // -----------------------------------------------
     var data = {{ connection_types_json|safe }};
     var canvas = $("#connectionPreview");
+    var resultJson = null;
     $.jCanvas.defaults.fromCenter = false;
 
     // functions called on page load
@@ -67,17 +68,40 @@ $(function () {
             type : "POST",
             data : serializedForm,
 
-            // handle a successful response
             success : function(json) {
-                console.log(json); // log the returned json to the console
-                $(".cnc p#cncNum").html(json);
+                console.log(json);
+                $.resultJson = json;
+                updateResultTable(json);
             },
 
-            // handle a non-successful response
             error : function(xhr,errmsg,err) {
-                console.log(xhr.status + ": " + xhr.responseText); // provide a bit more info about the error to the console
+                console.log(xhr.status);
             }
         });
+    };
+
+    function updateResultTable(json) {
+        var htmlBoilerplate = '<div><span class="{0}">{0}: </span><span class="{0}-val">{1}</span></div>';
+        var typeSelector = "table.connectors tr.{0} td.{1} ";
+        $("div.results").show();
+        $.each(json, function(i, obj) {
+            var cncSelector = typeSelector.format(i, "cnc");
+            var cncPossible = htmlBoilerplate.format("Possible", obj.cnc.possible);
+            var cncPosition = htmlBoilerplate.format("Position", obj.cnc.position);
+            $(cncSelector).html("");
+            $(cncSelector).append(cncPossible);
+            $(cncSelector).append(cncPosition);
+
+            var zetaSelector = typeSelector.format(i, "zeta");
+            var zeta0 = htmlBoilerplate.format("0mm", obj.zeta['0mm']);
+            var zeta2 = htmlBoilerplate.format("2mm", obj.zeta['2mm']);
+            var zeta4 = htmlBoilerplate.format("2mm", obj.zeta['4mm']);
+            $(zetaSelector).html("");
+            $(zetaSelector).append(zeta0);
+            $(zetaSelector).append(zeta2);
+            $(zetaSelector).append(zeta4);
+        });
+
     };
 
     function drawShape(num) {
@@ -148,3 +172,12 @@ $(function () {
         });
     }
 });
+
+String.prototype.format = function() {
+  var str = this;
+  for (var i = 0; i < arguments.length; i++) {       
+    var reg = new RegExp("\\{" + i + "\\}", "gm");             
+    str = str.replace(reg, arguments[i]);
+  }
+  return str;
+}

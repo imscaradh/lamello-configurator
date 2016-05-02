@@ -1,4 +1,5 @@
 import math
+from .models import Connector
 
 
 class Service:
@@ -9,6 +10,10 @@ class Service:
     links = []
     rechts = []
     results = {}
+
+    # Parameters for P-10
+
+    connector = None
 
     def __init__(self, m1_width, m2_width, angle):
         self.m1_width = m1_width
@@ -24,6 +29,12 @@ class Service:
         self.results['zeta']['2mm'] = False
         self.results['zeta']['4mm'] = False
 
+    def set_connector(self, connector_name):
+        self.connector = Connector.objects.get(name=connector_name)
+
+        if self.connector is None:
+            raise RuntimeError("Fucking shit isn't working!")
+
     def zeta_0mm(self):
         raise NotImplementedError("Please Implement this method")
 
@@ -38,12 +49,6 @@ class Service:
 
 
 class BisecService(Service):
-
-    # Parameters for P-10
-    p1 = 8.46
-    p2 = 4.9
-    p3 = 10
-    p4 = 2.7
 
     def __init__(self, m1_width, m2_width, angle):
         Service.__init__(self, m1_width, m2_width, angle)
@@ -64,10 +69,10 @@ class BisecService(Service):
         return self.calc(kontaktdistanz, schnittwinkel)
 
     def calc(self, kontaktdistanz, schnittwinkel):
-        rechts_niedrig = (kontaktdistanz - (1 / math.cos(schnittwinkel / 180 * math.pi) + self.p1)
-                          / math.tan(schnittwinkel / 180 * math.pi) - self.p2)
-        rechts_hoch = (kontaktdistanz - (1 / math.cos(schnittwinkel / 180 * math.pi) + self.p3)
-                       / math.tan(schnittwinkel / 180 * math.pi) - self.p4)
+        rechts_niedrig = (kontaktdistanz - (1 / math.cos(schnittwinkel / 180 * math.pi) + float(self.connector.p1))
+                          / math.tan(schnittwinkel / 180 * math.pi) - float(self.connector.p2))
+        rechts_hoch = (kontaktdistanz - (1 / math.cos(schnittwinkel / 180 * math.pi) + float(self.connector.p3))
+                       / math.tan(schnittwinkel / 180 * math.pi) - float(self.connector.p4))
 
         rechts = rechts_niedrig if rechts_niedrig < rechts_hoch else rechts_hoch
         # FIXME: use right links!!
