@@ -20,7 +20,7 @@ from configurator import views
 urlpatterns = [
     url(r'^$', views.main),
     url(r'^calc/$', views.calc, name='calc'),
-    url(r'^pdf/$', views.pdf),
+    url(r'^pdf/$', views.pdf, name='pdf'),
     url(r'^admin/', admin.site.urls),
     url(r'^i18n/', include('django.conf.urls.i18n')),
 ]

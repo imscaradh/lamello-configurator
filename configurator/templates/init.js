@@ -12,6 +12,7 @@ $(function () {
     initCanvas();
     initFormActions();
     initFormSubmitActions();
+    pdfGeneration();
 
     // functions called on page resize
     $( window ).resize(function() {
@@ -146,5 +147,43 @@ $(function () {
             $('.connection .selected-text').html(targetText);
             $('input#connection_type').val(targetText);
         });
+    }
+
+    function pdfGeneration() {
+        $('.pdf-btn').click(function() {
+            var $m1 = $('#m1 input').val();
+            console.log("m1: " + $m1);
+            var $m2 = $('#m2 input').val();
+            console.log("m2: " + $m2);
+            var $angle = $('#angle input').val();
+            console.log("angle: " + $angle);
+            var $situation = $('#connection_type').val();
+            console.log("situation: " + $situation);
+            //var $canvas = document.getElementById('#connectionPreview');
+            //var b64String = $canvas.toDataURL();
+            //console.log("b64String: " + b64String);
+            $.ajax({
+            url : "pdf/",
+            type : "POST",
+            data : {
+                m1: $m1,
+                m2: $m2,
+                angle: $angle,
+                situation: $situation,
+                //b64String: b64String
+            },
+
+           // handle a successful response
+            success : function() {
+                console.log("success");
+            },
+
+            // handle a non-successful response
+            error : function() {
+                console.log("Fails");
+            }
+        });
+
+        })
     }
 });

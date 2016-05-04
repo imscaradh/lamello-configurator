@@ -68,6 +68,7 @@
 </form>
 
 <div class="results">
+    {% csrf_token %}
     <table class="connectors">
         <thead>
             <th class="conn-name">Verbindername</th> 
@@ -77,19 +78,19 @@
         <tr class="p10">
             <td>P-10</td>
             <td>
-                <input class="btn btn-default" type="submit" value="Export"/>
+                <input class="btn btn-default pdf-btn" type="submit" value="Export"/>
             </td>
         </tr>
         <tr class="p14">
             <td>P-14</td>
             <td>
-                <input class="btn btn-default" type="submit" value="Export"/>
+                <input class="btn btn-default pdf-btn" type="submit" value="Export"/>
             </td>
         </tr>
         <tr class="p1014">
             <td>P-10/P-14</td>
             <td>
-                <input class="btn btn-default" type="submit" value="Export"/>
+                <input class="btn btn-default pdf-btn" type="submit" value="Export"/>
             </td>
         </tr>
         </tbody>
