@@ -93,9 +93,9 @@ $(function () {
             $(cncSelector).append(cncPosition);
 
             var zetaSelector = typeSelector.format(i, "zeta");
-            var zeta0 = htmlBoilerplate.format("0mm", obj.zeta['0mm']['possible']);
-            var zeta2 = htmlBoilerplate.format("2mm", obj.zeta['2mm']['possible']);
-            var zeta4 = htmlBoilerplate.format("4mm", obj.zeta['4mm']['possible']);
+            var zeta0 = htmlBoilerplate.format("0mm", obj.zeta['0mm']['possible'] + ", " + obj.zeta['0mm']['val']);
+            var zeta2 = htmlBoilerplate.format("2mm", obj.zeta['2mm']['possible'] + ", " + obj.zeta['0mm']['val']);
+            var zeta4 = htmlBoilerplate.format("4mm", obj.zeta['4mm']['possible'] + ", " + obj.zeta['0mm']['val']);
             $(zetaSelector).html("");
             $(zetaSelector).append(zeta0);
             $(zetaSelector).append(zeta2);
@@ -167,8 +167,9 @@ $(function () {
 
         $('.connection a').click(function(e) {
             var targetText = $(e.target).text();
+            var connector_name = $(e.target).attr("name");
             $('.connection .selected-text').html(targetText);
-            $('input#connection_type').val(targetText);
+            $('input#connection_type').val(connector_name);
         });
     }
 });

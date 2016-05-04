@@ -2,7 +2,7 @@ from django.shortcuts import render
 from django.http import HttpResponse
 from .models import ConnectionType, Connector
 from django.core import serializers
-from .services import BisecService
+from .services import ConnectorService
 import json
 
 
@@ -42,22 +42,29 @@ def main(request, calc_result=None):
 
 
 def calc(request):
-    if request.method == 'POST':
+    if request.method == 'POST' and request.POST is not None:
         m1_width = request.POST['m1']
         m2_width = request.POST['m2']
         angle = request.POST['angle']
+        connection_type = request.POST['connection_type']
+
+        if None in (m1_width, m2_width, angle, connection_type):
+            return HttpResponse(
+                json.dumps({"nothing to see": "this isn't happening"}),
+                content_type="application/json"
+            )
 
         m1_width = float(m1_width)
         m2_width = float(m2_width)
         angle = float(angle)
 
         calc_results = {}
-        bisec = BisecService(m1_width, m2_width, angle)
-        for i in Connector.connections:
-            # Not very efficient
-            bisec.set_connector(i)
-            tmp = bisec.check()
-            calc_results[i] = tmp
+        service = ConnectorService.factory(connection_type, m1_width, m2_width, angle)
+
+        for connector in Connector.connections:
+            service.set_connector(connector)
+            tmp = service.check()
+            calc_results[connector] = tmp
 
         return HttpResponse(
             json.dumps(calc_results),
