@@ -4,11 +4,11 @@ import base64
 from django.shortcuts import render
 from django.http import HttpResponse
 from reportlab.lib.pagesizes import A4
+from .models import ConnectionType, Connector
 from django.core import serializers
 from reportlab.lib.pagesizes import portrait
 from reportlab.lib.styles import getSampleStyleSheet
 from reportlab.platypus import Paragraph, SimpleDocTemplate, Image
-from .models import ConnectionType
 from .services import BisecService
 import json
 
@@ -32,6 +32,14 @@ def main(request, calc_result=None):
     # connection_types = ConnectionType.objects.all()
     json_serialized = serializers.serialize('json', connection_types)
 
+    Connector.objects.all().delete()
+    p1 = Connector(name="P10", p1=8.46, p2=4.9, p3=10, p4=2.7)
+    p1.save()
+    p2 = Connector(name="P14", p1=8.46, p2=4.9, p3=10, p4=2.7)
+    p2.save()
+    p3 = Connector(name="P1014", p1=8.46, p2=4.9, p3=10, p4=2.7)
+    p3.save()
+
     return render(
         request,
         'configurator/index.html',
@@ -53,11 +61,16 @@ def calc(request):
         m2_width = float(m2_width)
         angle = float(angle)
 
+        calc_results = {}
         bisec = BisecService(m1_width, m2_width, angle)
-        calc_result = bisec.check()
+        for i in Connector.connections:
+            # Not very efficient
+            bisec.set_connector(i)
+            tmp = bisec.check()
+            calc_results[i] = tmp
 
         return HttpResponse(
-            json.dumps(calc_result),
+            json.dumps(calc_results),
             content_type="application/json"
         )
     else:
