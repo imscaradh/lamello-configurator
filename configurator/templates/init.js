@@ -93,9 +93,9 @@ $(function () {
             $(cncSelector).append(cncPosition);
 
             var zetaSelector = typeSelector.format(i, "zeta");
-            var zeta0 = htmlBoilerplate.format("0mm", obj.zeta['0mm']);
-            var zeta2 = htmlBoilerplate.format("2mm", obj.zeta['2mm']);
-            var zeta4 = htmlBoilerplate.format("4mm", obj.zeta['4mm']);
+            var zeta0 = htmlBoilerplate.format("0mm", obj.zeta['0mm']['possible']);
+            var zeta2 = htmlBoilerplate.format("2mm", obj.zeta['2mm']['possible']);
+            var zeta4 = htmlBoilerplate.format("4mm", obj.zeta['4mm']['possible']);
             $(zetaSelector).html("");
             $(zetaSelector).append(zeta0);
             $(zetaSelector).append(zeta2);

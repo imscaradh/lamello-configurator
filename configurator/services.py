@@ -25,9 +25,12 @@ class Service:
         self.results['cnc'] = {}
         self.results['cnc']['possible'] = False
         self.results['zeta'] = {}
-        self.results['zeta']['0mm'] = False
-        self.results['zeta']['2mm'] = False
-        self.results['zeta']['4mm'] = False
+        self.results['zeta']['0mm'] = {}
+        self.results['zeta']['2mm'] = {}
+        self.results['zeta']['4mm'] = {}
+        self.results['zeta']['0mm']['possible'] = False
+        self.results['zeta']['2mm']['possible'] = False
+        self.results['zeta']['4mm']['possible'] = False
 
     def set_connector(self, connector_name):
         self.connector = Connector.objects.get(name=connector_name)
@@ -118,8 +121,8 @@ class BisecService(Service):
             # FIXME: What is links?
             self.results['cnc']['position'] = (max(self.links[0], self.links[0]) + min(rechts_v, rechts_h)) / 2
 
-        self.results['zeta']['0mm'] = self.zeta_0mm()
-        self.results['zeta']['2mm'] = self.zeta_2mm()
-        self.results['zeta']['4mm'] = self.zeta_4mm()
+        self.results['zeta']['0mm']['possible'] = self.zeta_0mm()
+        self.results['zeta']['2mm']['possible'] = self.zeta_2mm()
+        self.results['zeta']['4mm']['possible'] = self.zeta_4mm()
 
         return self.results
