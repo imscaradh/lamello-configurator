@@ -42,6 +42,8 @@ def main(request, calc_result=None):
 
 
 def calc(request):
+    error_msg = HttpResponse(status=500)
+
     if request.method == 'POST' and request.POST is not None:
         m1_width = request.POST['m1']
         m2_width = request.POST['m2']
@@ -49,29 +51,26 @@ def calc(request):
         connection_type = request.POST['connection_type']
 
         if None in (m1_width, m2_width, angle, connection_type):
+            return error_msg
+
+        try:
+            m1_width = float(m1_width)
+            m2_width = float(m2_width)
+            angle = float(angle)
+
+            calc_results = {}
+            service = ConnectorService.factory(connection_type, m1_width, m2_width, angle)
+
+            for connector in Connector.connections:
+                service.set_connector(connector)
+                tmp = service.check()
+                calc_results[connector] = tmp
+
             return HttpResponse(
-                json.dumps({"nothing to see": "this isn't happening"}),
+                json.dumps(calc_results),
                 content_type="application/json"
             )
-
-        m1_width = float(m1_width)
-        m2_width = float(m2_width)
-        angle = float(angle)
-
-        calc_results = {}
-        service = ConnectorService.factory(connection_type, m1_width, m2_width, angle)
-
-        for connector in Connector.connections:
-            service.set_connector(connector)
-            tmp = service.check()
-            calc_results[connector] = tmp
-
-        return HttpResponse(
-            json.dumps(calc_results),
-            content_type="application/json"
-        )
+        except Exception:
+            return error_msg
     else:
-        return HttpResponse(
-            json.dumps({"nothing to see": "this isn't happening"}),
-            content_type="application/json"
-        )
+        return error_msg
