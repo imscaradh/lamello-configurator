@@ -183,23 +183,30 @@ $(function () {
             console.log("angle: " + $angle);
             var $situation = $('#connection_type').val();
             console.log("situation: " + $situation);
-            //var $canvas = document.getElementById('#connectionPreview');
-            //var b64String = $canvas.toDataURL();
-            //console.log("b64String: " + b64String);
+            var dataURL = canvas.get(0).toDataURL();
+            console.log("b64String: " + dataURL);
+            var connector = $(this).closest('tr').find('td:eq(0)').text();
+            console.log("connector: " + connector);
             $.ajax({
             url : "pdf/",
             type : "POST",
             data : {
+                csrfmiddlewaretoken: '{{ csrf_token }}',
                 m1: $m1,
                 m2: $m2,
                 angle: $angle,
                 situation: $situation,
-                //b64String: b64String
+                dataURL: dataURL,
+                connector : connector
             },
 
            // handle a successful response
-            success : function() {
-                console.log("success");
+            success: function(data) {
+                var blob=new Blob([data]);
+                var link=document.createElement('a');
+                link.href=window.URL.createObjectURL(blob);
+                link.download="Konfiguration_"+ connector + "_"+ $situation +".pdf";
+                link.click();
             },
 
             // handle a non-successful response

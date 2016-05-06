@@ -1,6 +1,5 @@
 import base64
-
-import base64
+import io
 from django.shortcuts import render
 from django.http import HttpResponse
 from reportlab.lib.pagesizes import A4
@@ -85,16 +84,16 @@ def pdf(request):
         m1 = request.POST['m1']
         m2 = request.POST['m2']
         angle = request.POST['angle']
-        situation = request.POST['connection_type']  #
+        situation = request.POST['situation']
+        data = request.POST['dataURL']
+        connector = request.POST['connector']
 
-        image = "configurator/logo.jpg"
-        im = Image(image)
+        im = Image(io.BytesIO(base64.b64decode(data.split(',')[1])))
 
         response = HttpResponse(content_type='application/pdf')
-        response['Content-Disposition'] = 'attachment; filename=Lamello_Configurator.pdf'
+        response['Content-Disposition'] = ' filename=Lamello_Configurator.pdf'
         p = SimpleDocTemplate(response, pagesize=portrait(A4))
 
-        connector = "Verbinder"
         condesc = "Hier wird der Verbinder beschrieben."
         assdesc = "Beschrieb der Montage. Ob mit Handfraese oder CNC."
         style = getSampleStyleSheet()
@@ -104,7 +103,6 @@ def pdf(request):
         story.append(Paragraph("Lamello", style['Title']))
         story.append(Paragraph("Situation: %s" % situation, style['Heading2']))
         story.append(Paragraph("Verbinder: %s" % connector, style['Heading2']))
-        # story.append(img)
         story.append(im)
         story.append(Paragraph("Materialstärke  I: %s" % m1, style['BodyText']))
         story.append(Paragraph("Materialstärke II: %s" % m2, style['BodyText']))
