@@ -72,11 +72,13 @@ $(function () {
                 console.log(json);
                 $.resultJson = json;
                 updateResultTable(json);
+                $("div.errors").hide();
             },
 
             error : function(xhr,errmsg,err) {
                 console.log(xhr.status);
                 $("div.results").hide();
+                $("div.errors").show();
                 $("div.errors").html("Error occured. Please try it again or contact administrator");
             }
         });

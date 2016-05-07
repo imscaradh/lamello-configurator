@@ -4,6 +4,7 @@ from .models import ConnectionType, Connector
 from django.core import serializers
 from .services import ConnectorService
 import json
+import logging
 
 
 def main(request, calc_result=None):
@@ -25,9 +26,9 @@ def main(request, calc_result=None):
     Connector.objects.all().delete()
     p1 = Connector(name="P10", p1=8.46, p2=4.9, p3=10, p4=2.7)
     p1.save()
-    p2 = Connector(name="P14", p1=8.46, p2=4.9, p3=10, p4=2.7)
+    p2 = Connector(name="P14", p1=12.46, p2=4.9, p3=14, p4=2.7)
     p2.save()
-    p3 = Connector(name="P1014", p1=8.46, p2=4.9, p3=10, p4=2.7)
+    p3 = Connector(name="P1014", p1=12.46, p2=4.9, p3=14, p4=2.7)
     p3.save()
 
     return render(
@@ -70,7 +71,8 @@ def calc(request):
                 json.dumps(calc_results),
                 content_type="application/json"
             )
-        except Exception:
+        except Exception as e:
+            logging.exception(e)
             return error_msg
     else:
         return error_msg
