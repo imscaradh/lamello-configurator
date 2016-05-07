@@ -3,7 +3,7 @@ import io
 from django.shortcuts import render
 from django.http import HttpResponse
 from reportlab.lib.pagesizes import A4
-from .models import ConnectionType, Connector
+from .models import ConnectionType, Connector, ConnectorInfos
 from django.core import serializers
 from reportlab.lib.pagesizes import portrait
 from reportlab.lib.styles import getSampleStyleSheet
@@ -87,6 +87,12 @@ def pdf(request):
         situation = request.POST['situation']
         data = request.POST['dataURL']
         connector = request.POST['connector']
+        condesc = "Hier wird der Verbinder beschrieben."
+        cncPossible = request.POST['cncPossible']
+        cncPosistion = request.POST['cncPosition']
+        zeta0 = request.POST['zeta0']
+        zeta2 = request.POST['zeta2']
+        zeta4 = request.POST['zeta4']
 
         im = Image(io.BytesIO(base64.b64decode(data.split(',')[1])))
 
@@ -94,8 +100,6 @@ def pdf(request):
         response['Content-Disposition'] = ' filename=Lamello_Configurator.pdf'
         p = SimpleDocTemplate(response, pagesize=portrait(A4))
 
-        condesc = "Hier wird der Verbinder beschrieben."
-        assdesc = "Beschrieb der Montage. Ob mit Handfraese oder CNC."
         style = getSampleStyleSheet()
 
         story = []
@@ -110,7 +114,13 @@ def pdf(request):
         story.append(Paragraph("Beschreibung Verbinder:", style['Heading2']))
         story.append(Paragraph("%s:" % condesc, style['BodyText']))
         story.append(Paragraph("Beschreibung Montage:", style['Heading2']))
-        story.append(Paragraph("%s:" % assdesc, style['BodyText']))
+        story.append(Paragraph("CNC:", style['Heading3']))
+        story.append(Paragraph("%s:" % cncPossible, style['BodyText']))
+        story.append(Paragraph("%s:" % cncPosistion, style['BodyText']))
+        story.append(Paragraph("Zeta:", style['Heading3']))
+        story.append(Paragraph("0mm: %s" % zeta0, style['BodyText']))
+        story.append(Paragraph("2mm: %s" % zeta2, style['BodyText']))
+        story.append(Paragraph("4mm: %s" % zeta4, style['BodyText']))
 
         p.build(story)
 

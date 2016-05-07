@@ -187,6 +187,20 @@ $(function () {
             console.log("b64String: " + dataURL);
             var connector = $(this).closest('tr').find('td:eq(0)').text();
             console.log("connector: " + connector);
+            var cncString = $(this).closest('tr').find('td:eq(1)').text();
+            var cncPossible = cncString.split('Position')[0];
+            var cncPosition = cncString.split('true' || 'false')[1];
+            console.log("cnc: " + cncString);
+            console.log("cnc: " + cncPossible);
+            console.log("cnc: " + cncPosition);
+            var zetaString = $(this).closest('tr').find('td:eq(2)').text();
+            var zeta0Possible = zetaString.indexOf('0mm: true') >= 0;
+            var zeta2Possible = zetaString.indexOf('2mm: true') >= 0;
+            var zeta4Possible = zetaString.indexOf('4mm: true') >= 0;
+            console.log("zeta: " + zetaString);
+            console.log("0mm: " + zeta0Possible);
+            console.log("zeta: " + zeta2Possible);
+            console.log("zeta: " + zeta4Possible);
             $.ajax({
             url : "pdf/",
             type : "POST",
@@ -197,7 +211,12 @@ $(function () {
                 angle: $angle,
                 situation: $situation,
                 dataURL: dataURL,
-                connector : connector
+                connector: connector,
+                cncPossible: cncPossible,
+                cncPosition: cncPosition,
+                zeta0: zeta0Possible,
+                zeta2: zeta2Possible,
+                zeta4: zeta4Possible
             },
 
            // handle a successful response
