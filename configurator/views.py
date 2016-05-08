@@ -2,8 +2,9 @@ from django.shortcuts import render
 from django.http import HttpResponse
 from .models import ConnectionType, Connector
 from django.core import serializers
-from .services import BisecService
+from .services import ConnectorService
 import json
+import logging
 
 
 def main(request, calc_result=None):
@@ -25,9 +26,9 @@ def main(request, calc_result=None):
     Connector.objects.all().delete()
     p1 = Connector(name="P10", p1=8.46, p2=4.9, p3=10, p4=2.7)
     p1.save()
-    p2 = Connector(name="P14", p1=8.46, p2=4.9, p3=10, p4=2.7)
+    p2 = Connector(name="P14", p1=12.46, p2=4.9, p3=14, p4=2.7)
     p2.save()
-    p3 = Connector(name="P1014", p1=8.46, p2=4.9, p3=10, p4=2.7)
+    p3 = Connector(name="P1014", p1=12.46, p2=4.9, p3=14, p4=2.7)
     p3.save()
 
     return render(
@@ -42,29 +43,36 @@ def main(request, calc_result=None):
 
 
 def calc(request):
-    if request.method == 'POST':
+    error_msg = HttpResponse(status=500)
+
+    if request.method == 'POST' and request.POST is not None:
         m1_width = request.POST['m1']
         m2_width = request.POST['m2']
         angle = request.POST['angle']
+        connection_type = request.POST['connection_type']
 
-        m1_width = float(m1_width)
-        m2_width = float(m2_width)
-        angle = float(angle)
+        if None in (m1_width, m2_width, angle, connection_type):
+            return error_msg
 
-        calc_results = {}
-        bisec = BisecService(m1_width, m2_width, angle)
-        for i in Connector.connections:
-            # Not very efficient
-            bisec.set_connector(i)
-            tmp = bisec.check()
-            calc_results[i] = tmp
+        try:
+            m1_width = float(m1_width)
+            m2_width = float(m2_width)
+            angle = float(angle)
 
-        return HttpResponse(
-            json.dumps(calc_results),
-            content_type="application/json"
-        )
+            calc_results = {}
+            service = ConnectorService.factory(connection_type, m1_width, m2_width, angle)
+
+            for connector in Connector.connections:
+                service.set_connector(connector)
+                tmp = service.check()
+                calc_results[connector] = tmp
+
+            return HttpResponse(
+                json.dumps(calc_results),
+                content_type="application/json"
+            )
+        except Exception as e:
+            logging.exception(e)
+            return error_msg
     else:
-        return HttpResponse(
-            json.dumps({"nothing to see": "this isn't happening"}),
-            content_type="application/json"
-        )
+        return error_msg

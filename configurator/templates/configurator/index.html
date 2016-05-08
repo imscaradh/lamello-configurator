@@ -37,7 +37,7 @@
                     </button>
                     <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
                         {% for connection in connection_types %}
-                        <li><a href="#">{{ connection.name }}</a></li>
+                        <li><a name="{{ connection.name }}" href="#">{{ connection.name }}</a></li>
                         {% endfor %}
                     </ul>
                 </div>
@@ -66,6 +66,8 @@
         </div>
     </div>
 </form>
+
+<div class="errors"></div>
 
 <div class="results">
     <table class="connectors">
