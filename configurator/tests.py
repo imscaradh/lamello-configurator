@@ -33,6 +33,25 @@ class BisecTest(TestCase):
         self.assertAlmostEqual(result['zeta']['2mm']['val'], 0.00, places=3, msg=None, delta=None)
         self.assertAlmostEqual(result['zeta']['4mm']['val'], 0.00, places=3, msg=None, delta=None)
 
+    def test_calc_bigger90_P10(self):
+        bisec = BisecService(20, 20, 110)
+        bisec.set_connector("P10")
+        result = bisec.check()
+
+        # CNC tests
+        self.assertAlmostEqual(result['cnc']['position'], 9.135, places=3, msg=None, delta=None)
+        self.assertTrue(result['cnc']['possible'])
+
+        # Zeta tests
+        self.assertTrue(result['zeta']['0mm']['possible'])
+        self.assertTrue(result['zeta']['2mm']['possible'])
+        self.assertTrue(result['zeta']['4mm']['possible'])
+
+        # TODO: Check values
+        self.assertAlmostEqual(result['zeta']['0mm']['val'], 0.00, places=3, msg=None, delta=None)
+        self.assertAlmostEqual(result['zeta']['2mm']['val'], 0.00, places=3, msg=None, delta=None)
+        self.assertAlmostEqual(result['zeta']['4mm']['val'], 0.00, places=3, msg=None, delta=None)
+
     def test_calc_smaller90P14(self):
         bisec = BisecService(20, 20, 86)
         bisec.set_connector("P14")
@@ -101,6 +120,25 @@ class StumbEdgeTest(TestCase):
         self.assertAlmostEqual(result['zeta']['2mm']['val'], 0.00, places=3, msg=None, delta=None)
         self.assertAlmostEqual(result['zeta']['4mm']['val'], 0.00, places=3, msg=None, delta=None)
 
+    def test_calc_bigger90_P10(self):
+        stumb_edge = StumbEdgeService(20, 20, 110)
+        stumb_edge.set_connector("P10")
+        result = stumb_edge.check()
+
+        # CNC tests
+        self.assertAlmostEqual(result['cnc']['position'], 10.642, places=3, msg=None, delta=None)
+        self.assertTrue(result['cnc']['possible'])
+
+        # Zeta tests
+        self.assertTrue(result['zeta']['0mm']['possible'])
+        self.assertTrue(result['zeta']['2mm']['possible'])
+        self.assertTrue(result['zeta']['4mm']['possible'])
+
+        # TODO: Check values
+        self.assertAlmostEqual(result['zeta']['0mm']['val'], 0.00, places=3, msg=None, delta=None)
+        self.assertAlmostEqual(result['zeta']['2mm']['val'], 0.00, places=3, msg=None, delta=None)
+        self.assertAlmostEqual(result['zeta']['4mm']['val'], 0.00, places=3, msg=None, delta=None)
+
     def test_calc_smaller90P14(self):
         stumb_edge = StumbEdgeService(20, 20, 86)
         stumb_edge.set_connector("P14")
@@ -157,6 +195,25 @@ class TConnectionTest(TestCase):
 
         # CNC tests
         self.assertAlmostEqual(result['cnc']['position'], 10.321, places=3, msg=None, delta=None)
+        self.assertTrue(result['cnc']['possible'])
+
+        # Zeta tests
+        self.assertTrue(result['zeta']['0mm']['possible'])
+        self.assertTrue(result['zeta']['2mm']['possible'])
+        self.assertTrue(result['zeta']['4mm']['possible'])
+
+        # TODO: Check values
+        self.assertAlmostEqual(result['zeta']['0mm']['val'], 0.00, places=3, msg=None, delta=None)
+        self.assertAlmostEqual(result['zeta']['2mm']['val'], 0.00, places=3, msg=None, delta=None)
+        self.assertAlmostEqual(result['zeta']['4mm']['val'], 0.00, places=3, msg=None, delta=None)
+
+    def test_calc_bigger90_P10(self):
+        t_conn = TConnectionService(20, 20, 110)
+        t_conn.set_connector("P10")
+        result = t_conn.check()
+
+        # CNC tests
+        self.assertAlmostEqual(result['cnc']['position'], 9.070, places=3, msg=None, delta=None)
         self.assertTrue(result['cnc']['possible'])
 
         # Zeta tests

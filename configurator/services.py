@@ -147,7 +147,8 @@ class StumbEdgeService(ConnectorService):
     def calc_schmalfl(self):
         kontaktdistanz = self.m2_width / math.sin(self.angle / 180 * math.pi)
 
-        schnittwinkel = self.angle
+        schnittwinkel = self.angle if self.angle <= 90 else 180 - self.angle
+
         rechts_niedrig = ((1 / math.cos(schnittwinkel / 180 * math.pi) + float(self.connector.p1))
                           / math.tan(schnittwinkel / 180 * math.pi) + float(self.connector.p2))
         rechts_hoch = ((1 / math.cos(schnittwinkel / 180 * math.pi) + float(self.connector.p3))
@@ -170,7 +171,8 @@ class StumbEdgeService(ConnectorService):
     def calc_fl(self):
         kontaktdistanz = self.m2_width / math.sin(self.angle / 180 * math.pi)
 
-        schnittwinkel = self.angle
+        schnittwinkel = self.angle if self.angle <= 90 else 180 - self.angle
+
         rechts_niedrig = ((1 / math.cos(schnittwinkel / 180 * math.pi) + float(self.connector.p1))
                           / math.tan(schnittwinkel / 180 * math.pi) + float(self.connector.p2))
         rechts_hoch = ((1 / math.cos(schnittwinkel / 180 * math.pi) + float(self.connector.p3))
@@ -260,7 +262,8 @@ class TConnectionService(ConnectorService):
     def calc_schmalfl(self):
         kontaktdistanz = self.m2_width / math.sin(self.angle / 180 * math.pi)
 
-        schnittwinkel = self.angle
+        schnittwinkel = self.angle if self.angle <= 90 else 180 - self.angle
+
         rechts_niedrig = ((1 / math.cos(schnittwinkel / 180 * math.pi) + float(self.connector.p1))
                           / math.tan(schnittwinkel / 180 * math.pi) + float(self.connector.p2))
         rechts_hoch = ((1 / math.cos(schnittwinkel / 180 * math.pi) + float(self.connector.p3))
@@ -283,15 +286,15 @@ class TConnectionService(ConnectorService):
     def calc_fl(self):
         kontaktdistanz = self.m2_width / math.sin(self.angle / 180 * math.pi)
 
-        schnittwinkel = self.angle
+        schnittwinkel = self.angle if self.angle <= 90 else 180 - self.angle
+
         rechts_niedrig = ((1 / math.cos(schnittwinkel / 180 * math.pi) + float(self.connector.p1))
                           / math.tan(schnittwinkel / 180 * math.pi) + float(self.connector.p2))
         rechts_hoch = ((1 / math.cos(schnittwinkel / 180 * math.pi) + float(self.connector.p3))
                        / math.tan(schnittwinkel / 180 * math.pi) + float(self.connector.p4))
 
         if self.angle >= 90:
-            links = ((1 / math.cos(schnittwinkel / 180 * math.pi) + float(self.connector.p1))
-                     / math.tan(schnittwinkel / 180 * math.pi) + float(self.connector.p2))
+            links = self.links_max
             if kontaktdistanz - rechts_niedrig < kontaktdistanz - rechts_hoch:
                 rechts = kontaktdistanz - rechts_niedrig
             else:
