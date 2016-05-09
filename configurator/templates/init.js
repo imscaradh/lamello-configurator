@@ -238,7 +238,6 @@ $(function () {
                 console.log("Fails");
             }
         });
-
         })
     }
 });

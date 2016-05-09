@@ -3,12 +3,11 @@ import io
 from django.shortcuts import render
 from django.http import HttpResponse
 from reportlab.lib.pagesizes import A4
-from .models import ConnectionType, Connector, ConnectorInfos
+from .models import ConnectionType, Connector, Info
 from django.core import serializers
 from reportlab.lib.pagesizes import portrait
 from reportlab.lib.styles import getSampleStyleSheet
 from reportlab.platypus import Paragraph, SimpleDocTemplate, Image
-from .services import BisecService
 from .services import ConnectorService
 import json
 import logging
@@ -40,6 +39,18 @@ def main(request, calc_result=None):
     p2.save()
     p3 = Connector(name="P1014", p1=12.46, p2=4.9, p3=14, p4=2.7)
     p3.save()
+
+    Info.objects.all().delete()
+    i1 = Info(name="P-10", info="Clamex P-10 ist eine Ergänzung zum P-System Verbindungssystem für dünnere "
+                                         "Materialstärken ab 13mm")
+    i1.save()
+    i2 = Info(name="P-14", info="Clamex P-14, der Nachfolger des erfolgreichen Clamex P-15, ist ein "
+                                         "zerlegbarer Verbindungsbeschlag mit sekundenschneller formschlüssiger "
+                                         "P-System Verankerung")
+    i2.save()
+    i3 = Info(name="P-1014", info="Clamex P Medius ist der Mittelwandverbinder passend zum Clamex P-14 "
+                                           "Verbinder für Materialstärken ab 16mm")
+    i3.save()
 
     return render(
         request,
@@ -96,9 +107,11 @@ def pdf(request):
         situation = request.POST['situation']
         data = request.POST['dataURL']
         connector = request.POST['connector']
-        condesc = "Hier wird der Verbinder beschrieben."
+        allconnectorinfos = Info.objects.all()
+        connectorinfo = allconnectorinfos.filter(name="%s" % connector).first()
+        info = connectorinfo.info
         cncPossible = request.POST['cncPossible']
-        cncPosistion = request.POST['cncPosition']
+        cncPosition = request.POST['cncPosition']
         zeta0 = request.POST['zeta0']
         zeta2 = request.POST['zeta2']
         zeta4 = request.POST['zeta4']
@@ -121,11 +134,11 @@ def pdf(request):
         story.append(Paragraph("Materialstärke II: %s" % m2, style['BodyText']))
         story.append(Paragraph("Winkel: %s°" % angle, style['BodyText']))
         story.append(Paragraph("Beschreibung Verbinder:", style['Heading2']))
-        story.append(Paragraph("%s:" % condesc, style['BodyText']))
+        story.append(Paragraph("%s:" % info, style['BodyText']))
         story.append(Paragraph("Beschreibung Montage:", style['Heading2']))
         story.append(Paragraph("CNC:", style['Heading3']))
         story.append(Paragraph("%s:" % cncPossible, style['BodyText']))
-        story.append(Paragraph("%s:" % cncPosistion, style['BodyText']))
+        story.append(Paragraph("%s:" % cncPosition, style['BodyText']))
         story.append(Paragraph("Zeta:", style['Heading3']))
         story.append(Paragraph("0mm: %s" % zeta0, style['BodyText']))
         story.append(Paragraph("2mm: %s" % zeta2, style['BodyText']))
