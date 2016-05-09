@@ -1,5 +1,7 @@
+reportlab
 django
 djangorestframework
 django-compressor
 django-sass-processor
 libsass
+reportlab
