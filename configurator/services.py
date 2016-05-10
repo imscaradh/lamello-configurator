@@ -7,6 +7,7 @@ class ConnectorService:
     m2_width = 0
     angle = 90
     gehrung = 0
+    stumb = 0
 
     links_max = 5.9
     links = []
@@ -38,6 +39,11 @@ class ConnectorService:
         self.results['zeta']['0mm']['val'] = 0
         self.results['zeta']['2mm']['val'] = 0
         self.results['zeta']['4mm']['val'] = 0
+
+        if self.angle == 90 or self.angle == 180 or self.angle == 0:
+            self.stumb = 0.0000000001
+        else:
+            self.stumb = abs(90 - self.angle)
 
     @staticmethod
     def factory(type, m1_width, m2_width, angle):
@@ -147,7 +153,8 @@ class StumbEdgeService(ConnectorService):
     def calc_schmalfl(self):
         kontaktdistanz = self.m2_width / math.sin(self.angle / 180 * math.pi)
 
-        schnittwinkel = self.angle
+        schnittwinkel = self.angle if self.angle <= 90 else 180 - self.angle
+
         rechts_niedrig = ((1 / math.cos(schnittwinkel / 180 * math.pi) + float(self.connector.p1))
                           / math.tan(schnittwinkel / 180 * math.pi) + float(self.connector.p2))
         rechts_hoch = ((1 / math.cos(schnittwinkel / 180 * math.pi) + float(self.connector.p3))
@@ -170,7 +177,8 @@ class StumbEdgeService(ConnectorService):
     def calc_fl(self):
         kontaktdistanz = self.m2_width / math.sin(self.angle / 180 * math.pi)
 
-        schnittwinkel = self.angle
+        schnittwinkel = self.angle if self.angle <= 90 else 180 - self.angle
+
         rechts_niedrig = ((1 / math.cos(schnittwinkel / 180 * math.pi) + float(self.connector.p1))
                           / math.tan(schnittwinkel / 180 * math.pi) + float(self.connector.p2))
         rechts_hoch = ((1 / math.cos(schnittwinkel / 180 * math.pi) + float(self.connector.p3))
@@ -195,39 +203,43 @@ class StumbEdgeService(ConnectorService):
         kontaktdistanz = self.m2_width / math.sin(self.angle / 180 * math.pi)
         cond1 = self.m1_width > 11
 
-        if self.angle >= 90:
-            cond2 = (max(self.links) < 14 - (math.tan(self.gehrung / 180 * math.pi) * 4 / math.sin(self.gehrung / 180 * math.pi)
-                     - math.tan(self.gehrung / 180 * math.pi) * 4))
-            cond3 = ((14 - (math.tan(self.gehrung / 180 * math.pi) * 4 / math.sin(self.gehrung / 180 * math.pi) -
-                     math.tan(self.gehrung / 180 * math.pi) * 4)) < min(self.rechts))
-        else:
-            cond2 = (max(self.links) < kontaktdistanz - (14 - (math.tan(self.gehrung / 180 * math.pi) * 4 / math.sin(self.gehrung / 180 * math.pi)
-                     - math.tan(self.gehrung / 180 * math.pi) * 4)))
-            # Check
-            cond3 = (kontaktdistanz - (14 - (math.tan(self.gehrung / 180 * math.pi) * 4 / math.sin(self.gehrung / 180 * math.pi) -
-                     math.tan(self.gehrung / 180 * math.pi) * 4)) < min(self.rechts))
+        val1 = (14 - (math.tan(self.stumb / 180 * math.pi) * 4 /
+                math.sin(self.stumb / 180 * math.pi) - math.tan(self.stumb / 180 * math.pi) * 4))
+        val2 = (kontaktdistanz - (14 - (math.tan(self.stumb / 180 * math.pi) * 4 /
+                math.sin(self.stumb / 180 * math.pi) - math.tan(self.stumb / 180 * math.pi) * 4)))
 
-        return cond1 and cond2 and cond3
+        cond2 = (max(self.links) < val2)
+        cond3 = (val1 < min(self.rechts))
+
+        return {'possible': cond1 and cond2 and cond3, 'val': [val1, val2]}
 
     def zeta_2mm(self):
         kontaktdistanz = self.m2_width / math.sin(self.angle / 180 * math.pi)
         cond1 = self.m1_width > 11
 
-        if self.angle >= 90:
-            cond2 = (max(self.links) < 14 - ((math.tan(self.gehrung / 180 * math.pi) * 4 / math.sin(self.gehrung / 180 * math.pi)
-                     - math.tan(self.gehrung / 180 * math.pi) * 4) + 2 / math.cos(self.gehrung / 180 * math.pi)))
-            cond3 = (14 - ((math.tan(self.gehrung / 180 * math.pi) * 4 / math.sin(self.gehrung / 180 * math.pi) -
-                     math.tan(self.gehrung / 180 * math.pi) * 4) + 2 / math.cos(self.gehrung / 180 * math.pi)) < min(self.rechts))
-        else:
-            cond2 = (max(self.links) < kontaktdistanz - (14 - ((math.tan(self.gehrung / 180 * math.pi) * 4 / math.sin(self.gehrung / 180 * math.pi)
-                     - math.tan(self.gehrung / 180 * math.pi) * 4) + 2 / math.cos(self.gehrung / 180 * math.pi))))
-            cond3 = (kontaktdistanz - (14 - ((math.tan(self.gehrung / 180 * math.pi) * 4 / math.sin(self.gehrung / 180 * math.pi) -
-                     math.tan(self.gehrung / 180 * math.pi) * 4) + 2 / math.cos(self.gehrung / 180 * math.pi))) < min(self.rechts))
+        val1 = (14 - ((math.tan(self.stumb / 180 * math.pi) * 4 /
+                math.sin(self.stumb / 180 * math.pi) - math.tan(self.stumb / 180 * math.pi) * 4) + 2 / math.cos(self.stumb / 180 * math.pi)))
+        val2 = (kontaktdistanz - (14 - ((math.tan(self.stumb / 180 * math.pi) * 4 /
+                math.sin(self.stumb / 180 * math.pi) - math.tan(self.stumb / 180 * math.pi) * 4) + 2 / math.cos(self.stumb / 180 * math.pi))))
 
-        return cond1 and cond2 and cond3
+        cond2 = (max(self.links) < val2)
+        cond3 = (val1 < min(self.rechts))
+
+        return {'possible': cond1 and cond2 and cond3, 'val': [val1, val2]}
 
     def zeta_4mm(self):
-        return self.zeta_2mm()
+        kontaktdistanz = self.m2_width / math.sin(self.angle / 180 * math.pi)
+        cond1 = self.m1_width > 11
+
+        val1 = (14 - ((math.tan(self.stumb / 180 * math.pi) * 4 /
+                math.sin(self.stumb / 180 * math.pi) - math.tan(self.stumb / 180 * math.pi) * 4) + 4 / math.cos(self.stumb / 180 * math.pi)))
+        val2 = (kontaktdistanz - (14 - ((math.tan(self.stumb / 180 * math.pi) * 4 /
+                math.sin(self.stumb / 180 * math.pi) - math.tan(self.stumb / 180 * math.pi) * 4) + 4 / math.cos(self.stumb / 180 * math.pi))))
+
+        cond2 = (max(self.links) < val2)
+        cond3 = (val1 < min(self.rechts))
+
+        return {'possible': cond1 and cond2 and cond3, 'val': [val1, val2]}
 
     def check(self):
         schmalfl = self.calc_schmalfl()
@@ -244,9 +256,9 @@ class StumbEdgeService(ConnectorService):
             self.results['cnc']['possible'] = True
             self.results['cnc']['position'] = tmp_cnc
 
-        self.results['zeta']['0mm']['possible'] = self.zeta_0mm()
-        self.results['zeta']['2mm']['possible'] = self.zeta_2mm()
-        self.results['zeta']['4mm']['possible'] = self.zeta_4mm()
+        self.results['zeta']['0mm'] = self.zeta_0mm()
+        self.results['zeta']['2mm'] = self.zeta_2mm()
+        self.results['zeta']['4mm'] = self.zeta_4mm()
 
         return self.results
 
@@ -260,7 +272,8 @@ class TConnectionService(ConnectorService):
     def calc_schmalfl(self):
         kontaktdistanz = self.m2_width / math.sin(self.angle / 180 * math.pi)
 
-        schnittwinkel = self.angle
+        schnittwinkel = self.angle if self.angle <= 90 else 180 - self.angle
+
         rechts_niedrig = ((1 / math.cos(schnittwinkel / 180 * math.pi) + float(self.connector.p1))
                           / math.tan(schnittwinkel / 180 * math.pi) + float(self.connector.p2))
         rechts_hoch = ((1 / math.cos(schnittwinkel / 180 * math.pi) + float(self.connector.p3))
@@ -283,7 +296,8 @@ class TConnectionService(ConnectorService):
     def calc_fl(self):
         kontaktdistanz = self.m2_width / math.sin(self.angle / 180 * math.pi)
 
-        schnittwinkel = self.angle
+        schnittwinkel = self.angle if self.angle <= 90 else 180 - self.angle
+
         rechts_niedrig = ((1 / math.cos(schnittwinkel / 180 * math.pi) + float(self.connector.p1))
                           / math.tan(schnittwinkel / 180 * math.pi) + float(self.connector.p2))
         rechts_hoch = ((1 / math.cos(schnittwinkel / 180 * math.pi) + float(self.connector.p3))
@@ -308,39 +322,43 @@ class TConnectionService(ConnectorService):
         kontaktdistanz = self.m2_width / math.sin(self.angle / 180 * math.pi)
         cond1 = self.m1_width > 11
 
-        if self.angle >= 90:
-            cond2 = (max(self.links) < 14 - (math.tan(self.gehrung / 180 * math.pi) * 4 / math.sin(self.gehrung / 180 * math.pi)
-                     - math.tan(self.gehrung / 180 * math.pi) * 4))
-            cond3 = ((14 - (math.tan(self.gehrung / 180 * math.pi) * 4 / math.sin(self.gehrung / 180 * math.pi) -
-                     math.tan(self.gehrung / 180 * math.pi) * 4)) < min(self.rechts))
-        else:
-            cond2 = (max(self.links) < kontaktdistanz - (14 - (math.tan(self.gehrung / 180 * math.pi) * 4 / math.sin(self.gehrung / 180 * math.pi)
-                     - math.tan(self.gehrung / 180 * math.pi) * 4)))
-            # Check
-            cond3 = (kontaktdistanz - (14 - (math.tan(self.gehrung / 180 * math.pi) * 4 / math.sin(self.gehrung / 180 * math.pi) -
-                     math.tan(self.gehrung / 180 * math.pi) * 4)) < min(self.rechts))
+        val1 = (14 - (math.tan(self.stumb / 180 * math.pi) * 4 /
+                math.sin(self.stumb / 180 * math.pi) - math.tan(self.stumb / 180 * math.pi) * 4))
+        val2 = (kontaktdistanz - (14 - (math.tan(self.stumb / 180 * math.pi) * 4 /
+                math.sin(self.stumb / 180 * math.pi) - math.tan(self.stumb / 180 * math.pi) * 4)))
 
-        return cond1 and cond2 and cond3
+        cond2 = (max(self.links) < val2)
+        cond3 = (val1 < min(self.rechts))
+
+        return {'possible': cond1 and cond2 and cond3, 'val': [val1, val2]}
 
     def zeta_2mm(self):
         kontaktdistanz = self.m2_width / math.sin(self.angle / 180 * math.pi)
         cond1 = self.m1_width > 11
 
-        if self.angle >= 90:
-            cond2 = (max(self.links) < 14 - ((math.tan(self.gehrung / 180 * math.pi) * 4 / math.sin(self.gehrung / 180 * math.pi)
-                     - math.tan(self.gehrung / 180 * math.pi) * 4) + 2 / math.cos(self.gehrung / 180 * math.pi)))
-            cond3 = (14 - ((math.tan(self.gehrung / 180 * math.pi) * 4 / math.sin(self.gehrung / 180 * math.pi) -
-                     math.tan(self.gehrung / 180 * math.pi) * 4) + 2 / math.cos(self.gehrung / 180 * math.pi)) < min(self.rechts))
-        else:
-            cond2 = (max(self.links) < kontaktdistanz - (14 - ((math.tan(self.gehrung / 180 * math.pi) * 4 / math.sin(self.gehrung / 180 * math.pi)
-                     - math.tan(self.gehrung / 180 * math.pi) * 4) + 2 / math.cos(self.gehrung / 180 * math.pi))))
-            cond3 = (kontaktdistanz - (14 - ((math.tan(self.gehrung / 180 * math.pi) * 4 / math.sin(self.gehrung / 180 * math.pi) -
-                     math.tan(self.gehrung / 180 * math.pi) * 4) + 2 / math.cos(self.gehrung / 180 * math.pi))) < min(self.rechts))
+        val1 = (14 - ((math.tan(self.stumb / 180 * math.pi) * 4 /
+                math.sin(self.stumb / 180 * math.pi) - math.tan(self.stumb / 180 * math.pi) * 4) + 2 / math.cos(self.stumb / 180 * math.pi)))
+        val2 = (kontaktdistanz - (14 - ((math.tan(self.stumb / 180 * math.pi) * 4 /
+                math.sin(self.stumb / 180 * math.pi) - math.tan(self.stumb / 180 * math.pi) * 4) + 2 / math.cos(self.stumb / 180 * math.pi))))
 
-        return cond1 and cond2 and cond3
+        cond2 = (max(self.links) < val2)
+        cond3 = (val1 < min(self.rechts))
+
+        return {'possible': cond1 and cond2 and cond3, 'val': [val1, val2]}
 
     def zeta_4mm(self):
-        return self.zeta_2mm()
+        kontaktdistanz = self.m2_width / math.sin(self.angle / 180 * math.pi)
+        cond1 = self.m1_width > 11
+
+        val1 = (14 - ((math.tan(self.stumb / 180 * math.pi) * 4 /
+                math.sin(self.stumb / 180 * math.pi) - math.tan(self.stumb / 180 * math.pi) * 4) + 4 / math.cos(self.stumb / 180 * math.pi)))
+        val2 = (kontaktdistanz - (14 - ((math.tan(self.stumb / 180 * math.pi) * 4 /
+                math.sin(self.stumb / 180 * math.pi) - math.tan(self.stumb / 180 * math.pi) * 4) + 4 / math.cos(self.stumb / 180 * math.pi))))
+
+        cond2 = (max(self.links) < val2)
+        cond3 = (val1 < min(self.rechts))
+
+        return {'possible': cond1 and cond2 and cond3, 'val': [val1, val2]}
 
     def check(self):
         schmalfl = self.calc_schmalfl()
@@ -357,9 +375,9 @@ class TConnectionService(ConnectorService):
             self.results['cnc']['possible'] = True
             self.results['cnc']['position'] = tmp_cnc
 
-        self.results['zeta']['0mm']['possible'] = self.zeta_0mm()
-        self.results['zeta']['2mm']['possible'] = self.zeta_2mm()
-        self.results['zeta']['4mm']['possible'] = self.zeta_4mm()
+        self.results['zeta']['0mm'] = self.zeta_0mm()
+        self.results['zeta']['2mm'] = self.zeta_2mm()
+        self.results['zeta']['4mm'] = self.zeta_4mm()
 
         return self.results
 
