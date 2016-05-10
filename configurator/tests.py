@@ -116,9 +116,9 @@ class StumbEdgeTest(TestCase):
         self.assertTrue(result['zeta']['4mm']['possible'])
 
         # TODO: Check values
-        self.assertAlmostEqual(result['zeta']['0mm']['val'], 0.00, places=3, msg=None, delta=None)
-        self.assertAlmostEqual(result['zeta']['2mm']['val'], 0.00, places=3, msg=None, delta=None)
-        self.assertAlmostEqual(result['zeta']['4mm']['val'], 0.00, places=3, msg=None, delta=None)
+        self.assertAlmostEqual(result['zeta']['0mm']['val'][0], 10.27, places=2, msg=None, delta=None)
+        self.assertAlmostEqual(result['zeta']['2mm']['val'][0], 8.27, places=2, msg=None, delta=None)
+        self.assertAlmostEqual(result['zeta']['4mm']['val'][0], 6.26, places=2, msg=None, delta=None)
 
     def test_calc_bigger90_P10(self):
         stumb_edge = StumbEdgeService(20, 20, 110)
@@ -135,9 +135,9 @@ class StumbEdgeTest(TestCase):
         self.assertTrue(result['zeta']['4mm']['possible'])
 
         # TODO: Check values
-        self.assertAlmostEqual(result['zeta']['0mm']['val'], 0.00, places=3, msg=None, delta=None)
-        self.assertAlmostEqual(result['zeta']['2mm']['val'], 0.00, places=3, msg=None, delta=None)
-        self.assertAlmostEqual(result['zeta']['4mm']['val'], 0.00, places=3, msg=None, delta=None)
+        self.assertAlmostEqual(result['zeta']['0mm']['val'][0], 11.199, places=2, msg=None, delta=None)
+        self.assertAlmostEqual(result['zeta']['2mm']['val'][0], 9.07, places=2, msg=None, delta=None)
+        self.assertAlmostEqual(result['zeta']['4mm']['val'][0], 6.94, places=2, msg=None, delta=None)
 
     def test_calc_smaller90P14(self):
         stumb_edge = StumbEdgeService(20, 20, 86)
@@ -154,9 +154,9 @@ class StumbEdgeTest(TestCase):
         self.assertTrue(result['zeta']['4mm']['possible'])
 
         # TODO: Check values
-        self.assertAlmostEqual(result['zeta']['0mm']['val'], 0.00, places=3, msg=None, delta=None)
-        self.assertAlmostEqual(result['zeta']['2mm']['val'], 0.00, places=3, msg=None, delta=None)
-        self.assertAlmostEqual(result['zeta']['4mm']['val'], 0.00, places=3, msg=None, delta=None)
+        self.assertAlmostEqual(result['zeta']['0mm']['val'][0], 10.27, places=2, msg=None, delta=None)
+        self.assertAlmostEqual(result['zeta']['2mm']['val'][0], 8.27, places=2, msg=None, delta=None)
+        self.assertAlmostEqual(result['zeta']['4mm']['val'][0], 6.26, places=2, msg=None, delta=None)
 
     def test_calc_smaller90P1014(self):
         stumb_edge = StumbEdgeService(20, 20, 86)
@@ -173,9 +173,9 @@ class StumbEdgeTest(TestCase):
         self.assertTrue(result['zeta']['4mm']['possible'])
 
         # TODO: Check values
-        self.assertAlmostEqual(result['zeta']['0mm']['val'], 0.00, places=3, msg=None, delta=None)
-        self.assertAlmostEqual(result['zeta']['2mm']['val'], 0.00, places=3, msg=None, delta=None)
-        self.assertAlmostEqual(result['zeta']['4mm']['val'], 0.00, places=3, msg=None, delta=None)
+        self.assertAlmostEqual(result['zeta']['0mm']['val'][0], 10.27, places=2, msg=None, delta=None)
+        self.assertAlmostEqual(result['zeta']['2mm']['val'][0], 8.27, places=2, msg=None, delta=None)
+        self.assertAlmostEqual(result['zeta']['4mm']['val'][0], 6.26, places=2, msg=None, delta=None)
 
 
 class TConnectionTest(TestCase):
