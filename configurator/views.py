@@ -3,7 +3,7 @@ import io
 from django.shortcuts import render
 from django.http import HttpResponse
 from reportlab.lib.pagesizes import A4
-from .models import ConnectionType, Connector, Info
+from .models import ConnectionType, Connector
 from django.core import serializers
 from reportlab.lib.pagesizes import portrait
 from reportlab.lib.styles import getSampleStyleSheet
@@ -29,28 +29,23 @@ def main(request, calc_result=None):
     c4.save()
     c5 = ConnectionType(name="Septum", x1=40, y1=40, width1=40, height1=160, x2=80, y2=40, width2=160, height2=40)
     c5.save()
-    # connection_types = ConnectionType.objects.all()
+    connection_types = ConnectionType.objects.all()
     json_serialized = serializers.serialize('json', connection_types)
 
     Connector.objects.all().delete()
-    p1 = Connector(name="P10", p1=8.46, p2=4.9, p3=10, p4=2.7)
+    p1 = Connector(name="P10", p1=8.46, p2=4.9, p3=10, p4=2.7, info="Clamex P-10 ist eine Ergänzung zum P-System "
+                                                                    "Verbindungssystem für dünnere Materialstärken "
+                                                                    "ab 13mm")
     p1.save()
-    p2 = Connector(name="P14", p1=12.46, p2=4.9, p3=14, p4=2.7)
+    p2 = Connector(name="P14", p1=12.46, p2=4.9, p3=14, p4=2.7, info="Clamex P-14, der Nachfolger des erfolgreichen "
+                                                                     "Clamex P-15, ist ein zerlegbarer Verbindungs"
+                                                                     "beschlag mit sekundenschneller formschlüssiger "
+                                                                     "P-System Verankerung")
     p2.save()
-    p3 = Connector(name="P1014", p1=12.46, p2=4.9, p3=14, p4=2.7)
+    p3 = Connector(name="P1014", p1=12.46, p2=4.9, p3=14, p4=2.7, info="Clamex P Medius ist der Mittelwandverbinder "
+                                                                       "passend zum Clamex P-14 Verbinder für "
+                                                                       "Materialstärken ab 16mm")
     p3.save()
-
-    Info.objects.all().delete()
-    i1 = Info(name="P-10", info="Clamex P-10 ist eine Ergänzung zum P-System Verbindungssystem für dünnere "
-                                         "Materialstärken ab 13mm")
-    i1.save()
-    i2 = Info(name="P-14", info="Clamex P-14, der Nachfolger des erfolgreichen Clamex P-15, ist ein "
-                                         "zerlegbarer Verbindungsbeschlag mit sekundenschneller formschlüssiger "
-                                         "P-System Verankerung")
-    i2.save()
-    i3 = Info(name="P-1014", info="Clamex P Medius ist der Mittelwandverbinder passend zum Clamex P-14 "
-                                           "Verbinder für Materialstärken ab 16mm")
-    i3.save()
 
     return render(
         request,
@@ -107,8 +102,9 @@ def pdf(request):
         situation = request.POST['situation']
         data = request.POST['dataURL']
         connector = request.POST['connector']
-        allconnectorinfos = Info.objects.all()
-        connectorinfo = allconnectorinfos.filter(name="%s" % connector).first()
+        con = connector.replace("-", "")
+        allconnectorinfos = Connector.objects.all()
+        connectorinfo = allconnectorinfos.filter(name="%s" % con).first()
         info = connectorinfo.info
         cncPossible = request.POST['cncPossible']
         cncPosition = request.POST['cncPosition']
