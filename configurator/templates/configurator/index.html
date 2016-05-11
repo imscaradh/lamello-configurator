@@ -22,10 +22,10 @@
             <div class="btn-group" data-toggle="buttons">
                 <label class="btn btn-default active">
                     <input type="radio" id="q156" name="measurement" value="1" active/>milimeters
-                </label> 
+                </label>
                 <label class="btn btn-default">
                     <input type="radio" id="q157" name="measurement" value="2" />inches
-                </label> 
+                </label>
             </div>
             <div class="field connection">
                 <label>Verbindung:</label>
@@ -70,6 +70,7 @@
 <div class="errors"></div>
 
 <div class="results">
+    {% csrf_token %}
     <table class="connectors">
         <thead>
             <th class="conn-name">Verbindername</th> 
@@ -87,7 +88,7 @@
             <td class="zeta">
             </td>
             <td>
-                <input class="btn btn-default" type="submit" value="Export"/>
+                <input class="btn btn-default pdf-btn" type="submit" value="Export"/>
             </td>
         </tr>
         <tr class="P14">
@@ -97,17 +98,17 @@
             <td class="zeta">
             </td>
             <td>
-                <input class="btn btn-default" type="submit" value="Export"/>
+                <input class="btn btn-default pdf-btn" type="submit" value="Export"/>
             </td>
         </tr>
         <tr class="P1014">
-            <td>P-10/P-14</td>
+            <td>P-1014</td>
             <td class="cnc">
             </td>
             <td class="zeta">
             </td>
             <td>
-                <input class="btn btn-default" type="submit" value="Export"/>
+                <input class="btn btn-default pdf-btn" type="submit" value="Export"/>
             </td>
         </tr>
         </tbody>

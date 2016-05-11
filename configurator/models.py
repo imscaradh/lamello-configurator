@@ -21,3 +21,4 @@ class Connector(models.Model):
     p2 = models.DecimalField(max_digits=19, decimal_places=3)
     p3 = models.DecimalField(max_digits=19, decimal_places=3)
     p4 = models.DecimalField(max_digits=19, decimal_places=3)
+    info = models.CharField(max_length=512, default="")
