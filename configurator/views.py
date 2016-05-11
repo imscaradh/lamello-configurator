@@ -7,7 +7,7 @@ from .models import ConnectionType, Connector
 from django.core import serializers
 from reportlab.lib.pagesizes import portrait
 from reportlab.lib.styles import getSampleStyleSheet
-from reportlab.platypus import Paragraph, SimpleDocTemplate, Image
+from reportlab.platypus import Paragraph, SimpleDocTemplate, Image, Table, TableStyle
 from .services import ConnectorService
 import json
 import logging
@@ -120,6 +120,17 @@ def pdf(request):
 
         style = getSampleStyleSheet()
 
+        tableData = [('', 'Possible', 'a', 'b'),
+                     ('CNC', 'Ja', '5.32mm', '9.4mm'),
+                     ('Zeta P2', '', '', ''),
+                     ('0mm Aufsteckplatte', 'Ja'),
+                     ('2mm Aufsteckplatte', 'Nein'),
+                     ('4mm Aufsteckplatte', 'Nein')]
+        tableStyle = TableStyle([('VALIGN', (0, 0), (-1, -1), 'MIDDLE'),
+                                 ('ALIGN', (0, 0), (-1, 1), 'LEFT')])
+
+        table = Table(tableData)
+        table.setStyle(tableStyle)
         story = []
 
         story.append(Paragraph("Lamello", style['Title']))
@@ -132,17 +143,17 @@ def pdf(request):
         story.append(Paragraph("Beschreibung Verbinder:", style['Heading2']))
         story.append(Paragraph("%s:" % info, style['BodyText']))
         story.append(Paragraph("Beschreibung Montage:", style['Heading2']))
-        story.append(Paragraph("CNC:", style['Heading3']))
-        story.append(Paragraph("%s:" % cncPossible, style['BodyText']))
-        story.append(Paragraph("%s:" % cncPosition, style['BodyText']))
-        story.append(Paragraph("Zeta:", style['Heading3']))
-        story.append(Paragraph("0mm: %s" % zeta0, style['BodyText']))
-        story.append(Paragraph("2mm: %s" % zeta2, style['BodyText']))
-        story.append(Paragraph("4mm: %s" % zeta4, style['BodyText']))
+        story.append(table)
+        # story.append(Paragraph("CNC:", style['Heading3']))
+        # story.append(Paragraph("%s:" % cncPossible, style['BodyText']))
+        # story.append(Paragraph("%s:" % cncPosition, style['BodyText']))
+        # story.append(Paragraph("Zeta:", style['Heading3']))
+        # story.append(Paragraph("0mm: %s" % zeta0, style['BodyText']))
+        # story.append(Paragraph("2mm: %s" % zeta2, style['BodyText']))
+        # story.append(Paragraph("4mm: %s" % zeta4, style['BodyText']))
 
         p.build(story)
 
         return response
     else:
         return HttpResponse()
-
