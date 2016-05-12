@@ -263,7 +263,6 @@ class StumbEdgeService(ConnectorService):
         return self.results
 
 
-# FIXME: Same as Stumb Edge?
 class TConnectionService(ConnectorService):
 
     def __init__(self, m1_width, m2_width, angle):
@@ -304,8 +303,7 @@ class TConnectionService(ConnectorService):
                        / math.tan(schnittwinkel / 180 * math.pi) + float(self.connector.p4))
 
         if self.angle >= 90:
-            links = ((1 / math.cos(schnittwinkel / 180 * math.pi) + float(self.connector.p1))
-                     / math.tan(schnittwinkel / 180 * math.pi) + float(self.connector.p2))
+            links = self.links_max
             if kontaktdistanz - rechts_niedrig < kontaktdistanz - rechts_hoch:
                 rechts = kontaktdistanz - rechts_niedrig
             else:

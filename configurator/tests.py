@@ -52,7 +52,7 @@ class BisecTest(TestCase):
         self.assertAlmostEqual(result['zeta']['2mm']['val'], 0.00, places=3, msg=None, delta=None)
         self.assertAlmostEqual(result['zeta']['4mm']['val'], 0.00, places=3, msg=None, delta=None)
 
-    def test_calc_smaller90P14(self):
+    def test_calc_smaller90_P14(self):
         bisec = BisecService(20, 20, 86)
         bisec.set_connector("P14")
         result = bisec.check()
@@ -71,7 +71,7 @@ class BisecTest(TestCase):
         self.assertAlmostEqual(result['zeta']['2mm']['val'], 0.00, places=3, msg=None, delta=None)
         self.assertAlmostEqual(result['zeta']['4mm']['val'], 0.00, places=3, msg=None, delta=None)
 
-    def test_calc_smaller90P1014(self):
+    def test_calc_smaller90_P1014(self):
         bisec = BisecService(20, 20, 86)
         bisec.set_connector("P1014")
         result = bisec.check()
@@ -115,10 +115,13 @@ class StumbEdgeTest(TestCase):
         self.assertTrue(result['zeta']['2mm']['possible'])
         self.assertTrue(result['zeta']['4mm']['possible'])
 
-        # TODO: Check values
         self.assertAlmostEqual(result['zeta']['0mm']['val'][0], 10.27, places=2, msg=None, delta=None)
         self.assertAlmostEqual(result['zeta']['2mm']['val'][0], 8.27, places=2, msg=None, delta=None)
         self.assertAlmostEqual(result['zeta']['4mm']['val'][0], 6.26, places=2, msg=None, delta=None)
+
+        self.assertAlmostEqual(result['zeta']['0mm']['val'][1], 9.78, places=2, msg=None, delta=None)
+        self.assertAlmostEqual(result['zeta']['2mm']['val'][1], 11.78, places=2, msg=None, delta=None)
+        self.assertAlmostEqual(result['zeta']['4mm']['val'][1], 13.79, places=2, msg=None, delta=None)
 
     def test_calc_bigger90_P10(self):
         stumb_edge = StumbEdgeService(20, 20, 110)
@@ -134,12 +137,15 @@ class StumbEdgeTest(TestCase):
         self.assertTrue(result['zeta']['2mm']['possible'])
         self.assertTrue(result['zeta']['4mm']['possible'])
 
-        # TODO: Check values
         self.assertAlmostEqual(result['zeta']['0mm']['val'][0], 11.199, places=2, msg=None, delta=None)
         self.assertAlmostEqual(result['zeta']['2mm']['val'][0], 9.07, places=2, msg=None, delta=None)
         self.assertAlmostEqual(result['zeta']['4mm']['val'][0], 6.94, places=2, msg=None, delta=None)
 
-    def test_calc_smaller90P14(self):
+        self.assertAlmostEqual(result['zeta']['0mm']['val'][1], 10.08, places=2, msg=None, delta=None)
+        self.assertAlmostEqual(result['zeta']['2mm']['val'][1], 12.21, places=2, msg=None, delta=None)
+        self.assertAlmostEqual(result['zeta']['4mm']['val'][1], 14.34, places=2, msg=None, delta=None)
+
+    def test_calc_smaller90_P14(self):
         stumb_edge = StumbEdgeService(20, 20, 86)
         stumb_edge.set_connector("P14")
         result = stumb_edge.check()
@@ -153,12 +159,15 @@ class StumbEdgeTest(TestCase):
         self.assertTrue(result['zeta']['2mm']['possible'])
         self.assertTrue(result['zeta']['4mm']['possible'])
 
-        # TODO: Check values
         self.assertAlmostEqual(result['zeta']['0mm']['val'][0], 10.27, places=2, msg=None, delta=None)
         self.assertAlmostEqual(result['zeta']['2mm']['val'][0], 8.27, places=2, msg=None, delta=None)
         self.assertAlmostEqual(result['zeta']['4mm']['val'][0], 6.26, places=2, msg=None, delta=None)
 
-    def test_calc_smaller90P1014(self):
+        self.assertAlmostEqual(result['zeta']['0mm']['val'][1], 9.78, places=2, msg=None, delta=None)
+        self.assertAlmostEqual(result['zeta']['2mm']['val'][1], 11.78, places=2, msg=None, delta=None)
+        self.assertAlmostEqual(result['zeta']['4mm']['val'][1], 13.79, places=2, msg=None, delta=None)
+
+    def test_calc_smaller90_P1014(self):
         stumb_edge = StumbEdgeService(20, 20, 86)
         stumb_edge.set_connector("P1014")
         result = stumb_edge.check()
@@ -202,10 +211,13 @@ class TConnectionTest(TestCase):
         self.assertTrue(result['zeta']['2mm']['possible'])
         self.assertTrue(result['zeta']['4mm']['possible'])
 
-        # TODO: Check values
         self.assertAlmostEqual(result['zeta']['0mm']['val'][0], 10.27, places=2, msg=None, delta=None)
         self.assertAlmostEqual(result['zeta']['2mm']['val'][0], 8.27, places=2, msg=None, delta=None)
         self.assertAlmostEqual(result['zeta']['4mm']['val'][0], 6.26, places=2, msg=None, delta=None)
+
+        self.assertAlmostEqual(result['zeta']['0mm']['val'][1], 9.78, places=2, msg=None, delta=None)
+        self.assertAlmostEqual(result['zeta']['2mm']['val'][1], 11.78, places=2, msg=None, delta=None)
+        self.assertAlmostEqual(result['zeta']['4mm']['val'][1], 13.79, places=2, msg=None, delta=None)
 
     def test_calc_bigger90_P10(self):
         t_conn = TConnectionService(20, 20, 110)
@@ -214,19 +226,22 @@ class TConnectionTest(TestCase):
 
         # CNC tests
         self.assertTrue(result['cnc']['possible'])
-        # self.assertAlmostEqual(result['cnc']['position'], 9.070, places=3, msg=None, delta=None)
+        self.assertAlmostEqual(result['cnc']['position'], 9.070, places=3, msg=None, delta=None)
 
         # Zeta tests
         self.assertTrue(result['zeta']['0mm']['possible'])
         self.assertTrue(result['zeta']['2mm']['possible'])
         self.assertTrue(result['zeta']['4mm']['possible'])
 
-        # TODO: Check values
         self.assertAlmostEqual(result['zeta']['0mm']['val'][0], 11.199, places=2, msg=None, delta=None)
         self.assertAlmostEqual(result['zeta']['2mm']['val'][0], 9.07, places=2, msg=None, delta=None)
         self.assertAlmostEqual(result['zeta']['4mm']['val'][0], 6.94, places=2, msg=None, delta=None)
 
-    def test_calc_smaller90P14(self):
+        self.assertAlmostEqual(result['zeta']['0mm']['val'][1], 10.08, places=2, msg=None, delta=None)
+        self.assertAlmostEqual(result['zeta']['2mm']['val'][1], 12.21, places=2, msg=None, delta=None)
+        self.assertAlmostEqual(result['zeta']['4mm']['val'][1], 14.34, places=2, msg=None, delta=None)
+
+    def test_calc_smaller90_P14(self):
         t_conn = TConnectionService(20, 20, 86)
         t_conn.set_connector("P14")
         result = t_conn.check()
@@ -240,12 +255,15 @@ class TConnectionTest(TestCase):
         self.assertTrue(result['zeta']['2mm']['possible'])
         self.assertTrue(result['zeta']['4mm']['possible'])
 
-        # TODO: Check values
         self.assertAlmostEqual(result['zeta']['0mm']['val'][0], 10.27, places=2, msg=None, delta=None)
         self.assertAlmostEqual(result['zeta']['2mm']['val'][0], 8.27, places=2, msg=None, delta=None)
         self.assertAlmostEqual(result['zeta']['4mm']['val'][0], 6.26, places=2, msg=None, delta=None)
 
-    def test_calc_smaller90P1014(self):
+        self.assertAlmostEqual(result['zeta']['0mm']['val'][1], 9.78, places=2, msg=None, delta=None)
+        self.assertAlmostEqual(result['zeta']['2mm']['val'][1], 11.78, places=2, msg=None, delta=None)
+        self.assertAlmostEqual(result['zeta']['4mm']['val'][1], 13.79, places=2, msg=None, delta=None)
+
+    def test_calc_smaller90_P1014(self):
         t_conn = TConnectionService(20, 20, 86)
         t_conn.set_connector("P1014")
         result = t_conn.check()
