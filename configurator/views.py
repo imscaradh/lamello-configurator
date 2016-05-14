@@ -2,6 +2,7 @@ import base64
 import io
 from django.shortcuts import render
 from django.http import HttpResponse
+from reportlab.lib import colors
 from reportlab.lib.pagesizes import A4
 from .models import ConnectionType, Connector
 from django.core import serializers
@@ -107,30 +108,34 @@ def pdf(request):
         connectorinfo = allconnectorinfos.filter(name="%s" % con).first()
         info = connectorinfo.info
         cncPossible = request.POST['cncPossible']
-        cncPosition = request.POST['cncPosition']
+        cncPositionA = request.POST['cncPosition']
         zeta0 = request.POST['zeta0']
         zeta2 = request.POST['zeta2']
         zeta4 = request.POST['zeta4']
 
-        im = Image(io.BytesIO(base64.b64decode(data.split(',')[1])))
-
+        im = Image(io.BytesIO(base64.b64decode(data.split(',')[1])), hAlign='LEFT')
         response = HttpResponse(content_type='application/pdf')
         response['Content-Disposition'] = ' filename=Lamello_Configurator.pdf'
-        p = SimpleDocTemplate(response, pagesize=portrait(A4))
+        p = SimpleDocTemplate(response, pagesize=portrait(A4), )
 
         style = getSampleStyleSheet()
 
-        tableData = [('', 'Possible', 'a', 'b'),
-                     ('CNC', 'Ja', '5.32mm', '9.4mm'),
-                     ('Zeta P2', '', '', ''),
-                     ('0mm Aufsteckplatte', 'Ja'),
-                     ('2mm Aufsteckplatte', 'Nein'),
-                     ('4mm Aufsteckplatte', 'Nein')]
-        tableStyle = TableStyle([('VALIGN', (0, 0), (-1, -1), 'MIDDLE'),
-                                 ('ALIGN', (0, 0), (-1, 1), 'LEFT')])
+        tabledata = [('', 'Possible', 'a', 'b'),
+                     (Paragraph('CNC:', style['Heading4']), '%s' % cncPossible, '%smm' % cncPositionA, '%smm' % cncPositionA),
+                     '',
+                     (Paragraph('Zeta P2:', style['Heading4']), '', '', ''),
+                     ('0mm Aufsteckplatte', '%s' % zeta0, '?mm', '?mm'),
+                     ('2mm Aufsteckplatte', '%s' % zeta2, '?mm', '?mm'),
+                     ('4mm Aufsteckplatte', '%s' % zeta4, '?mm', '?mm')]
 
-        table = Table(tableData)
-        table.setStyle(tableStyle)
+        tablestyle = TableStyle([('VALIGN', (0, 0), (-1, -1), 'MIDDLE'),
+                                 ('ALIGN', (0, 0), (-1, 1), 'LEFT'),
+                                 ('BOX', (0, 0), (-1, -1), 0.25, colors.black),
+                                 ('INNERGRID', (0, 0), (-1, -1), 0.25, colors.black)
+                                 ])
+
+        table = Table(tabledata, hAlign='LEFT')
+        table.setStyle(tablestyle)
         story = []
 
         story.append(Paragraph("Lamello", style['Title']))
