@@ -33,18 +33,15 @@ def main(request, calc_result=None):
     json_serialized = serializers.serialize('json', connection_types)
 
     Connector.objects.all().delete()
-    p1 = Connector(name="P10", p1=8.46, p2=4.9, p3=10, p4=2.7, min_m1=11, info="Clamex P-10 ist eine Ergänzung zum P-System "
-                                                                    "Verbindungssystem für dünnere Materialstärken "
-                                                                    "ab 13mm")
+    p1 = Connector(name="P10", p1=8.46, p2=4.9, p3=10, p4=2.7, min_m1=11,
+                   info="Clamex P-10 ist eine Ergänzung zum P-System Verbindungssystem für dünnere Materialstärken ab 13mm")
     p1.save()
-    p2 = Connector(name="P14", p1=12.46, p2=4.9, p3=14, p4=2.7, min_m1=15, info="Clamex P-14, der Nachfolger des erfolgreichen "
-                                                                     "Clamex P-15, ist ein zerlegbarer Verbindungs"
-                                                                     "beschlag mit sekundenschneller formschlüssiger "
-                                                                     "P-System Verankerung")
+    p2 = Connector(name="P14", p1=12.46, p2=4.9, p3=14, p4=2.7, min_m1=15,
+                   info="Clamex P-14, der Nachfolger des erfolgreichen Clamex P-15, ist ein zerlegbarer Verbindungs \
+                            beschlag mit sekundenschneller formschlüssiger P-System Verankerung")
     p2.save()
-    p3 = Connector(name="P1014", p1=12.46, p2=4.9, p3=14, p4=2.7,min_m1=15 info="Clamex P Medius ist der Mittelwandverbinder "
-                                                                       "passend zum Clamex P-14 Verbinder für "
-                                                                       "Materialstärken ab 16mm")
+    p3 = Connector(name="P1014", p1=12.46, p2=4.9, p3=14, p4=2.7, min_m1=15,
+                   info="Clamex P Medius ist der Mittelwandverbinder passend zum Clamex P-14 Verbinder für Materialstärken ab 16mm")
     p3.save()
 
     return render(
@@ -145,4 +142,3 @@ def pdf(request):
         return response
     else:
         return HttpResponse()
-
