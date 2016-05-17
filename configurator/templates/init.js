@@ -168,6 +168,11 @@ $(function () {
             drawShape($(this).index());
         });
 
+        $("div.unit input[name='unit']").change(function(e) {
+            $("span.lbl.unit").html($(e.target).val());
+            
+        });
+
         $('.connection a').click(function(e) {
             var targetText = $(e.target).text();
             var connector_name = $(e.target).attr("name");
