@@ -79,8 +79,8 @@ def calc(request):
                 m1_width = m1_width * 25.4
                 m2_width = m2_width * 25.4
 
-            import pdb
-            pdb.set_trace()
+            #import pdb
+            #pdb.set_trace()
 
             calc_results = {}
             service = ConnectorService.factory(connection_type, m1_width, m2_width, angle)
@@ -105,6 +105,7 @@ def pdf(request):
     if request.method == 'POST':
         m1 = request.POST['m1']
         m2 = request.POST['m2']
+        unit = request.POST['unit']
         angle = request.POST['angle']
         situation = request.POST['situation']
         data = request.POST['dataURL']
@@ -118,6 +119,12 @@ def pdf(request):
         zeta0 = request.POST['zeta0']
         zeta2 = request.POST['zeta2']
         zeta4 = request.POST['zeta4']
+        zeta0a = request.POST['zeta0a']
+        zeta0b = request.POST['zeta0b']
+        zeta2a = request.POST['zeta2a']
+        zeta2b = request.POST['zeta2b']
+        zeta4a = request.POST['zeta4a']
+        zeta4b = request.POST['zeta4b']
 
         im = Image(io.BytesIO(base64.b64decode(data.split(',')[1])), hAlign='LEFT')
         response = HttpResponse(content_type='application/pdf')
@@ -127,12 +134,13 @@ def pdf(request):
         style = getSampleStyleSheet()
 
         tabledata = [('', 'Possible', 'a', 'b'),
-                     (Paragraph('CNC:', style['Heading4']), '%s' % cncPossible, '%smm' % cncPositionA, '%smm' % cncPositionA),
+                     (Paragraph('CNC:', style['Heading4']), '%s' % cncPossible, '%s%s' % (cncPositionA, unit), '%s%s'
+                      % (cncPositionA, unit)),
                      '',
                      (Paragraph('Zeta P2:', style['Heading4']), '', '', ''),
-                     ('0mm Aufsteckplatte', '%s' % zeta0, '?mm', '?mm'),
-                     ('2mm Aufsteckplatte', '%s' % zeta2, '?mm', '?mm'),
-                     ('4mm Aufsteckplatte', '%s' % zeta4, '?mm', '?mm')]
+                     ('0mm Aufsteckplatte', '%s' % zeta0, '%s%s' % (zeta0a, unit), '%s%s' % (zeta0b, unit)),
+                     ('2mm Aufsteckplatte', '%s' % zeta2, '%s%s' % (zeta2a, unit), '%s%s' % (zeta2b, unit)),
+                     ('4mm Aufsteckplatte', '%s' % zeta4, '%s%s' % (zeta4a, unit), '%s%s' % (zeta4b, unit))]
 
         tablestyle = TableStyle([('VALIGN', (0, 0), (-1, -1), 'MIDDLE'),
                                  ('ALIGN', (0, 0), (-1, 1), 'LEFT'),
@@ -148,20 +156,13 @@ def pdf(request):
         story.append(Paragraph("Situation: %s" % situation, style['Heading2']))
         story.append(Paragraph("Verbinder: %s" % connector, style['Heading2']))
         story.append(im)
-        story.append(Paragraph("Materialstärke  I: %s" % m1, style['BodyText']))
-        story.append(Paragraph("Materialstärke II: %s" % m2, style['BodyText']))
+        story.append(Paragraph("Materialstärke  I: %s%s" % (m1, unit), style['BodyText']))
+        story.append(Paragraph("Materialstärke II: %s%s" % (m2, unit), style['BodyText']))
         story.append(Paragraph("Winkel: %s°" % angle, style['BodyText']))
         story.append(Paragraph("Beschreibung Verbinder:", style['Heading2']))
         story.append(Paragraph("%s:" % info, style['BodyText']))
         story.append(Paragraph("Beschreibung Montage:", style['Heading2']))
         story.append(table)
-        # story.append(Paragraph("CNC:", style['Heading3']))
-        # story.append(Paragraph("%s:" % cncPossible, style['BodyText']))
-        # story.append(Paragraph("%s:" % cncPosition, style['BodyText']))
-        # story.append(Paragraph("Zeta:", style['Heading3']))
-        # story.append(Paragraph("0mm: %s" % zeta0, style['BodyText']))
-        # story.append(Paragraph("2mm: %s" % zeta2, style['BodyText']))
-        # story.append(Paragraph("4mm: %s" % zeta4, style['BodyText']))
 
         p.build(story)
 
