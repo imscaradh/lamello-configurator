@@ -198,12 +198,12 @@ $(function () {
             var zeta2Possible = (zetaString.indexOf('2mm: true') >= 0 ? "Yes" : "No");
             var zeta4Possible = (zetaString.indexOf('4mm: true') >= 0 ? "Yes" : "No");
             var zetaVal = zetaString.split(',');
-            var zeta0a = zetaVal[1].substr(0, 8);
-            var zeta0b = zetaVal[2].substr(0, 8);
-            var zeta2a = zetaVal[3].substr(0, 8);
-            var zeta2b = zetaVal[4].substr(0, 8);
-            var zeta4a = zetaVal[5].substr(0, 8);
-            var zeta4b = zetaVal[6].substr(0, 8);
+            var zeta0a = (zeta0Possible == "Yes" ? zetaVal[1].substr(0, 8) : "0");
+            var zeta0b = (zeta0Possible == "Yes" ? zetaVal[2].substr(0, 8) : "0");
+            var zeta2a = (zeta2Possible == "Yes" ? zetaVal[3].substr(0, 8) : "0");
+            var zeta2b = (zeta2Possible == "Yes" ? zetaVal[4].substr(0, 8) : "0");
+            var zeta4a = (zeta4Possible == "Yes" ? zetaVal[5].substr(0, 8) : "0");
+            var zeta4b = (zeta4Possible == "Yes" ? zetaVal[6].substr(0, 8) : "0");
             console.log("m1: " + $m1);
             console.log("m2: " + $m2);
             console.log("unit:" + unit);
