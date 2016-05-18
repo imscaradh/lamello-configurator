@@ -102,7 +102,7 @@ def pdf(request):
     if request.method == 'POST':
         m1 = request.POST['m1']
         m2 = request.POST['m2']
-        unit = request.POST['unit']
+        #unit = request.POST['unit']
         angle = request.POST['angle']
         situation = request.POST['situation']
         data = request.POST['dataURL']
@@ -131,13 +131,13 @@ def pdf(request):
         style = getSampleStyleSheet()
 
         tabledata = [('', 'Possible', 'a', 'b'),
-                     (Paragraph('CNC:', style['Heading4']), '%s' % cncPossible, '%s%s' % (cncPositionA, unit), '%s%s'
-                      % (cncPositionA, unit)),
+                     (Paragraph('CNC:', style['Heading4']), '%s' % cncPossible, '%smm' % cncPositionA, '%smm'
+                      % cncPositionA),
                      '',
                      (Paragraph('Zeta P2:', style['Heading4']), '', '', ''),
-                     ('0mm Aufsteckplatte', '%s' % zeta0, '%s%s' % (zeta0a, unit), '%s%s' % (zeta0b, unit)),
-                     ('2mm Aufsteckplatte', '%s' % zeta2, '%s%s' % (zeta2a, unit), '%s%s' % (zeta2b, unit)),
-                     ('4mm Aufsteckplatte', '%s' % zeta4, '%s%s' % (zeta4a, unit), '%s%s' % (zeta4b, unit))]
+                     ('0mm Aufsteckplatte', '%s' % zeta0, '%smm' % zeta0a, '%smm' % zeta0b),
+                     ('2mm Aufsteckplatte', '%s' % zeta2, '%smm' % zeta2a, '%smm' % zeta2b),
+                     ('4mm Aufsteckplatte', '%s' % zeta4, '%smm' % zeta4a, '%smm' % zeta4b)]
 
         tablestyle = TableStyle([('VALIGN', (0, 0), (-1, -1), 'MIDDLE'),
                                  ('ALIGN', (0, 0), (-1, 1), 'LEFT'),
@@ -153,8 +153,8 @@ def pdf(request):
         story.append(Paragraph("Situation: %s" % situation, style['Heading2']))
         story.append(Paragraph("Verbinder: %s" % connector, style['Heading2']))
         story.append(im)
-        story.append(Paragraph("Materialstärke  I: %s%s" % (m1, unit), style['BodyText']))
-        story.append(Paragraph("Materialstärke II: %s%s" % (m2, unit), style['BodyText']))
+        story.append(Paragraph("Materialstärke  I: %smm" % m1, style['BodyText']))
+        story.append(Paragraph("Materialstärke II: %smm" % m2, style['BodyText']))
         story.append(Paragraph("Winkel: %s°" % angle, style['BodyText']))
         story.append(Paragraph("Beschreibung Verbinder:", style['Heading2']))
         story.append(Paragraph("%s:" % info, style['BodyText']))
