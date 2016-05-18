@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-03-23 15:14+0100\n"
+"POT-Creation-Date: 2016-05-18 13:56+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -18,10 +18,74 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-#: configurator/templates/base.html:40
-msgid "Overview"
-msgstr ""
+#: templates/configurator/index.html:10
+msgid "Configurator"
+msgstr "Konfigurator"
 
-#: configurator/templates/configurator/index.html:10
-msgid "Weatherstation at Merligen, Switzerland"
-msgstr ""
+#: templates/configurator/index.html:31
+msgid "Connection"
+msgstr "Verbindung"
+
+#: templates/configurator/index.html:35
+msgid "Situation"
+msgstr "Situation"
+
+#: templates/configurator/index.html:46 templates/configurator/index.html:52
+msgid "Material thickness"
+msgstr "Materialstärke"
+
+#: templates/configurator/index.html:58
+msgid "Angle"
+msgstr "Winkel"
+
+#: templates/configurator/index.html:64
+msgid "Submit"
+msgstr "Bestätigen"
+
+#: templates/configurator/index.html:76
+msgid "Connector"
+msgstr "Verbindungsname"
+
+#: views.py:134
+msgid "Possible"
+msgstr "Möglich"
+
+#: views.py:139
+msgid "0mm board"
+msgstr "0mm Aufsteckplatte"
+
+#: views.py:140
+msgid "2mm board"
+msgstr "2mm Aufsteckplatte"
+
+#: views.py:141
+msgid "4mm board"
+msgstr "4mm Aufsteckplatte"
+
+#: views.py:154
+msgid "Situation: %s"
+msgstr "Situation: %s"
+
+#: views.py:155
+msgid "Connector: %s"
+msgstr "Verbindungsname: %s"
+
+#: views.py:157
+msgid "Material thickness I: %smm"
+msgstr "Materialstärke I: %smm"
+
+#: views.py:158
+msgid "Material thickness II: %smm"
+msgstr "Materialstärke II: %smm"
+
+#: views.py:159
+msgid "Angle: %s°"
+msgstr "Winkel: %s°"
+
+#: views.py:160
+msgid "Connector description:"
+msgstr "Verbinder Beschreibung:"
+
+#: views.py:162
+msgid "Installation:"
+msgstr "Montage Beschreibung:"
