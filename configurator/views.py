@@ -79,9 +79,6 @@ def calc(request):
                 m1_width = m1_width * 25.4
                 m2_width = m2_width * 25.4
 
-            #import pdb
-            #pdb.set_trace()
-
             calc_results = {}
             service = ConnectorService.factory(connection_type, m1_width, m2_width, angle)
 
