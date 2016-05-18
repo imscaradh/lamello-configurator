@@ -3,7 +3,7 @@ $(function () {
     // -----------------------------------------------
     // 			function calls and configuration
     // -----------------------------------------------
-    var data = {{ connection_types_json|safe }};
+    var data = {{connection_types_json | safe}};
     var canvas = $("#connectionPreview");
     var resultJson = null;
     $.jCanvas.defaults.fromCenter = false;
@@ -83,8 +83,7 @@ $(function () {
                 $("div.errors").html("Error occured. Please try it again or contact administrator");
             }
         });
-    };
-
+    }
     function updateResultTable(json) {
         var htmlBoilerplate = '<div><span class="{0}">{0}: </span><span class="{0}-val">{1}</span></div>';
         var typeSelector = "table.connectors tr.{0} td.{1} ";
@@ -106,9 +105,7 @@ $(function () {
             $(zetaSelector).append(zeta2);
             $(zetaSelector).append(zeta4);
         });
-
-    };
-
+    }
     function drawShape(num) {
         canvas.removeLayers().drawLayers();
 
@@ -182,35 +179,45 @@ $(function () {
             $('input#connection_type').val(connector_name);
         });
     }
-
     function pdfGeneration() {
         $('.pdf-btn').click(function() {
             var $m1 = $('#m1 input').val();
-            console.log("m1: " + $m1);
             var $m2 = $('#m2 input').val();
-            console.log("m2: " + $m2);
+            var unit = $('span.lbl.unit').text();
+            unit = (unit == null ? "mm" : unit.substr(0, 2));
             var $angle = $('#angle input').val();
-            console.log("angle: " + $angle);
             var $situation = $('#connection_type').val();
-            console.log("situation: " + $situation);
             var dataURL = canvas.get(0).toDataURL();
-            console.log("b64String: " + dataURL);
             var connector = $(this).closest('tr').find('td:eq(0)').text();
-            console.log("connector: " + connector);
             var cncString = $(this).closest('tr').find('td:eq(1)').text();
-            var cncPossible = cncString.split('Position')[0];
+            var cncPossible = (cncString.indexOf('Possible: true') >= 0 ? "Yes" : "No");
             var cncPosition = cncString.split('true' || 'false')[1];
+            cncPosition = (cncPosition == null ? "0" : cncPosition.substring(10,18));
+            var zetaString = $(this).closest('tr').find('td:eq(2)').text();
+            var zeta0Possible = (zetaString.indexOf('0mm: true') >= 0 ? "Yes" : "No");
+            var zeta2Possible = (zetaString.indexOf('2mm: true') >= 0 ? "Yes" : "No");
+            var zeta4Possible = (zetaString.indexOf('4mm: true') >= 0 ? "Yes" : "No");
+            var zetaVal = zetaString.split(',');
+            var zeta0a = (zeta0Possible == "Yes" ? zetaVal[1].substr(0, 8) : "0");
+            var zeta0b = (zeta0Possible == "Yes" ? zetaVal[2].substr(0, 8) : "0");
+            var zeta2a = (zeta2Possible == "Yes" ? zetaVal[3].substr(0, 8) : "0");
+            var zeta2b = (zeta2Possible == "Yes" ? zetaVal[4].substr(0, 8) : "0");
+            var zeta4a = (zeta4Possible == "Yes" ? zetaVal[5].substr(0, 8) : "0");
+            var zeta4b = (zeta4Possible == "Yes" ? zetaVal[6].substr(0, 8) : "0");
+            console.log("m1: " + $m1);
+            console.log("m2: " + $m2);
+            console.log("unit:" + unit);
+            console.log("angle: " + $angle);
+            console.log("situation: " + $situation);
+            console.log("b64String: " + dataURL);
+            console.log("connector: " + connector);
             console.log("cnc: " + cncString);
             console.log("cnc: " + cncPossible);
             console.log("cnc: " + cncPosition);
-            var zetaString = $(this).closest('tr').find('td:eq(2)').text();
-            var zeta0Possible = zetaString.indexOf('0mm: true') >= 0;
-            var zeta2Possible = zetaString.indexOf('2mm: true') >= 0;
-            var zeta4Possible = zetaString.indexOf('4mm: true') >= 0;
             console.log("zeta: " + zetaString);
             console.log("0mm: " + zeta0Possible);
-            console.log("zeta: " + zeta2Possible);
-            console.log("zeta: " + zeta4Possible);
+            console.log("2mm: " + zeta2Possible);
+            console.log("4mm: " + zeta4Possible);
             $.ajax({
             url : "pdf/",
             type : "POST",
@@ -218,6 +225,7 @@ $(function () {
                 csrfmiddlewaretoken: '{{ csrf_token }}',
                 m1: $m1,
                 m2: $m2,
+                unit: unit,
                 angle: $angle,
                 situation: $situation,
                 dataURL: dataURL,
@@ -226,7 +234,13 @@ $(function () {
                 cncPosition: cncPosition,
                 zeta0: zeta0Possible,
                 zeta2: zeta2Possible,
-                zeta4: zeta4Possible
+                zeta4: zeta4Possible,
+                zeta0a: zeta0a,
+                zeta0b: zeta0b,
+                zeta2a: zeta2a,
+                zeta2b: zeta2b,
+                zeta4a: zeta4a,
+                zeta4b: zeta4b
             },
 
            // handle a successful response
@@ -234,7 +248,7 @@ $(function () {
                 var blob=new Blob([data]);
                 var link=document.createElement('a');
                 link.href=window.URL.createObjectURL(blob);
-                link.download="Konfiguration_"+ connector + "_"+ $situation +".pdf";
+                link.download="Configuration_"+ $situation +".pdf";
                 link.click();
             },
 
@@ -254,4 +268,4 @@ String.prototype.format = function() {
     str = str.replace(reg, arguments[i]);
   }
   return str;
-}
+};
