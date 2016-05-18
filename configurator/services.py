@@ -252,7 +252,7 @@ class StumbEdgeService(ConnectorService):
         range_schmalfl = schmalfl['range']
 
         tmp_cnc = (max(self.links) + min(self.rechts)) / 2
-        if (tmp_cnc > range_schmalfl and tmp_cnc >= max(self.links) and tmp_cnc <= min(self.rechts)
+        if (range_schmalfl > 0 and tmp_cnc >= max(self.links) and tmp_cnc <= min(self.rechts)
                 and self.m1_width >= float(self.connector.min_m1)):
             self.results['cnc']['possible'] = True
             self.results['cnc']['position'] = tmp_cnc
