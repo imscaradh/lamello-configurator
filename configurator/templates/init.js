@@ -6,6 +6,8 @@ $(function () {
     var data = {{connection_types_json | safe}};
     var canvas = $("#connectionPreview");
     var resultJson = null;
+    var originX = 0;
+    var originY = 0;
     $.jCanvas.defaults.fromCenter = false;
 
     // functions called on page load
@@ -48,7 +50,7 @@ $(function () {
         });
 
         $( "#angle input" ).blur(function() {
-            //rotateMaterial2($(this).val());
+            rotateMaterial2($(this).val());
         });
     }
 
@@ -111,16 +113,21 @@ $(function () {
 
         var model = data[num].fields;
 
-        drawMaterial('m1', model.x1, model.y1, model.width1, model.height1);
         drawMaterial('m2', model.x2, model.y2, model.width2, model.height2);
+        drawMaterial('m1', model.x1, model.y1, model.width1, model.height1);
+
+        originX = canvas.getLayer('m2').x;
+        originY = canvas.getLayer('m2').y;
     }
 
     function drawMaterial(name, x, y, width, height) {
         canvas.drawRect({
             layer: true, 
             name: name,
+            fillStyle: '#FFF',
             strokeStyle: '#000',
-            strokeWidth: 2,
+            strokeWidth: 1,
+            rotate: 0,
             x: x, 
             y: y,
             width: width,
@@ -140,24 +147,31 @@ $(function () {
 
     function scaleMaterial2(height) {
         var m2 = canvas.getLayer('m2');
-        var offsetY = m2.y - (height - m2.height);
+        var offsetY = (height - m2.height);
         canvas.setLayer('m2', {
             height: height,
-            y: offsetY
+            y: m2.y - offsetY,
         })
         .drawLayers(); 
+        originY = originY - offsetY;
+        rotateMaterial2($( "#angle input" ).val());
     }
 
+
     function rotateMaterial2(angle) {
+        var m1 = canvas.getLayer('m1');
         var m2 = canvas.getLayer('m2');
-        //FIXME: Improve
-        var originY = 40;
-        var offsetY = originY - Math.sin(angle/180*Math.PI) * m2.width;
+        var rotationAngle = parseInt(angle) + 90;
+        var alpha = parseInt(angle) - 90;
+        var offsetX = (angle > 90) ? Math.abs(Math.sin(alpha / 180 * Math.PI)) * m2.height : 0;
+        // TODO: Offset for Y
         canvas.setLayer('m2', {
-            rotate: -angle,
-            y: offsetY
-        })
-        .drawLayers(); 
+            rotate: rotationAngle,
+            translateX: -m2.width / 2,
+            translateY: m2.height / 2,
+            x: originX - m2.width / 2 - offsetX,
+            y: originY + m2.height / 2 
+        }).drawLayers(); 
     }
 
     function initSituationPreview() {
