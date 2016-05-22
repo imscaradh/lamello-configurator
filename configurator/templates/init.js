@@ -3,11 +3,13 @@ $(function () {
     // -----------------------------------------------
     // 			function calls and configuration
     // -----------------------------------------------
-    var data = {{connection_types_json | safe}};
+    var data = {{ connection_types_json|safe }};
     var canvas = $("#connectionPreview");
     var resultJson = null;
     var originX = 0;
     var originY = 0;
+    var actualConnection = -1;
+
     $.jCanvas.defaults.fromCenter = false;
 
     // functions called on page load
@@ -85,7 +87,8 @@ $(function () {
                 $("div.errors").html("Error occured. Please try it again or contact administrator");
             }
         });
-    }
+    };
+
     function updateResultTable(json) {
         var htmlBoilerplate = '<div><span class="{0}">{0}: </span><span class="{0}-val">{1}</span></div>';
         var typeSelector = "table.connectors tr.{0} td.{1} ";
@@ -107,7 +110,9 @@ $(function () {
             $(zetaSelector).append(zeta2);
             $(zetaSelector).append(zeta4);
         });
-    }
+
+    };
+
     function drawShape(num) {
         canvas.removeLayers().drawLayers();
 
@@ -161,16 +166,42 @@ $(function () {
     function rotateMaterial2(angle) {
         var m1 = canvas.getLayer('m1');
         var m2 = canvas.getLayer('m2');
+
         var rotationAngle = parseInt(angle) + 90;
-        var alpha = parseInt(angle) - 90;
-        var offsetX = (angle > 90) ? Math.abs(Math.sin(alpha / 180 * Math.PI)) * m2.height : 0;
-        // TODO: Offset for Y
+        var translateX = m2.translateX;
+        var translateY = m2.translateY;
+        var newX = m2.x;
+        var newY = m2.y;
+        switch(actualConnection) {
+            case 0:
+                var alpha = parseInt(angle) - 90;
+                var offsetX = (angle > 90) ? Math.abs(Math.sin(alpha / 180 * Math.PI)) * m2.height : 0;
+                // TODO: Offset for Y
+                translateX = -m2.width / 2;
+                translateY = m2.height / 2;
+                newX = originX - m2.width / 2 -offsetX;
+                newY = originY + m2.height / 2;
+                break;
+            case 1:
+                break;
+            case 2:
+                canvas.moveLayer('m2', 1).drawLayers();
+                a = Math.abs(90 - parseInt(angle));
+                newY = originY + Math.tan(a / 180 * Math.PI) * m1.width / 2;
+                break;
+            case 3:
+                break;
+            default:
+                break;
+
+        }
+
         canvas.setLayer('m2', {
             rotate: rotationAngle,
-            translateX: -m2.width / 2,
-            translateY: m2.height / 2,
-            x: originX - m2.width / 2 - offsetX,
-            y: originY + m2.height / 2 
+            translateX: translateX,
+            translateY: translateY,
+            x: newX,
+            y: newY
         }).drawLayers(); 
     }
 
@@ -178,12 +209,9 @@ $(function () {
         $('.connection li').hover(function(e) {
             var $target = $(e.target);
             console.info("hovered " + $target.text());
-            drawShape($(this).index());
-        });
-
-        $("div.unit input[name='unit']").change(function(e) {
-            $("span.lbl.unit").html($(e.target).val());
-            
+            var index = $(this).index();
+            drawShape(index);
+            actualConnection = index;
         });
 
         $('.connection a').click(function(e) {
@@ -193,45 +221,22 @@ $(function () {
             $('input#connection_type').val(connector_name);
         });
     }
+
     function pdfGeneration() {
         $('.pdf-btn').click(function() {
             var $m1 = $('#m1 input').val();
             var $m2 = $('#m2 input').val();
-            var unit = $('span.lbl.unit').text();
-            unit = (unit == null ? "mm" : unit.substr(0, 2));
             var $angle = $('#angle input').val();
             var $situation = $('#connection_type').val();
             var dataURL = canvas.get(0).toDataURL();
             var connector = $(this).closest('tr').find('td:eq(0)').text();
             var cncString = $(this).closest('tr').find('td:eq(1)').text();
-            var cncPossible = (cncString.indexOf('Possible: true') >= 0 ? "Yes" : "No");
+            var cncPossible = cncString.split('Position')[0];
             var cncPosition = cncString.split('true' || 'false')[1];
-            cncPosition = (cncPosition == null ? "0" : cncPosition.substring(10,18));
             var zetaString = $(this).closest('tr').find('td:eq(2)').text();
-            var zeta0Possible = (zetaString.indexOf('0mm: true') >= 0 ? "Yes" : "No");
-            var zeta2Possible = (zetaString.indexOf('2mm: true') >= 0 ? "Yes" : "No");
-            var zeta4Possible = (zetaString.indexOf('4mm: true') >= 0 ? "Yes" : "No");
-            var zetaVal = zetaString.split(',');
-            var zeta0a = (zeta0Possible == "Yes" ? zetaVal[1].substr(0, 8) : "0");
-            var zeta0b = (zeta0Possible == "Yes" ? zetaVal[2].substr(0, 8) : "0");
-            var zeta2a = (zeta2Possible == "Yes" ? zetaVal[3].substr(0, 8) : "0");
-            var zeta2b = (zeta2Possible == "Yes" ? zetaVal[4].substr(0, 8) : "0");
-            var zeta4a = (zeta4Possible == "Yes" ? zetaVal[5].substr(0, 8) : "0");
-            var zeta4b = (zeta4Possible == "Yes" ? zetaVal[6].substr(0, 8) : "0");
-            console.log("m1: " + $m1);
-            console.log("m2: " + $m2);
-            console.log("unit:" + unit);
-            console.log("angle: " + $angle);
-            console.log("situation: " + $situation);
-            console.log("b64String: " + dataURL);
-            console.log("connector: " + connector);
-            console.log("cnc: " + cncString);
-            console.log("cnc: " + cncPossible);
-            console.log("cnc: " + cncPosition);
-            console.log("zeta: " + zetaString);
-            console.log("0mm: " + zeta0Possible);
-            console.log("2mm: " + zeta2Possible);
-            console.log("4mm: " + zeta4Possible);
+            var zeta0Possible = zetaString.indexOf('0mm: true') >= 0;
+            var zeta2Possible = zetaString.indexOf('2mm: true') >= 0;
+            var zeta4Possible = zetaString.indexOf('4mm: true') >= 0;
             $.ajax({
             url : "pdf/",
             type : "POST",
@@ -239,7 +244,6 @@ $(function () {
                 csrfmiddlewaretoken: '{{ csrf_token }}',
                 m1: $m1,
                 m2: $m2,
-                unit: unit,
                 angle: $angle,
                 situation: $situation,
                 dataURL: dataURL,
@@ -248,13 +252,7 @@ $(function () {
                 cncPosition: cncPosition,
                 zeta0: zeta0Possible,
                 zeta2: zeta2Possible,
-                zeta4: zeta4Possible,
-                zeta0a: zeta0a,
-                zeta0b: zeta0b,
-                zeta2a: zeta2a,
-                zeta2b: zeta2b,
-                zeta4a: zeta4a,
-                zeta4b: zeta4b
+                zeta4: zeta4Possible
             },
 
            // handle a successful response
@@ -262,7 +260,7 @@ $(function () {
                 var blob=new Blob([data]);
                 var link=document.createElement('a');
                 link.href=window.URL.createObjectURL(blob);
-                link.download="Configuration_"+ $situation +".pdf";
+                link.download="Konfiguration_"+ connector + "_"+ $situation +".pdf";
                 link.click();
             },
 
@@ -282,4 +280,4 @@ String.prototype.format = function() {
     str = str.replace(reg, arguments[i]);
   }
   return str;
-};
+}
