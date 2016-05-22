@@ -28,8 +28,6 @@ def main(request, calc_result=None):
     c3.save()
     c4 = ConnectionType(name="Miter", x1=120, y1=40, width1=40, height1=160, x2=80, y2=80, width2=160, height2=40)
     c4.save()
-    c5 = ConnectionType(name="Septum", x1=40, y1=40, width1=40, height1=160, x2=80, y2=40, width2=160, height2=40)
-    c5.save()
     connection_types = ConnectionType.objects.all()
     json_serialized = serializers.serialize('json', connection_types)
 
@@ -102,7 +100,7 @@ def pdf(request):
     if request.method == 'POST':
         m1 = request.POST['m1']
         m2 = request.POST['m2']
-        #unit = request.POST['unit']
+        # unit = request.POST['unit']
         angle = request.POST['angle']
         situation = request.POST['situation']
         data = request.POST['dataURL']
