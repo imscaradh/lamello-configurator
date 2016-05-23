@@ -174,13 +174,15 @@ $(function () {
         var newY = m2.y;
         switch(actualConnection) {
             case 0:
-                var alpha = parseInt(angle) - 90;
+                var alpha = angle - 90;
                 var offsetX = (angle > 90) ? Math.abs(Math.sin(alpha / 180 * Math.PI)) * m2.height : 0;
-                // TODO: Offset for Y
+                var beta = 180 - angle;
+                // Precision not correct
+                var offsetY = (angle > 90) ? m2.height / Math.abs(Math.sin(beta / 180 * Math.PI)) - m2.height : 0;
                 translateX = -m2.width / 2;
                 translateY = m2.height / 2;
                 newX = originX - m2.width / 2 - offsetX;
-                newY = originY + m2.height / 2;
+                newY = originY + m2.height / 2 - offsetY;
                 break;
             case 1:
                 translateX = -m2.width / 2;
@@ -190,14 +192,13 @@ $(function () {
                 break;
             case 2:
                 canvas.moveLayer('m2', 1).drawLayers();
-                a = Math.abs(90 - parseInt(angle));
+                var a = Math.abs(90 - parseInt(angle));
                 newY = originY + Math.tan(a / 180 * Math.PI) * m1.width / 2;
                 break;
             case 3:
                 break;
             default:
                 break;
-
         }
 
         canvas.setLayer('m2', {
