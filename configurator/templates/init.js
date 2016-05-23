@@ -127,6 +127,12 @@ $(function () {
         drawMaterial('m2', model.x2, model.y2, model.width2, model.height2);
         drawMaterial('m1', model.x1, model.y1, model.width1, model.height1);
 
+        if(num == 1) {
+            var m1 = canvas.getLayer('m1');
+            var m2 = canvas.getLayer('m2');
+            drawBisecConnectorHelpers($( "#angle input" ).val(), m1, m2);
+        }
+
         originX = canvas.getLayer('m2').x;
         originY = canvas.getLayer('m2').y;
     }
@@ -195,6 +201,8 @@ $(function () {
                 translateY = -m2.height / 2;
                 newX = originX - m2.width / 2;
                 newY = originY - m2.height / 2;
+
+                drawBisecConnectorHelpers(angle, m1, m2);
                 break;
             case 2:
                 canvas.moveLayer('m2', 1).drawLayers();
@@ -215,10 +223,43 @@ $(function () {
             y: newY
         }).drawLayers(); 
 
-        var height = m2.width * Math.sin(alpha / 180 * Math.PI);
-        if (height > 0) {
-            resizeCanvas(height);
+        var height = m2.width * Math.sin((angle -90) / 180 * Math.PI);
+        if (height > 0 || (actualConnection == 1 && angle < 90)) {
+            resizeCanvas(Math.abs(height));
+        } else {
+            resizeCanvas(0);
         }
+    }
+
+    function drawBisecConnectorHelpers(angle, m1, m2) {
+        var alpha = (180 - angle) / 2;
+        console.info(alpha);
+        var y2 = m1.y + m1.height + Math.tan(alpha / 180 * Math.PI) * m1.width;
+
+        var beta = angle - 90;
+        var x3 = originX - Math.sin(beta / 180 * Math.PI) * m2.height;
+        var y3 = originY + Math.cos(beta / 180 * Math.PI) * m2.height;
+
+        canvas.removeLayer('bisec-helpers').drawLayers();
+        canvas.removeLayer('bisec').drawLayers();
+        // Draw to lines here
+        canvas.drawLine({
+            layer: true,
+            name: 'bisec-helpers',
+            strokeStyle: '#000',
+            strokeWidth: 1,
+            x1: m1.x,   y1: m1.y + m1.height,
+            x2: m1.x,   y2: y2,
+            x3: x3,     y3: y3
+        });
+        canvas.drawLine({
+            layer: true,
+            name: 'bisec',
+            strokeStyle: '#000',
+            strokeWidth: 1,
+            x1: m1.x,       y1: y2,
+            x2: originX,    y2: originY
+        });
     }
 
     function initSituationPreview() {
