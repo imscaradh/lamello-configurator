@@ -29,12 +29,18 @@ $(function () {
     // 			function declarations	
     // -----------------------------------------------
 
+    var originHeight;
     function initCanvas() {
-        // Resizing the canvas dynamically
         var ctx = ctx = canvas[0].getContext('2d');
-        console.debug("Resized canvas: " + $(".preview").width() + "x" + $(".preview").height());
         ctx.canvas.width = $(".preview").width();
-        ctx.canvas.height = $(".preview").height();
+        originHeight = $(".preview").height();
+        ctx.canvas.height = originHeight;
+    }
+
+    function resizeCanvas(height) {
+        var ctx = ctx = canvas[0].getContext('2d');
+        ctx.canvas.height = originHeight + height;
+        canvas.drawLayers();
     }
 
     function initFormActions() {
@@ -208,6 +214,11 @@ $(function () {
             x: newX,
             y: newY
         }).drawLayers(); 
+
+        var height = m2.width * Math.sin(alpha / 180 * Math.PI);
+        if (height > 0) {
+            resizeCanvas(height);
+        }
     }
 
     function initSituationPreview() {
