@@ -179,10 +179,14 @@ $(function () {
                 // TODO: Offset for Y
                 translateX = -m2.width / 2;
                 translateY = m2.height / 2;
-                newX = originX - m2.width / 2 -offsetX;
+                newX = originX - m2.width / 2 - offsetX;
                 newY = originY + m2.height / 2;
                 break;
             case 1:
+                translateX = -m2.width / 2;
+                translateY = -m2.height / 2;
+                newX = originX - m2.width / 2;
+                newY = originY - m2.height / 2;
                 break;
             case 2:
                 canvas.moveLayer('m2', 1).drawLayers();
