@@ -27,10 +27,8 @@ def main(request, calc_result=None):
     c3 = ConnectionType(name="T-Connection", x1=130, y1=80, width1=40, height1=160, x2=80, y2=40, width2=160,
                         height2=40)
     c3.save()
-    c4 = ConnectionType(name="Miter", x1=120, y1=40, width1=40, height1=160, x2=80, y2=80, width2=160, height2=40)
+    c4 = ConnectionType(name="Miter", x1=150, y1=40, width1=40, height1=180, x2=80, y2=100, width2=200, height2=40)
     c4.save()
-    c5 = ConnectionType(name="Septum", x1=40, y1=40, width1=40, height1=160, x2=80, y2=40, width2=160, height2=40)
-    c5.save()
     connection_types = ConnectionType.objects.all()
     json_serialized = serializers.serialize('json', connection_types)
 
