@@ -145,6 +145,25 @@ $(function () {
         });
     }
 
+    function drawText(material) {
+        var m = canvas.getLayer(material);
+        var m2Xoffset = (material != 'm1') ? Math.cos(($( "#angle input" ).val() - 90) / 180 * Math.PI) * m.width + 30 : m.width + 10;
+        var m2Yoffset = (material != 'm1') ? Math.sin(($( "#angle input" ).val() - 90) / 180 * Math.PI) * m.width : 0;
+        var layerName = material + "-text";
+        canvas.removeLayer(layerName).drawLayers();
+        canvas.drawText({
+            layer: true,
+            name: layerName,
+            fillStyle: '#000',
+            strokeWidth: 2,
+            x: m.x - m.translateX + m2Xoffset, 
+            y: m.y - m.translateY + m2Yoffset + m.height / 2 - 8,
+            fontSize: 16,
+            fontFamily: 'Verdana, sans-serif',
+            text: (material == 'm1') ? 'a' : 'b'
+        }).drawLayers();
+    }
+
     function scaleMaterial1(width) {
         var m1 = canvas.getLayer('m1');
         var newX = (actualConnection < 2) ? m1.x - (width - m1.width) : m1.x - (width - m1.width) / 2;
@@ -154,6 +173,7 @@ $(function () {
             x: newX 
         }).drawLayers(); 
         model.x1 = m1.x;
+        drawText('m1');
     }
 
     function scaleMaterial2(height) {
@@ -192,6 +212,7 @@ $(function () {
         model.y2 = m2.y;
         model.height2 = height;
         rotateMaterial($( "#angle input" ).val());
+        drawText('m2');
     }
 
 
@@ -240,6 +261,7 @@ $(function () {
                     x: model.x3 - translateX,
                     y: model.y3
                 }).drawLayers(); 
+                drawText('m3');
                 break;
             default:
                 break;
@@ -259,11 +281,12 @@ $(function () {
         } else {
             resizeCanvas(0);
         }
+        drawText('m1');
+        if (actualConnection != 3) drawText('m2');
     }
 
     function drawBisecConnectorHelpers(angle, m1, m2) {
         var alpha = (180 - angle) / 2;
-        console.info(alpha);
         var y2 = m1.y + m1.height + Math.tan(alpha / 180 * Math.PI) * m2.height;
 
         var beta = angle - 90;
@@ -312,58 +335,89 @@ $(function () {
         $('.pdf-btn').click(function() {
             var $m1 = $('#m1 input').val();
             var $m2 = $('#m2 input').val();
+            var unit = $('span.lbl.unit').text();
+            unit = (unit == null ? "mm" : unit.substr(0, 2));
             var $angle = $('#angle input').val();
             var $situation = $('#connection_type').val();
             var dataURL = canvas.get(0).toDataURL();
             var connector = $(this).closest('tr').find('td:eq(0)').text();
             var cncString = $(this).closest('tr').find('td:eq(1)').text();
-            var cncPossible = cncString.split('Position')[0];
+            var cncPossible = (cncString.indexOf('Possible: true') >= 0 ? "Yes" : "No");
             var cncPosition = cncString.split('true' || 'false')[1];
+            cncPosition = (cncPosition == null ? "0" : cncPosition.substring(10,18));
             var zetaString = $(this).closest('tr').find('td:eq(2)').text();
-            var zeta0Possible = zetaString.indexOf('0mm: true') >= 0;
-            var zeta2Possible = zetaString.indexOf('2mm: true') >= 0;
-            var zeta4Possible = zetaString.indexOf('4mm: true') >= 0;
+            var zeta0Possible = (zetaString.indexOf('0mm: true') >= 0 ? "Yes" : "No");
+            var zeta2Possible = (zetaString.indexOf('2mm: true') >= 0 ? "Yes" : "No");
+            var zeta4Possible = (zetaString.indexOf('4mm: true') >= 0 ? "Yes" : "No");
+            var zetaVal = zetaString.split(',');
+            var zeta0a = (zeta0Possible == "Yes" ? zetaVal[1].substr(0, 8) : "0");
+            var zeta0b = (zeta0Possible == "Yes" ? zetaVal[2].substr(0, 8) : "0");
+            var zeta2a = (zeta2Possible == "Yes" ? zetaVal[3].substr(0, 8) : "0");
+            var zeta2b = (zeta2Possible == "Yes" ? zetaVal[4].substr(0, 8) : "0");
+            var zeta4a = (zeta4Possible == "Yes" ? zetaVal[5].substr(0, 8) : "0");
+            var zeta4b = (zeta4Possible == "Yes" ? zetaVal[6].substr(0, 8) : "0");
+            console.log("m1: " + $m1);
+            console.log("m2: " + $m2);
+            console.log("unit:" + unit);
+            console.log("angle: " + $angle);
+            console.log("situation: " + $situation);
+            console.log("b64String: " + dataURL);
+            console.log("connector: " + connector);
+            console.log("cnc: " + cncString);
+            console.log("cnc: " + cncPossible);
+            console.log("cnc: " + cncPosition);
+            console.log("zeta: " + zetaString);
+            console.log("0mm: " + zeta0Possible);
+            console.log("2mm: " + zeta2Possible);
+            console.log("4mm: " + zeta4Possible);
             $.ajax({
-            url : "pdf/",
-            type : "POST",
-            data : {
-                csrfmiddlewaretoken: '{{ csrf_token }}',
-                m1: $m1,
-                m2: $m2,
-                angle: $angle,
-                situation: $situation,
-                dataURL: dataURL,
-                connector: connector,
-                cncPossible: cncPossible,
-                cncPosition: cncPosition,
-                zeta0: zeta0Possible,
-                zeta2: zeta2Possible,
-                zeta4: zeta4Possible
-            },
+                url : "pdf/",
+                type : "POST",
+                data : {
+                    csrfmiddlewaretoken: '{{ csrf_token }}',
+                    m1: $m1,
+                    m2: $m2,
+                    unit: unit,
+                    angle: $angle,
+                    situation: $situation,
+                    dataURL: dataURL,
+                    connector: connector,
+                    cncPossible: cncPossible,
+                    cncPosition: cncPosition,
+                    zeta0: zeta0Possible,
+                    zeta2: zeta2Possible,
+                    zeta4: zeta4Possible,
+                    zeta0a: zeta0a,
+                    zeta0b: zeta0b,
+                    zeta2a: zeta2a,
+                    zeta2b: zeta2b,
+                    zeta4a: zeta4a,
+                    zeta4b: zeta4b
+                },
 
-           // handle a successful response
-            success: function(data) {
-                var blob=new Blob([data]);
-                var link=document.createElement('a');
-                link.href=window.URL.createObjectURL(blob);
-                link.download="Konfiguration_"+ connector + "_"+ $situation +".pdf";
-                link.click();
-            },
+                // handle a successful response
+                success: function(data) {
+                    var blob=new Blob([data]);
+                    var link=document.createElement('a');
+                    link.href=window.URL.createObjectURL(blob);
+                    link.download="Configuration_"+ $situation +".pdf";
+                    link.click();
+                },
 
-            // handle a non-successful response
-            error : function() {
-                console.log("Fails");
-            }
-        });
+                // handle a non-successful response
+                error : function() {
+                    console.log("Fails");
+                }
+            });
         })
     }
 });
 
 String.prototype.format = function() {
-  var str = this;
-  for (var i = 0; i < arguments.length; i++) {       
-    var reg = new RegExp("\\{" + i + "\\}", "gm");             
-    str = str.replace(reg, arguments[i]);
-  }
-  return str;
+    var str = this;
+    for (var i = 0; i < arguments.length; i++) {       
+        var reg = new RegExp("\\{" + i + "\\}", "gm");             
+        str = str.replace(reg, arguments[i]);
+    }
+    return str;
 }
