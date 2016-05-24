@@ -147,33 +147,49 @@ $(function () {
 
     function scaleMaterial1(width) {
         var m1 = canvas.getLayer('m1');
-
-        var offsetX = (actualConnection < 2) ? m1.x - (width - m1.width) : m1.x - (width - m1.width) / 2;
+        var newX = (actualConnection < 2) ? m1.x - (width - m1.width) : m1.x - (width - m1.width) / 2;
 
         canvas.setLayer('m1', {
             width: width,
-            x: offsetX 
+            x: newX 
         }).drawLayers(); 
         model.x1 = m1.x;
     }
 
     function scaleMaterial2(height) {
         var m2 = canvas.getLayer('m2');
-        var m3 = canvas.getLayer('m3');
-        var offsetY = (height - m2.height);
+
+        var newY = 0;
+        switch (actualConnection) {
+            case 0:
+                newY = model.y2 - (height - m2.height); 
+                break;
+            case 1:
+                newY = model.y2;
+                break;
+            case 2:
+                newY = model.y2 - (height - m2.height); 
+                break;
+            case 3:
+                newY = m2.y - (height - m2.height);
+                var m3 = canvas.getLayer('m3');
+                var newX3 = m3.y - (height - m3.height);
+                canvas.setLayer('m3', {
+                    height: height,
+                    y: newY
+                })
+                .drawLayers(); 
+                model.y3 = m3.y;
+                break;
+        }
+
         canvas.setLayer('m2', {
             height: height,
-            y: m2.y - offsetY,
-        })
-        .drawLayers(); 
-        canvas.setLayer('m3', {
-            height: height,
-            y: m3.y - offsetY,
+            y: newY
         })
         .drawLayers(); 
 
         model.y2 = m2.y;
-        model.y3 = m3.y;
         model.height2 = height;
         rotateMaterial($( "#angle input" ).val());
     }
@@ -248,7 +264,7 @@ $(function () {
     function drawBisecConnectorHelpers(angle, m1, m2) {
         var alpha = (180 - angle) / 2;
         console.info(alpha);
-        var y2 = m1.y + m1.height + Math.tan(alpha / 180 * Math.PI) * m1.width;
+        var y2 = m1.y + m1.height + Math.tan(alpha / 180 * Math.PI) * m2.height;
 
         var beta = angle - 90;
         var x3 = model.x2 - Math.sin(beta / 180 * Math.PI) * m2.height;
