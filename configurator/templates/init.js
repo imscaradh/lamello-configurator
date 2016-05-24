@@ -57,7 +57,7 @@ $(function () {
         });
 
         $( "#angle input" ).blur(function() {
-            rotateMaterial2($(this).val());
+            rotateMaterial($(this).val());
         });
     }
 
@@ -118,16 +118,16 @@ $(function () {
 
     };
 
-    function drawShape(num) {
+    function drawShape() {
         canvas.removeLayers().drawLayers();
 
-        model = data[num].fields;
+        model = data[actualConnection].fields;
 
         if(model.height3 != 0) { drawMaterial('m3', model.x3, model.y3, model.width3, model.height3); }
-        drawMaterial('m2', model.x2, model.y2, model.width2, model.height2);
-        drawMaterial('m1', model.x1, model.y1, model.width1, model.height1);
+        if(model.height2 != 0) { drawMaterial('m2', model.x2, model.y2, model.width2, model.height2); }
+        if(model.height1 != 0) { drawMaterial('m1', model.x1, model.y1, model.width1, model.height1); }
 
-        rotateMaterial2($( "#angle input" ).val());
+        rotateMaterial($( "#angle input" ).val());
     }
 
     function drawMaterial(name, x, y, width, height) {
@@ -147,27 +147,39 @@ $(function () {
 
     function scaleMaterial1(width) {
         var m1 = canvas.getLayer('m1');
-        var m2 = canvas.getLayer('m2');
-        var offsetX = m1.x - (width - m1.width);
+
+        var offsetX = (actualConnection < 2) ? m1.x - (width - m1.width) : m1.x - (width - m1.width) / 2;
+
         canvas.setLayer('m1', {
             width: width,
-            x: offsetX
+            x: offsetX 
         }).drawLayers(); 
+        model.x1 = m1.x;
     }
 
     function scaleMaterial2(height) {
         var m2 = canvas.getLayer('m2');
+        var m3 = canvas.getLayer('m3');
         var offsetY = (height - m2.height);
         canvas.setLayer('m2', {
             height: height,
             y: m2.y - offsetY,
         })
         .drawLayers(); 
-        rotateMaterial2($( "#angle input" ).val());
+        canvas.setLayer('m3', {
+            height: height,
+            y: m3.y - offsetY,
+        })
+        .drawLayers(); 
+
+        model.y2 = m2.y;
+        model.y3 = m3.y;
+        model.height2 = height;
+        rotateMaterial($( "#angle input" ).val());
     }
 
 
-    function rotateMaterial2(angle) {
+    function rotateMaterial(angle) {
         var m1 = canvas.getLayer('m1');
         var m2 = canvas.getLayer('m2');
         var m3 = canvas.getLayer('m3');
@@ -268,9 +280,8 @@ $(function () {
         $('.connection li').hover(function(e) {
             var $target = $(e.target);
             console.info("hovered " + $target.text());
-            var index = $(this).index();
-            actualConnection = index;
-            drawShape(index);
+            actualConnection = $(this).index();
+            drawShape();
         });
 
         $('.connection a').click(function(e) {
