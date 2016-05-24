@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-05-18 13:56+0200\n"
+"POT-Creation-Date: 2016-05-24 18:39+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -63,12 +63,12 @@ msgstr ""
 
 #: views.py:154
 #, python-format
-msgid "Situation + : %s"
+msgid "Situation: %s"
 msgstr ""
 
 #: views.py:155
 #, python-format
-msgid "Connector + : %s"
+msgid "Connector: %s"
 msgstr ""
 
 #: views.py:157

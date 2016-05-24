@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-05-18 13:56+0200\n"
+"POT-Creation-Date: 2016-05-24 18:39+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -63,22 +63,27 @@ msgid "4mm board"
 msgstr "4mm Aufsteckplatte"
 
 #: views.py:154
+#, python-format
 msgid "Situation: %s"
 msgstr "Situation: %s"
 
 #: views.py:155
+#, python-format
 msgid "Connector: %s"
-msgstr "Verbindungsname: %s"
+msgstr "Verbinder: %s"
 
 #: views.py:157
+#, python-format
 msgid "Material thickness I: %smm"
 msgstr "Materialstärke I: %smm"
 
 #: views.py:158
+#, python-format
 msgid "Material thickness II: %smm"
 msgstr "Materialstärke II: %smm"
 
 #: views.py:159
+#, python-format
 msgid "Angle: %s°"
 msgstr "Winkel: %s°"
 
