@@ -6,8 +6,7 @@ $(function () {
     var data = {{ connection_types_json|safe }};
     var canvas = $("#connectionPreview");
     var resultJson = null;
-    var originX = 0;
-    var originY = 0;
+    var model;
     var actualConnection = -1;
 
     $.jCanvas.defaults.fromCenter = false;
@@ -122,19 +121,13 @@ $(function () {
     function drawShape(num) {
         canvas.removeLayers().drawLayers();
 
-        var model = data[num].fields;
+        model = data[num].fields;
 
+        if(model.height3 != 0) { drawMaterial('m3', model.x3, model.y3, model.width3, model.height3); }
         drawMaterial('m2', model.x2, model.y2, model.width2, model.height2);
         drawMaterial('m1', model.x1, model.y1, model.width1, model.height1);
 
-        if(num == 1) {
-            var m1 = canvas.getLayer('m1');
-            var m2 = canvas.getLayer('m2');
-            drawBisecConnectorHelpers($( "#angle input" ).val(), m1, m2);
-        }
-
-        originX = canvas.getLayer('m2').x;
-        originY = canvas.getLayer('m2').y;
+        rotateMaterial2($( "#angle input" ).val());
     }
 
     function drawMaterial(name, x, y, width, height) {
@@ -170,7 +163,6 @@ $(function () {
             y: m2.y - offsetY,
         })
         .drawLayers(); 
-        originY = originY - offsetY;
         rotateMaterial2($( "#angle input" ).val());
     }
 
@@ -178,6 +170,7 @@ $(function () {
     function rotateMaterial2(angle) {
         var m1 = canvas.getLayer('m1');
         var m2 = canvas.getLayer('m2');
+        var m3 = canvas.getLayer('m3');
 
         var rotationAngle = parseInt(angle) + 90;
         var translateX = m2.translateX;
@@ -193,23 +186,32 @@ $(function () {
                 var offsetY = (angle > 90) ? m2.height / Math.abs(Math.sin(beta / 180 * Math.PI)) - m2.height : 0;
                 translateX = -m2.width / 2;
                 translateY = m2.height / 2;
-                newX = originX - m2.width / 2 - offsetX;
-                newY = originY + m2.height / 2 - offsetY;
+                newX = model.x2 - m2.width / 2 - offsetX;
+                newY = model.y2 + m2.height / 2 - offsetY;
                 break;
             case 1:
                 translateX = -m2.width / 2;
                 translateY = -m2.height / 2;
-                newX = originX - m2.width / 2;
-                newY = originY - m2.height / 2;
+                newX = model.x2 - m2.width / 2;
+                newY = model.y2 - m2.height / 2;
 
                 drawBisecConnectorHelpers(angle, m1, m2);
                 break;
             case 2:
                 canvas.moveLayer('m2', 1).drawLayers();
                 var a = Math.abs(90 - parseInt(angle));
-                newY = originY + Math.tan(a / 180 * Math.PI) * m1.width / 2;
+                newY = model.y2 + Math.tan(a / 180 * Math.PI) * m1.width / 2;
                 break;
             case 3:
+                // TODO: Prevent edge displaying
+                translateX = model.x1 - (model.x2 + model.width2 / 2);
+                newX = model.x2 + translateX;
+                canvas.setLayer('m3', {
+                    rotate: rotationAngle,
+                    translateX: -translateX,
+                    x: model.x3 - translateX,
+                    y: model.y3
+                }).drawLayers(); 
                 break;
             default:
                 break;
@@ -237,8 +239,8 @@ $(function () {
         var y2 = m1.y + m1.height + Math.tan(alpha / 180 * Math.PI) * m1.width;
 
         var beta = angle - 90;
-        var x3 = originX - Math.sin(beta / 180 * Math.PI) * m2.height;
-        var y3 = originY + Math.cos(beta / 180 * Math.PI) * m2.height;
+        var x3 = model.x2 - Math.sin(beta / 180 * Math.PI) * m2.height;
+        var y3 = model.y2 + Math.cos(beta / 180 * Math.PI) * m2.height;
 
         canvas.removeLayer('bisec-helpers').drawLayers();
         canvas.removeLayer('bisec').drawLayers();
@@ -258,7 +260,7 @@ $(function () {
             strokeStyle: '#000',
             strokeWidth: 1,
             x1: m1.x,       y1: y2,
-            x2: originX,    y2: originY
+            x2: model.x2,    y2: model.y2 
         });
     }
 
@@ -267,8 +269,8 @@ $(function () {
             var $target = $(e.target);
             console.info("hovered " + $target.text());
             var index = $(this).index();
-            drawShape(index);
             actualConnection = index;
+            drawShape(index);
         });
 
         $('.connection a').click(function(e) {
