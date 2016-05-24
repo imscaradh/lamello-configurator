@@ -121,6 +121,7 @@ def pdf(request):
         zeta4a = request.POST['zeta4a']
         zeta4b = request.POST['zeta4b']
 
+        logo = Image('./static/img/logo.png')
         im = Image(io.BytesIO(base64.b64decode(data.split(',')[1])), hAlign='LEFT')
         response = HttpResponse(content_type='application/pdf')
         response['Content-Disposition'] = ' filename=Lamello_Configurator.pdf'
@@ -148,6 +149,7 @@ def pdf(request):
         story = []
 
         story.append(Paragraph("Lamello", style['Title']))
+        story.append(logo)
         story.append(Paragraph("Situation: %s" % situation, style['Heading2']))
         story.append(Paragraph("Verbinder: %s" % connector, style['Heading2']))
         story.append(im)
