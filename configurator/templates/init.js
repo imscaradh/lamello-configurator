@@ -145,6 +145,25 @@ $(function () {
         });
     }
 
+    function drawText(material) {
+        var m = canvas.getLayer(material);
+        var m2Xoffset = (material != 'm1') ? Math.cos(($( "#angle input" ).val() - 90) / 180 * Math.PI) * m.width + 30 : m.width + 10;
+        var m2Yoffset = (material != 'm1') ? Math.sin(($( "#angle input" ).val() - 90) / 180 * Math.PI) * m.width : 0;
+        var layerName = material + "-text";
+        canvas.removeLayer(layerName).drawLayers();
+        canvas.drawText({
+            layer: true,
+            name: layerName,
+            fillStyle: '#000',
+            strokeWidth: 2,
+            x: m.x - m.translateX + m2Xoffset, 
+            y: m.y - m.translateY + m2Yoffset + m.height / 2 - 8,
+            fontSize: 16,
+            fontFamily: 'Verdana, sans-serif',
+            text: (material == 'm1') ? 'a' : 'b'
+        }).drawLayers();
+    }
+
     function scaleMaterial1(width) {
         var m1 = canvas.getLayer('m1');
         var newX = (actualConnection < 2) ? m1.x - (width - m1.width) : m1.x - (width - m1.width) / 2;
@@ -154,6 +173,7 @@ $(function () {
             x: newX 
         }).drawLayers(); 
         model.x1 = m1.x;
+        drawText('m1');
     }
 
     function scaleMaterial2(height) {
@@ -192,6 +212,7 @@ $(function () {
         model.y2 = m2.y;
         model.height2 = height;
         rotateMaterial($( "#angle input" ).val());
+        drawText('m2');
     }
 
 
@@ -240,6 +261,7 @@ $(function () {
                     x: model.x3 - translateX,
                     y: model.y3
                 }).drawLayers(); 
+                drawText('m3');
                 break;
             default:
                 break;
@@ -259,11 +281,12 @@ $(function () {
         } else {
             resizeCanvas(0);
         }
+        drawText('m1');
+        if (actualConnection != 3) drawText('m2');
     }
 
     function drawBisecConnectorHelpers(angle, m1, m2) {
         var alpha = (180 - angle) / 2;
-        console.info(alpha);
         var y2 = m1.y + m1.height + Math.tan(alpha / 180 * Math.PI) * m2.height;
 
         var beta = angle - 90;
