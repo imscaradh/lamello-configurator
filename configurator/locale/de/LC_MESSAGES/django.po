@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-05-24 18:39+0200\n"
+"POT-Creation-Date: 2016-05-25 14:57+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -18,7 +18,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-#: templates/configurator/index.html:10
+#: templates/configurator/index.html:10 views.py:143
 msgid "Configurator"
 msgstr "Konfigurator"
 
@@ -34,63 +34,63 @@ msgstr "Situation"
 msgid "Material thickness"
 msgstr "Materialstärke"
 
-#: templates/configurator/index.html:58
+#: templates/configurator/index.html:59
 msgid "Angle"
 msgstr "Winkel"
 
-#: templates/configurator/index.html:64
+#: templates/configurator/index.html:66
 msgid "Submit"
 msgstr "Bestätigen"
 
-#: templates/configurator/index.html:76
+#: templates/configurator/index.html:78
 msgid "Connector"
 msgstr "Verbindungsname"
 
-#: views.py:134
+#: views.py:149
 msgid "Possible"
 msgstr "Möglich"
 
-#: views.py:139
+#: views.py:154
 msgid "0mm board"
 msgstr "0mm Aufsteckplatte"
 
-#: views.py:140
+#: views.py:155
 msgid "2mm board"
 msgstr "2mm Aufsteckplatte"
 
-#: views.py:141
+#: views.py:156
 msgid "4mm board"
 msgstr "4mm Aufsteckplatte"
 
-#: views.py:154
+#: views.py:170
 #, python-format
 msgid "Situation: %s"
 msgstr "Situation: %s"
 
-#: views.py:155
+#: views.py:171
 #, python-format
 msgid "Connector: %s"
 msgstr "Verbinder: %s"
 
-#: views.py:157
+#: views.py:173
 #, python-format
 msgid "Material thickness I: %smm"
 msgstr "Materialstärke I: %smm"
 
-#: views.py:158
+#: views.py:174
 #, python-format
 msgid "Material thickness II: %smm"
 msgstr "Materialstärke II: %smm"
 
-#: views.py:159
+#: views.py:175
 #, python-format
 msgid "Angle: %s°"
 msgstr "Winkel: %s°"
 
-#: views.py:160
+#: views.py:176
 msgid "Connector description:"
 msgstr "Verbinder Beschreibung:"
 
-#: views.py:162
+#: views.py:178
 msgid "Installation:"
 msgstr "Montage Beschreibung:"

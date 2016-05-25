@@ -11,8 +11,8 @@ from reportlab.lib.units import cm
 from .models import ConnectionType, Connector
 from django.core import serializers
 from reportlab.lib.pagesizes import portrait
-from reportlab.lib.styles import getSampleStyleSheet
-from reportlab.platypus import Paragraph, SimpleDocTemplate, Image, Table, TableStyle
+from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
+from reportlab.platypus import Paragraph, SimpleDocTemplate, Image, Table, TableStyle, ImageAndFlowables
 from .services import ConnectorService
 from django.utils.translation import ugettext_lazy as _
 import json
@@ -128,25 +128,16 @@ def pdf(request):
         zeta4b = request.POST['zeta4b']
 
         logo_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'static/img/logo.jpg')
-        logo = Image(logo_path, width=6 * cm, height=3 * cm, hAlign='RIGHT', kind='proportional')
+        logo = Image(logo_path, width=6 * cm, height=3 * cm, hAlign='LEFT', kind='proportional')
 
         im = Image(io.BytesIO(base64.b64decode(data.split(',')[1])), hAlign='LEFT', width=10 * cm, height=10 * cm,
                    kind='proportional')
 
         response = HttpResponse(content_type='application/pdf')
         response['Content-Disposition'] = ' filename=Lamello_Configurator.pdf'
-        p = SimpleDocTemplate(response, pagesize=portrait(A4), )
+        p = SimpleDocTemplate(response, pagesize=portrait(A4))
 
         style = getSampleStyleSheet()
-
-        titletabledata = [('Konfigurator', logo)]
-
-        titletablestyle = TableStyle([('VALIGN', (0, 0), (1, 0), 'MIDDLE')])
-
-        titletable = Table(titletabledata, hAlign='LEFT')
-        titletable.setStyle(titletablestyle)
-
-
 
         tabledata = [('', _('Possible'), 'a', 'b'),
                      (Paragraph('CNC:', style['Heading4']), '%s' % cncPossible, '%smm' % cncPositionA, '%smm'
@@ -167,8 +158,7 @@ def pdf(request):
         table.setStyle(tablestyle)
         story = []
 
-        #story.append(logo)
-        story.append(titletable)
+        story.append(ImageAndFlowables(logo, Paragraph(_('Configurator'), style['Heading1']), imageSide='right'))
         story.append(Paragraph(_('Situation: %s') % situation, style['Heading2']))
         story.append(Paragraph(_('Connector: %s') % connector, style['Heading2']))
         story.append(im)
