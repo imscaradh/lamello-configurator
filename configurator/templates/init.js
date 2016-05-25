@@ -45,16 +45,17 @@ $(function () {
     }
 
     function initFormActions() {
-        var m1_input = 20;
-        var m2_input = 20;
+        var m1_input = 40;
+        var m2_input = 40;
 
         $( "#m1 input" ).blur(function() {
-            m1_input = $(this).val()
-                m2_input = $("#m2 input");
-            if(m2.val() == "") {
-                m2.val(m1_input); 
-                scaleMaterial2(m1_input);
+            m2_input = $("#m2 input").val();
+            if(m2_input == m1_input) {
+                m2_input = $(this).val();
+                $("#m2 input").val(m2_input); 
+                scaleMaterial2(m2_input);
             }
+            m1_input = $(this).val()
             scaleMaterial1(m1_input);
         });
 
