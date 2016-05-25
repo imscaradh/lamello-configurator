@@ -14,6 +14,7 @@ from reportlab.lib.pagesizes import portrait
 from reportlab.lib.styles import getSampleStyleSheet
 from reportlab.platypus import Paragraph, SimpleDocTemplate, Image, Table, TableStyle
 from .services import ConnectorService
+from django.utils.translation import ugettext_lazy as _
 import json
 import logging
 
@@ -145,14 +146,16 @@ def pdf(request):
         titletable = Table(titletabledata, hAlign='LEFT')
         titletable.setStyle(titletablestyle)
 
-        tabledata = [('', 'Possible', 'a', 'b'),
+
+
+        tabledata = [('', _('Possible'), 'a', 'b'),
                      (Paragraph('CNC:', style['Heading4']), '%s' % cncPossible, '%smm' % cncPositionA, '%smm'
                       % cncPositionA),
                      '',
                      (Paragraph('Zeta P2:', style['Heading4']), '', '', ''),
-                     ('0mm Aufsteckplatte', '%s' % zeta0, '%smm' % zeta0a, '%smm' % zeta0b),
-                     ('2mm Aufsteckplatte', '%s' % zeta2, '%smm' % zeta2a, '%smm' % zeta2b),
-                     ('4mm Aufsteckplatte', '%s' % zeta4, '%smm' % zeta4a, '%smm' % zeta4b)]
+                     (_('0mm board'), '%s' % zeta0, '%smm' % zeta0a, '%smm' % zeta0b),
+                     (_('2mm board'), '%s' % zeta2, '%smm' % zeta2a, '%smm' % zeta2b),
+                     (_('4mm board'), '%s' % zeta4, '%smm' % zeta4a, '%smm' % zeta4b)]
 
         tablestyle = TableStyle([('VALIGN', (0, 0), (-1, -1), 'MIDDLE'),
                                  ('ALIGN', (0, 0), (-1, 1), 'LEFT'),
@@ -166,15 +169,15 @@ def pdf(request):
 
         #story.append(logo)
         story.append(titletable)
-        story.append(Paragraph("Situation: %s" % situation, style['Heading2']))
-        story.append(Paragraph("Verbinder: %s" % connector, style['Heading2']))
+        story.append(Paragraph(_('Situation: %s') % situation, style['Heading2']))
+        story.append(Paragraph(_('Connector: %s') % connector, style['Heading2']))
         story.append(im)
-        story.append(Paragraph("Materialstärke  I: %smm" % m1, style['BodyText']))
-        story.append(Paragraph("Materialstärke II: %smm" % m2, style['BodyText']))
-        story.append(Paragraph("Winkel: %s°" % angle, style['BodyText']))
-        story.append(Paragraph("Beschreibung Verbinder:", style['Heading2']))
+        story.append(Paragraph(_('Material thickness I: %smm') % m1, style['BodyText']))
+        story.append(Paragraph(_('Material thickness II: %smm') % m2, style['BodyText']))
+        story.append(Paragraph(_('Angle: %s°') % angle, style['BodyText']))
+        story.append(Paragraph(_('Connector description:'), style['Heading2']))
         story.append(Paragraph("%s:" % info, style['BodyText']))
-        story.append(Paragraph("Beschreibung Montage:", style['Heading2']))
+        story.append(Paragraph(_('Installation:'), style['Heading2']))
         story.append(table)
 
         p.build(story)
