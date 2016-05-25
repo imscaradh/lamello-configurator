@@ -7,12 +7,12 @@ $(function () {
     var canvas = $("#connectionPreview");
     var resultJson = null;
     var model;
+
     var actualConnection = -1;
 
     $.jCanvas.defaults.fromCenter = false;
 
     // functions called on page load
-    initSituationPreview();
     initCanvas();
     initFormActions();
     initFormSubmitActions();
@@ -43,21 +43,50 @@ $(function () {
     }
 
     function initFormActions() {
+        var m1_input = 20;
+        var m2_input = 20;
+
         $( "#m1 input" ).blur(function() {
-            var m2 = $("#m2 input");
+            m1_input = $(this).val()
+                m2_input = $("#m2 input");
             if(m2.val() == "") {
-                m2.val($(this).val()); 
-                scaleMaterial2($(this).val());
+                m2.val(m1_input); 
+                scaleMaterial2(m1_input);
             }
-            scaleMaterial1($(this).val());
+            scaleMaterial1(m1_input);
         });
 
         $( "#m2 input" ).blur(function() {
-            scaleMaterial2($(this).val());
+            m2_input = $(this).val()
+                scaleMaterial2(m2_width);
         });
 
         $( "#angle input" ).blur(function() {
             rotateMaterial($(this).val());
+        });
+
+        $('.connection li').hover(function(e) {
+            var $target = $(e.target);
+            console.info("hovered " + $target.text());
+            actualConnection = $(this).index();
+            drawShape();
+        });
+
+        $('.connection a').click(function(e) {
+            var targetText = $(e.target).text();
+            var connector_name = $(e.target).attr("name");
+            $('.connection .selected-text').html(targetText);
+            $('input#connection_type').val(connector_name);
+        });
+
+        $("div.unit input[name='unit']").change(function(e) {		
+            var unit = $(e.target).val();
+            $("span.lbl.unit").html(unit);		
+
+            m1_input = (unit == "mm") ? m1_input * 25.4 : m1_input / 25.4;
+            $("#m1 input").val(m1_input.toFixed(2));
+            m2_input = (unit == "mm") ? m2_input * 25.4 : m2_input / 25.4;
+            $("#m2 input").val(m2_input.toFixed(2));
         });
     }
 
@@ -101,15 +130,15 @@ $(function () {
         $.each(json, function(i, obj) {
             var cncSelector = typeSelector.format(i, "cnc");
             var cncPossible = htmlBoilerplate.format("Possible", obj.cnc.possible);
-            var cncPosition = htmlBoilerplate.format("Position", obj.cnc.position);
+            var cncPosition = htmlBoilerplate.format("Position", obj.cnc.position.toFixed(2));
             $(cncSelector).html("");
             $(cncSelector).append(cncPossible);
             $(cncSelector).append(cncPosition);
 
             var zetaSelector = typeSelector.format(i, "zeta");
-            var zeta0 = htmlBoilerplate.format("0mm", obj.zeta['0mm']['possible'] + ", " + obj.zeta['0mm']['val']);
-            var zeta2 = htmlBoilerplate.format("2mm", obj.zeta['2mm']['possible'] + ", " + obj.zeta['0mm']['val']);
-            var zeta4 = htmlBoilerplate.format("4mm", obj.zeta['4mm']['possible'] + ", " + obj.zeta['0mm']['val']);
+            var zeta0 = htmlBoilerplate.format("0mm", obj.zeta['0mm']['possible'] + ", " + obj.zeta['0mm']['val'][0].toFixed(2));
+            var zeta2 = htmlBoilerplate.format("2mm", obj.zeta['2mm']['possible'] + ", " + obj.zeta['2mm']['val'][0].toFixed(2));
+            var zeta4 = htmlBoilerplate.format("4mm", obj.zeta['4mm']['possible'] + ", " + obj.zeta['4mm']['val'][0].toFixed(2));
             $(zetaSelector).html("");
             $(zetaSelector).append(zeta0);
             $(zetaSelector).append(zeta2);
@@ -334,21 +363,6 @@ $(function () {
         });
     }
 
-    function initSituationPreview() {
-        $('.connection li').hover(function(e) {
-            var $target = $(e.target);
-            console.info("hovered " + $target.text());
-            actualConnection = $(this).index();
-            drawShape();
-        });
-
-        $('.connection a').click(function(e) {
-            var targetText = $(e.target).text();
-            var connector_name = $(e.target).attr("name");
-            $('.connection .selected-text').html(targetText);
-            $('input#connection_type').val(connector_name);
-        });
-    }
 
     function pdfGeneration() {
         $('.pdf-btn').click(function() {
