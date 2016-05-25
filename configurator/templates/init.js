@@ -295,6 +295,8 @@ $(function () {
 
         canvas.removeLayer('bisec-helpers').drawLayers();
         canvas.removeLayer('bisec').drawLayers();
+        canvas.removeLayer('bisec-hidem1').drawLayers();
+        canvas.removeLayer('bisec-hidem2').drawLayers();
         // Draw to lines here
         canvas.drawLine({
             layer: true,
@@ -312,6 +314,23 @@ $(function () {
             strokeWidth: 1,
             x1: m1.x,       y1: y2,
             x2: model.x2,    y2: model.y2 
+        });
+        // Hide rect ends
+        canvas.drawLine({
+            layer: true,
+            name: 'bisec-hidem1',
+            strokeStyle: '#FFF',
+            strokeWidth: 2,
+            x1: m1.x + 1,   y1: m1.y + m1.height,
+            x2: model.x2 - 1,   y2: model.y2 
+        });
+        canvas.drawLine({
+            layer: true,
+            name: 'bisec-hidem2',
+            strokeStyle: '#FFF',
+            strokeWidth: 3,
+            x1: model.x2,   y1: model.y2,
+            x2: x3,         y2: y3 
         });
     }
 
