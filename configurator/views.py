@@ -1,9 +1,13 @@
 import base64
 import io
+import os.path
+
 from django.shortcuts import render
 from django.http import HttpResponse
 from reportlab.lib import colors
 from reportlab.lib.pagesizes import A4
+from reportlab.lib.units import cm
+
 from .models import ConnectionType, Connector
 from django.core import serializers
 from reportlab.lib.pagesizes import portrait
@@ -26,7 +30,8 @@ def main(request, calc_result=None):
     c3 = ConnectionType(name="T-Connection", x1=140, y1=80, width1=40, height1=160, x2=80, y2=40, width2=160,
                         height2=40)
     c3.save()
-    c4 = ConnectionType(name="Miter", x1=160, y1=40, width1=40, height1=200, x2=80, y2=170, width2=100, height2=40, x3=180, y3=170, width3=100, height3=40)
+    c4 = ConnectionType(name="Miter", x1=160, y1=40, width1=40, height1=200, x2=80, y2=170, width2=100, height2=40,
+                        x3=180, y3=170, width3=100, height3=40)
     c4.save()
     connection_types = ConnectionType.objects.all()
     json_serialized = serializers.serialize('json', connection_types)
@@ -121,13 +126,24 @@ def pdf(request):
         zeta4a = request.POST['zeta4a']
         zeta4b = request.POST['zeta4b']
 
-        logo = Image('./static/img/logo.png')
-        im = Image(io.BytesIO(base64.b64decode(data.split(',')[1])), hAlign='LEFT')
+        logo_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'static/img/logo.jpg')
+        logo = Image(logo_path, width=6 * cm, height=3 * cm, hAlign='RIGHT', kind='proportional')
+
+        im = Image(io.BytesIO(base64.b64decode(data.split(',')[1])), hAlign='LEFT', width=10 * cm, height=10 * cm,
+                   kind='proportional')
+
         response = HttpResponse(content_type='application/pdf')
         response['Content-Disposition'] = ' filename=Lamello_Configurator.pdf'
         p = SimpleDocTemplate(response, pagesize=portrait(A4), )
 
         style = getSampleStyleSheet()
+
+        titletabledata = [('Konfigurator', logo)]
+
+        titletablestyle = TableStyle([('VALIGN', (0, 0), (1, 0), 'MIDDLE')])
+
+        titletable = Table(titletabledata, hAlign='LEFT')
+        titletable.setStyle(titletablestyle)
 
         tabledata = [('', 'Possible', 'a', 'b'),
                      (Paragraph('CNC:', style['Heading4']), '%s' % cncPossible, '%smm' % cncPositionA, '%smm'
@@ -148,8 +164,8 @@ def pdf(request):
         table.setStyle(tablestyle)
         story = []
 
-        story.append(Paragraph("Lamello", style['Title']))
-        story.append(logo)
+        #story.append(logo)
+        story.append(titletable)
         story.append(Paragraph("Situation: %s" % situation, style['Heading2']))
         story.append(Paragraph("Verbinder: %s" % connector, style['Heading2']))
         story.append(im)
