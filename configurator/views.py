@@ -7,14 +7,13 @@ from django.http import HttpResponse
 from reportlab.lib import colors
 from reportlab.lib.pagesizes import A4
 from reportlab.lib.units import cm
-
 from .models import ConnectionType, Connector
 from django.core import serializers
 from reportlab.lib.pagesizes import portrait
-from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
+from reportlab.lib.styles import getSampleStyleSheet
 from reportlab.platypus import Paragraph, SimpleDocTemplate, Image, Table, TableStyle, ImageAndFlowables
-from .services import ConnectorService
-from django.utils.translation import ugettext_lazy as _
+from .services import ConnectorService, PDFService
+
 import json
 import logging
 
@@ -103,7 +102,8 @@ def calc(request):
 
 
 def pdf(request):
-    if request.method == 'POST':
+    error_msg = HttpResponse(status=500)
+    if request.method == 'POST' and request.POST is not None:
         m1 = request.POST['m1']
         m2 = request.POST['m2']
         # unit = request.POST['unit']
@@ -111,12 +111,8 @@ def pdf(request):
         situation = request.POST['situation']
         data = request.POST['dataURL']
         connector = request.POST['connector']
-        con = connector.replace("-", "")
-        allconnectorinfos = Connector.objects.all()
-        connectorinfo = allconnectorinfos.filter(name="%s" % con).first()
-        info = connectorinfo.info
         cncPossible = request.POST['cncPossible']
-        cncPositionA = request.POST['cncPosition']
+        cncPosition = request.POST['cncPosition']
         zeta0 = request.POST['zeta0']
         zeta2 = request.POST['zeta2']
         zeta4 = request.POST['zeta4']
@@ -127,51 +123,9 @@ def pdf(request):
         zeta4a = request.POST['zeta4a']
         zeta4b = request.POST['zeta4b']
 
-        logo_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'static/img/logo.jpg')
-        logo = Image(logo_path, width=6 * cm, height=3 * cm, hAlign='LEFT', kind='proportional')
+        pdf = PDFService(m1, m2, angle, situation, data, connector, cncPossible, cncPosition, zeta0, zeta2, zeta4,
+                         zeta0a, zeta0b, zeta2a, zeta2b, zeta4a, zeta4b)
 
-        im = Image(io.BytesIO(base64.b64decode(data.split(',')[1])), hAlign='LEFT', width=10 * cm, height=10 * cm,
-                   kind='proportional')
-
-        response = HttpResponse(content_type='application/pdf')
-        response['Content-Disposition'] = ' filename=Lamello_Configurator.pdf'
-        p = SimpleDocTemplate(response, pagesize=portrait(A4))
-
-        style = getSampleStyleSheet()
-
-        tabledata = [('', _('Possible'), 'a', 'b'),
-                     (Paragraph('CNC:', style['Heading4']), '%s' % cncPossible, '%smm' % cncPositionA, '%smm'
-                      % cncPositionA),
-                     '',
-                     (Paragraph('Zeta P2:', style['Heading4']), '', '', ''),
-                     (_('0mm board'), '%s' % zeta0, '%smm' % zeta0a, '%smm' % zeta0b),
-                     (_('2mm board'), '%s' % zeta2, '%smm' % zeta2a, '%smm' % zeta2b),
-                     (_('4mm board'), '%s' % zeta4, '%smm' % zeta4a, '%smm' % zeta4b)]
-
-        tablestyle = TableStyle([('VALIGN', (0, 0), (-1, -1), 'MIDDLE'),
-                                 ('ALIGN', (0, 0), (-1, 1), 'LEFT'),
-                                 ('BOX', (0, 0), (-1, -1), 0.25, colors.black),
-                                 ('INNERGRID', (0, 0), (-1, -1), 0.25, colors.black)
-                                 ])
-
-        table = Table(tabledata, hAlign='LEFT')
-        table.setStyle(tablestyle)
-        story = []
-
-        story.append(ImageAndFlowables(logo, Paragraph(_('Configurator'), style['Heading1']), imageSide='right'))
-        story.append(Paragraph(_('Situation: %s') % situation, style['Heading2']))
-        story.append(Paragraph(_('Connector: %s') % connector, style['Heading2']))
-        story.append(im)
-        story.append(Paragraph(_('Material thickness I: %smm') % m1, style['BodyText']))
-        story.append(Paragraph(_('Material thickness II: %smm') % m2, style['BodyText']))
-        story.append(Paragraph(_('Angle: %s°') % angle, style['BodyText']))
-        story.append(Paragraph(_('Connector description:'), style['Heading2']))
-        story.append(Paragraph("%s:" % info, style['BodyText']))
-        story.append(Paragraph(_('Installation:'), style['Heading2']))
-        story.append(table)
-
-        p.build(story)
-
-        return response
+        return pdf.generatePDF()
     else:
-        return HttpResponse()
+        return error_msg
