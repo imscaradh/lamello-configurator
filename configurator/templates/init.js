@@ -11,6 +11,8 @@ $(function () {
     var actualConnection = -1;
 
     $.jCanvas.defaults.fromCenter = false;
+    var fillStyle = '#FFF';
+    var strokeStyle = '#000';
 
     // functions called on page load
     initCanvas();
@@ -163,8 +165,8 @@ $(function () {
         canvas.drawRect({
             layer: true, 
             name: name,
-            fillStyle: '#FFF',
-            strokeStyle: '#000',
+            fillStyle: fillStyle,
+            strokeStyle: strokeStyle,
             strokeWidth: 1,
             rotate: 0,
             x: x, 
@@ -183,7 +185,7 @@ $(function () {
         canvas.drawText({
             layer: true,
             name: layerName,
-            fillStyle: '#000',
+            fillStyle: fillStyle,
             strokeWidth: 2,
             x: m.x - m.translateX + m2Xoffset, 
             y: m.y - m.translateY + m2Yoffset + m.height / 2 - 8,
@@ -330,36 +332,42 @@ $(function () {
         canvas.drawLine({
             layer: true,
             name: 'bisec-helpers',
-            strokeStyle: '#000',
+            fillStyle: fillStyle,
+            strokeStyle: strokeStyle,
             strokeWidth: 1,
-            x1: m1.x,   y1: m1.y + m1.height,
-            x2: m1.x,   y2: y2,
-            x3: x3,     y3: y3
+            closed: true,
+            x1: m1.x,       y1: m1.y + m1.height,
+            x2: m1.x,       y2: y2,
+            x3: x3,         y3: y3,
+            x4: model.x2,   y4:model.y2 
         });
         canvas.drawLine({
             layer: true,
             name: 'bisec',
-            strokeStyle: '#000',
-            strokeWidth: 1,
+            strokeStyle: strokeStyle,
+            strokeWidth: 1.2,
             x1: m1.x,       y1: y2,
-            x2: model.x2,    y2: model.y2 
+            x2: model.x2,   y2: model.y2 
         });
         // Hide rect ends
         canvas.drawLine({
             layer: true,
             name: 'bisec-hidem1',
-            strokeStyle: '#FFF',
+            strokeStyle: fillStyle,
             strokeWidth: 2,
             x1: m1.x + 1,   y1: m1.y + m1.height,
             x2: model.x2 - 1,   y2: model.y2 
         });
+
+        var x2 = model.x2 - Math.sin(beta / 180 * Math.PI) * (m2.height-1);
+        var y2 = model.y2 + Math.cos(beta / 180 * Math.PI) * (m2.height-1);
         canvas.drawLine({
             layer: true,
             name: 'bisec-hidem2',
-            strokeStyle: '#FFF',
+            strokeStyle: fillStyle,
             strokeWidth: 3,
             x1: model.x2,   y1: model.y2,
-            x2: x3,         y2: y3 
+            x2: x2,         y2: y2 
         });
     }
 
