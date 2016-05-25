@@ -60,7 +60,7 @@ $(function () {
 
         $( "#m2 input" ).blur(function() {
             m2_input = $(this).val()
-                scaleMaterial2(m2_width);
+            scaleMaterial2(m2_input);
         });
 
         $( "#angle input" ).blur(function() {
@@ -185,7 +185,7 @@ $(function () {
         canvas.drawText({
             layer: true,
             name: layerName,
-            fillStyle: fillStyle,
+            fillStyle: strokeStyle,
             strokeWidth: 2,
             x: m.x - m.translateX + m2Xoffset, 
             y: m.y - m.translateY + m2Yoffset + m.height / 2 - 8,
@@ -260,14 +260,13 @@ $(function () {
         switch(actualConnection) {
             case 0:
                 var alpha = angle - 90;
-                var offsetX = (angle > 90) ? Math.abs(Math.sin(alpha / 180 * Math.PI)) * m2.height : 0;
                 var beta = 180 - angle;
-                // Precision not correct
-                var offsetY = (angle > 90) ? m2.height / Math.abs(Math.sin(beta / 180 * Math.PI)) - m2.height : 0;
                 translateX = -m2.width / 2;
-                translateY = m2.height / 2;
-                newX = model.x2 - m2.width / 2 - offsetX;
-                newY = model.y2 + m2.height / 2 - offsetY;
+                translateY = (angle > 90) ? -m2.height / 2 : m2.height / 2;
+                newX = model.x2 - m2.width / 2;
+                newY = (angle > 90) ? 
+                    m1.y + m1.height - m2.height / Math.cos(alpha / 180 * Math.PI) -m2.height / 2 : 
+                    model.y2 + m2.height / 2;
                 break;
             case 1:
                 translateX = -m2.width / 2;
@@ -369,6 +368,7 @@ $(function () {
             x1: model.x2,   y1: model.y2,
             x2: x2,         y2: y2 
         });
+        canvas.moveLayer('bisec', 999).drawLayers();
     }
 
 
