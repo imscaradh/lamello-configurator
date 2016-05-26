@@ -11,6 +11,10 @@ class ConnectionType(models.Model):
     height2 = models.IntegerField(default=0)
     x2 = models.IntegerField(default=0)
     y2 = models.IntegerField(default=0)
+    width3 = models.IntegerField(default=0)
+    height3 = models.IntegerField(default=0)
+    x3 = models.IntegerField(default=0)
+    y3 = models.IntegerField(default=0)
 
 
 class Connector(models.Model):
