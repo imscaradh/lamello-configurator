@@ -7,12 +7,14 @@ $(function () {
     var canvas = $("#connectionPreview");
     var resultJson = null;
     var model;
+
     var actualConnection = -1;
 
     $.jCanvas.defaults.fromCenter = false;
+    var fillStyle = '#FFF';
+    var strokeStyle = '#000';
 
     // functions called on page load
-    initSituationPreview();
     initCanvas();
     initFormActions();
     initFormSubmitActions();
@@ -43,21 +45,51 @@ $(function () {
     }
 
     function initFormActions() {
+        var m1_input = 40;
+        var m2_input = 40;
+
         $( "#m1 input" ).blur(function() {
-            var m2 = $("#m2 input");
-            if(m2.val() == "") {
-                m2.val($(this).val()); 
-                scaleMaterial2($(this).val());
+            m2_input = $("#m2 input").val();
+            if(m2_input == m1_input) {
+                m2_input = $(this).val();
+                $("#m2 input").val(m2_input); 
+                scaleMaterial2(m2_input);
             }
-            scaleMaterial1($(this).val());
+            m1_input = $(this).val()
+            scaleMaterial1(m1_input);
         });
 
         $( "#m2 input" ).blur(function() {
-            scaleMaterial2($(this).val());
+            m2_input = $(this).val()
+            scaleMaterial2(m2_input);
         });
 
         $( "#angle input" ).blur(function() {
             rotateMaterial($(this).val());
+        });
+
+        $('.connection li').hover(function(e) {
+            var $target = $(e.target);
+            console.info("hovered " + $target.text());
+            actualConnection = $(this).index();
+            drawShape();
+        });
+
+        $('.connection a').click(function(e) {
+            var targetText = $(e.target).text();
+            var connector_name = $(e.target).attr("name");
+            $('.connection .selected-text').html(targetText);
+            $('input#connection_type').val(connector_name);
+        });
+
+        $("div.unit input[name='unit']").change(function(e) {		
+            var unit = $(e.target).val();
+            $("span.lbl.unit").html(unit);		
+
+            m1_input = (unit == "mm") ? m1_input * 25.4 : m1_input / 25.4;
+            $("#m1 input").val(m1_input.toFixed(2));
+            m2_input = (unit == "mm") ? m2_input * 25.4 : m2_input / 25.4;
+            $("#m2 input").val(m2_input.toFixed(2));
         });
     }
 
@@ -101,15 +133,15 @@ $(function () {
         $.each(json, function(i, obj) {
             var cncSelector = typeSelector.format(i, "cnc");
             var cncPossible = htmlBoilerplate.format("Possible", obj.cnc.possible);
-            var cncPosition = htmlBoilerplate.format("Position", obj.cnc.position);
+            var cncPosition = htmlBoilerplate.format("Position", obj.cnc.position.toFixed(2));
             $(cncSelector).html("");
             $(cncSelector).append(cncPossible);
             $(cncSelector).append(cncPosition);
 
             var zetaSelector = typeSelector.format(i, "zeta");
-            var zeta0 = htmlBoilerplate.format("0mm", obj.zeta['0mm']['possible'] + ", " + obj.zeta['0mm']['val']);
-            var zeta2 = htmlBoilerplate.format("2mm", obj.zeta['2mm']['possible'] + ", " + obj.zeta['0mm']['val']);
-            var zeta4 = htmlBoilerplate.format("4mm", obj.zeta['4mm']['possible'] + ", " + obj.zeta['0mm']['val']);
+            var zeta0 = htmlBoilerplate.format("0mm", obj.zeta['0mm']['possible'] + ", " + obj.zeta['0mm']['val'][0].toFixed(2));
+            var zeta2 = htmlBoilerplate.format("2mm", obj.zeta['2mm']['possible'] + ", " + obj.zeta['2mm']['val'][0].toFixed(2));
+            var zeta4 = htmlBoilerplate.format("4mm", obj.zeta['4mm']['possible'] + ", " + obj.zeta['4mm']['val'][0].toFixed(2));
             $(zetaSelector).html("");
             $(zetaSelector).append(zeta0);
             $(zetaSelector).append(zeta2);
@@ -134,8 +166,8 @@ $(function () {
         canvas.drawRect({
             layer: true, 
             name: name,
-            fillStyle: '#FFF',
-            strokeStyle: '#000',
+            fillStyle: fillStyle,
+            strokeStyle: strokeStyle,
             strokeWidth: 1,
             rotate: 0,
             x: x, 
@@ -154,7 +186,7 @@ $(function () {
         canvas.drawText({
             layer: true,
             name: layerName,
-            fillStyle: '#000',
+            fillStyle: strokeStyle,
             strokeWidth: 2,
             x: m.x - m.translateX + m2Xoffset, 
             y: m.y - m.translateY + m2Yoffset + m.height / 2 - 8,
@@ -229,14 +261,13 @@ $(function () {
         switch(actualConnection) {
             case 0:
                 var alpha = angle - 90;
-                var offsetX = (angle > 90) ? Math.abs(Math.sin(alpha / 180 * Math.PI)) * m2.height : 0;
                 var beta = 180 - angle;
-                // Precision not correct
-                var offsetY = (angle > 90) ? m2.height / Math.abs(Math.sin(beta / 180 * Math.PI)) - m2.height : 0;
                 translateX = -m2.width / 2;
-                translateY = m2.height / 2;
-                newX = model.x2 - m2.width / 2 - offsetX;
-                newY = model.y2 + m2.height / 2 - offsetY;
+                translateY = (angle > 90) ? -m2.height / 2 : m2.height / 2;
+                newX = model.x2 - m2.width / 2;
+                newY = (angle > 90) ? 
+                    m1.y + m1.height - m2.height / Math.cos(alpha / 180 * Math.PI) -m2.height / 2 : 
+                    model.y2 + m2.height / 2;
                 break;
             case 1:
                 translateX = -m2.width / 2;
@@ -295,41 +326,52 @@ $(function () {
 
         canvas.removeLayer('bisec-helpers').drawLayers();
         canvas.removeLayer('bisec').drawLayers();
+        canvas.removeLayer('bisec-hidem1').drawLayers();
+        canvas.removeLayer('bisec-hidem2').drawLayers();
         // Draw to lines here
         canvas.drawLine({
             layer: true,
             name: 'bisec-helpers',
-            strokeStyle: '#000',
+            fillStyle: fillStyle,
+            strokeStyle: strokeStyle,
             strokeWidth: 1,
-            x1: m1.x,   y1: m1.y + m1.height,
-            x2: m1.x,   y2: y2,
-            x3: x3,     y3: y3
+            closed: true,
+            x1: m1.x,       y1: m1.y + m1.height,
+            x2: m1.x,       y2: y2,
+            x3: x3,         y3: y3,
+            x4: model.x2,   y4:model.y2 
         });
         canvas.drawLine({
             layer: true,
             name: 'bisec',
-            strokeStyle: '#000',
-            strokeWidth: 1,
+            strokeStyle: strokeStyle,
+            strokeWidth: 1.2,
             x1: m1.x,       y1: y2,
-            x2: model.x2,    y2: model.y2 
+            x2: model.x2,   y2: model.y2 
         });
+        // Hide rect ends
+        canvas.drawLine({
+            layer: true,
+            name: 'bisec-hidem1',
+            strokeStyle: fillStyle,
+            strokeWidth: 2,
+            x1: m1.x + 1,   y1: m1.y + m1.height,
+            x2: model.x2 - 1,   y2: model.y2 
+        });
+
+        var x2 = model.x2 - Math.sin(beta / 180 * Math.PI) * (m2.height-1);
+        var y2 = model.y2 + Math.cos(beta / 180 * Math.PI) * (m2.height-1);
+        canvas.drawLine({
+            layer: true,
+            name: 'bisec-hidem2',
+            strokeStyle: fillStyle,
+            strokeWidth: 3,
+            x1: model.x2,   y1: model.y2,
+            x2: x2,         y2: y2 
+        });
+        canvas.moveLayer('bisec', 999).drawLayers();
     }
 
-    function initSituationPreview() {
-        $('.connection li').hover(function(e) {
-            var $target = $(e.target);
-            console.info("hovered " + $target.text());
-            actualConnection = $(this).index();
-            drawShape();
-        });
-
-        $('.connection a').click(function(e) {
-            var targetText = $(e.target).text();
-            var connector_name = $(e.target).attr("name");
-            $('.connection .selected-text').html(targetText);
-            $('input#connection_type').val(connector_name);
-        });
-    }
 
     function pdfGeneration() {
         $('.pdf-btn').click(function() {
