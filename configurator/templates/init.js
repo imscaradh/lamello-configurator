@@ -139,9 +139,9 @@ $(function () {
             $(cncSelector).append(cncPosition);
 
             var zetaSelector = typeSelector.format(i, "zeta");
-            var zeta0 = htmlBoilerplate.format("0mm", obj.zeta['0mm']['possible'] + ", " + obj.zeta['0mm']['val'][0].toFixed(2));
-            var zeta2 = htmlBoilerplate.format("2mm", obj.zeta['2mm']['possible'] + ", " + obj.zeta['2mm']['val'][0].toFixed(2));
-            var zeta4 = htmlBoilerplate.format("4mm", obj.zeta['4mm']['possible'] + ", " + obj.zeta['4mm']['val'][0].toFixed(2));
+            var zeta0 = htmlBoilerplate.format(" 0mm", obj.zeta['0mm']['possible'] + ", " + obj.zeta['0mm']['val'][0].toFixed(2));
+            var zeta2 = htmlBoilerplate.format(" 2mm", obj.zeta['2mm']['possible'] + ", " + obj.zeta['2mm']['val'][0].toFixed(2));
+            var zeta4 = htmlBoilerplate.format(" 4mm", obj.zeta['4mm']['possible'] + ", " + obj.zeta['4mm']['val'][0].toFixed(2));
             $(zetaSelector).html("");
             $(zetaSelector).append(zeta0);
             $(zetaSelector).append(zeta2);
@@ -388,16 +388,19 @@ $(function () {
             var cncPosition = cncString.split('true' || 'false')[1];
             cncPosition = (cncPosition == null ? "0" : cncPosition.substring(10,18));
             var zetaString = $(this).closest('tr').find('td:eq(2)').text();
+            console.log("zeta: " + zetaString);
+            var reg = /\b(\d+\.\d+)/g;
+            var matches = getMatches(zetaString, reg, 1);
+            console.log(matches);
             var zeta0Possible = (zetaString.indexOf('0mm: true') >= 0 ? "Yes" : "No");
             var zeta2Possible = (zetaString.indexOf('2mm: true') >= 0 ? "Yes" : "No");
             var zeta4Possible = (zetaString.indexOf('4mm: true') >= 0 ? "Yes" : "No");
-            var zetaVal = zetaString.split(',');
-            var zeta0a = (zeta0Possible == "Yes" ? zetaVal[1].substr(0, 8) : "0");
-            var zeta0b = (zeta0Possible == "Yes" ? zetaVal[2].substr(0, 8) : "0");
-            var zeta2a = (zeta2Possible == "Yes" ? zetaVal[3].substr(0, 8) : "0");
-            var zeta2b = (zeta2Possible == "Yes" ? zetaVal[4].substr(0, 8) : "0");
-            var zeta4a = (zeta4Possible == "Yes" ? zetaVal[5].substr(0, 8) : "0");
-            var zeta4b = (zeta4Possible == "Yes" ? zetaVal[6].substr(0, 8) : "0");
+            var zeta0a = (zeta0Possible == "Yes" ? matches[0] : "0");
+            var zeta0b = 0; //(zeta0Possible == "Yes" ? zetaVal[2].substr(0, 8) : "0");
+            var zeta2a = (zeta2Possible == "Yes" ? matches[1] : "0");
+            var zeta2b = 0; //(zeta2Possible == "Yes" ? zetaVal[4].substr(0, 8) : "0");
+            var zeta4a = (zeta4Possible == "Yes" ? matches[2] : "0");
+            var zeta4b = 0; //(zeta4Possible == "Yes" ? zetaVal[6].substr(0, 8) : "0");
             console.log("m1: " + $m1);
             console.log("m2: " + $m2);
             console.log("unit:" + unit);
@@ -408,7 +411,6 @@ $(function () {
             console.log("cnc: " + cncString);
             console.log("cnc: " + cncPossible);
             console.log("cnc: " + cncPosition);
-            console.log("zeta: " + zetaString);
             console.log("0mm: " + zeta0Possible);
             console.log("2mm: " + zeta2Possible);
             console.log("4mm: " + zeta4Possible);
@@ -452,6 +454,22 @@ $(function () {
                 }
             });
         })
+    }
+
+    function getMatches(string, regex, index) {
+    index || (index = 1); // default to the first capturing group
+    var matches = [];
+    var match;
+    while (match = regex.exec(string)) {
+        matches.push(match[index]);
+    }
+    return matches;
+    }
+
+    function searchPos(inputstr) {
+
+        matches = reg.exec(inputstr);
+        return matches;
     }
 });
 
