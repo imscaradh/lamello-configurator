@@ -117,8 +117,8 @@ class BisecService(ConnectorService):
     def zeta_0mm(self):
         cond1 = (self.m1_width == self.m2_width)
         cond2 = (
-        self.links_max < 14 - (math.tan(self.gehrung / 180 * math.pi) * 4 / math.sin(self.gehrung / 180 * math.pi)
-                               - math.tan(self.gehrung / 180 * math.pi) * 4))
+            self.links_max < 14 - (math.tan(self.gehrung / 180 * math.pi) * 4 / math.sin(self.gehrung / 180 * math.pi)
+                                   - math.tan(self.gehrung / 180 * math.pi) * 4))
         cond3 = ((14 - (math.tan(self.gehrung / 180 * math.pi) * 4 / math.sin(self.gehrung / 180 * math.pi) -
                         math.tan(self.gehrung / 180 * math.pi) * 4)) < min(self.rechts))
 
@@ -127,9 +127,9 @@ class BisecService(ConnectorService):
     def zeta_2mm(self):
         cond1 = (self.m1_width == self.m2_width)
         cond2 = (
-        self.links_max < 14 - ((math.tan(self.gehrung / 180 * math.pi) * 4 / math.sin(self.gehrung / 180 * math.pi)
-                                - math.tan(self.gehrung / 180 * math.pi) * 4) + 2 / math.cos(
-            self.gehrung / 180 * math.pi)))
+            self.links_max < 14 - ((math.tan(self.gehrung / 180 * math.pi) * 4 / math.sin(self.gehrung / 180 * math.pi)
+                                    - math.tan(self.gehrung / 180 * math.pi) * 4) + 2 / math.cos(
+                self.gehrung / 180 * math.pi)))
         cond3 = (14 - ((math.tan(self.gehrung / 180 * math.pi) * 4 / math.sin(self.gehrung / 180 * math.pi) -
                         math.tan(self.gehrung / 180 * math.pi) * 4) + 2 / math.cos(self.gehrung / 180 * math.pi)) < min(
             self.rechts))
@@ -522,6 +522,7 @@ class PDFService:
         self.zeta4a = zeta4a
         self.zeta4b = zeta4b
 
+    @property
     def generatePDF(self):
         con = self.connector.replace("-", "")
         allconnectorinfos = Connector.objects.all()
@@ -531,7 +532,8 @@ class PDFService:
         logo_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'static/img/logo.jpg')
         logo = Image(logo_path, width=6 * cm, height=3 * cm, hAlign='LEFT', kind='proportional')
 
-        im = Image(io.BytesIO(base64.b64decode(self.imgData.split(',')[1])), hAlign='LEFT', width=10 * cm, height=10 * cm,
+        im = Image(io.BytesIO(base64.b64decode(self.imgData.split(',')[1])), hAlign='LEFT', width=10 * cm,
+                   height=10 * cm,
                    kind='proportional')
 
         response = HttpResponse(content_type='application/pdf')
@@ -540,9 +542,17 @@ class PDFService:
 
         style = getSampleStyleSheet()
 
+        titeltabledata = [(Paragraph(_('Configurator'), style['Heading1']), logo)]
+
+        titeltablestyle = TableStyle([('ALIGN', (0, 0), (0, 0), 'LEFT'),
+                                      ('VALIGN', (0, 0), (0, 0), 'MIDDLE'),
+                                      ('ALIGN', (1, 0), (1, 0), 'RIGHT')])
+
+        titletable = Table(titeltabledata, hAlign='LEFT', colWidths=8 * cm)
+        titletable.setStyle(titeltablestyle)
+
         tabledata = [('', _('Possible'), 'a', 'b'),
-                     (Paragraph('CNC:', style['Heading4']), '%s' % self.cncPossible, '%smm' % self.cncPosition, '%smm'
-                      % self.cncPosition),
+                     (Paragraph('CNC:', style['Heading4']), '%s' % self.cncPossible, '%smm' % self.cncPosition, '0mm'),
                      '',
                      (Paragraph('Zeta P2:', style['Heading4']), '', '', ''),
                      (_('0mm board'), '%s' % self.zeta0, '%smm' % self.zeta0a, '%smm' % self.zeta0b),
@@ -555,11 +565,12 @@ class PDFService:
                                  ('INNERGRID', (0, 0), (-1, -1), 0.25, colors.black)
                                  ])
 
-        table = Table(tabledata, hAlign='LEFT')
+        table = Table(tabledata, colWidths=(5 * cm, 3 * cm, 3 * cm, 3 * cm), hAlign='LEFT')
         table.setStyle(tablestyle)
+
         story = []
 
-        story.append(ImageAndFlowables(logo, Paragraph(_('Configurator'), style['Heading1']), imageSide='right'))
+        story.append(titletable)
         story.append(Paragraph(_('Situation: %s') % self.situation, style['Heading2']))
         story.append(Paragraph(_('Connector: %s') % self.connector, style['Heading2']))
         story.append(im)
