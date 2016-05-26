@@ -7,7 +7,7 @@
 
 {% block content %}
 <div class="page-header">
-    <h1>Configurator</h1>
+    <h1>{%  trans "Configurator" %}</h1>
 </div>
 
 <form id="calculationForm" class="form" action="{% url 'calc' %}" method="POST">
@@ -28,11 +28,11 @@
                 </label>
             </div>
             <div class="field connection">
-                <label>Verbindung:</label>
+                <label>{% trans "Connection" %}:</label>
                 <div class="dropdown">
                     <input type="hidden" name="connection_type" id="connection_type"/>
                     <button class="btn btn-default dropdown-toggle" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
-                        <span class="selected-text">Situation</span>
+                        <span class="selected-text">{% trans "Situation" %}</span>
                         <span class="caret"></span>
                     </button>
                     <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
@@ -43,25 +43,27 @@
                 </div>
             </div>
             <div id="m1" class="field">
-                <label>Materialstärke I:</label>
-                <input class="form-control right" value="40.00" name="m1" type="number" step="0.01">
+                <label>{% trans "Material thickness" %} I:</label>
+                <input class="form-control right" value="40.00" name="m1" type="number" step="0.01" pattern="^[0-9]+$">
                 <span class="lbl unit">mm</span>
                 <span class="help-block"></span>
             </div>
             <div id="m2" class="field">
-                <label>Materialstärke II:</label>
-                <input class="form-control right" value="40.00" name="m2" type="number" step="0.01">
+                <label>{% trans "Material thickness" %} II:</label>
+                <input class="form-control right" value="40.00" name="m2" type="number" step="0.01" pattern="^[0-9]+$">
                 <span class="lbl unit">mm</span>
                 <span class="help-block"></span>
             </div>
             <div id="angle" class="field">
-                <label>Winkel:</label>
+
+                <label>{% trans "Angle" %}:</label>
                 <input class="form-control right" value="90.00" name="angle" type="number" step="1">
+
                 <span class="unit">°</span>
                 <span class="help-block"></span>
             </div>
             <div id="calc" class="button">
-                <input class="btn btn-default" type="submit" value="Submit"/>
+                <input class="btn btn-default" type="submit" value="{% trans "Submit" %}"/>
             </div>
         </div>
     </div>
@@ -73,7 +75,7 @@
     {% csrf_token %}
     <table class="connectors">
         <thead>
-            <th class="conn-name">Verbindername</th> 
+            <th class="conn-name">{% trans "Connector" %}</th>
             <th class="conn-cnc">CNC</th> 
             <th class="conn-zeta">Zeta</th> 
             <th class="conn-export">Export</th> 
