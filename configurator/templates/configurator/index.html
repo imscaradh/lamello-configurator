@@ -55,66 +55,41 @@
                 <span class="help-block"></span>
             </div>
             <div id="angle" class="field">
-
                 <label>{% trans "Angle" %}:</label>
-                <input class="form-control right" value="90.00" name="angle" type="number" step="1">
+                <input class="form-control right" value="90.00" name="angle" type="number" min="40" max="140" step="1">
 
                 <span class="unit">°</span>
                 <span class="help-block"></span>
             </div>
+
             <div id="calc" class="button">
                 <input class="btn btn-default" type="submit" value="{% trans "Submit" %}"/>
             </div>
+            <div class="errors"></div>
         </div>
     </div>
 </form>
 
-<div class="errors"></div>
 
 <div class="results">
-    {% csrf_token %}
-    <table class="connectors">
-        <thead>
-            <th class="conn-name">{% trans "Connector" %}</th>
-            <th class="conn-cnc">CNC</th> 
-            <th class="conn-zeta">Zeta</th> 
-            <th class="conn-export">Export</th> 
-        </thead>
-        <tbody>
-
-        <!-- could be done dynamically -->
-        <tr class="P10">
-            <td>P-10</td>
-            <td class="cnc">
-            </td>
-            <td class="zeta">
-            </td>
-            <td>
-                <input class="btn btn-default pdf-btn" type="submit" value="Export"/>
-            </td>
-        </tr>
-        <tr class="P14">
-            <td>P-14</td>
-            <td class="cnc">
-            </td>
-            <td class="zeta">
-            </td>
-            <td>
-                <input class="btn btn-default pdf-btn" type="submit" value="Export"/>
-            </td>
-        </tr>
-        <tr class="P1014">
-            <td>P-1014</td>
-            <td class="cnc">
-            </td>
-            <td class="zeta">
-            </td>
-            <td>
-                <input class="btn btn-default pdf-btn" type="submit" value="Export"/>
-            </td>
-        </tr>
-        </tbody>
-    </table> 
+    {% for connector in connectors %}
+    <div class="sec-{{ connector.name }}">
+        <h4>{% trans "Connector" %}: {{ connector.name }}</h4>
+        <table class="connectors">
+            <thead>
+                <th class="conn-cnc">CNC</th> 
+                <th class="conn-zeta">Zeta</th> 
+            </thead>
+            <tbody>
+                <tr>
+                    <td class="cnc"></td>
+                    <td class="zeta"></td>
+                </tr>
+            </tbody>
+        </table> 
+        <input class="btn btn-default pdf-btn" type="submit" value="Export"/>
+    </div>
+    {% endfor %}
 </div>
 
 {% endblock %}

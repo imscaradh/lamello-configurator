@@ -1,24 +1,15 @@
-import base64
-import io
-import os.path
-
 from django.shortcuts import render
 from django.http import HttpResponse
-from reportlab.lib import colors
-from reportlab.lib.pagesizes import A4
-from reportlab.lib.units import cm
 from .models import ConnectionType, Connector
 from django.core import serializers
-from reportlab.lib.pagesizes import portrait
-from reportlab.lib.styles import getSampleStyleSheet
-from reportlab.platypus import Paragraph, SimpleDocTemplate, Image, Table, TableStyle, ImageAndFlowables
 from .services import ConnectorService, PDFService
 
 import json
 import logging
 
 
-def main(request, calc_result=None):
+def main(request):
+    connectors = Connector.objects.all()
     connection_types = ConnectionType.objects.all()
     # uncommented for debugging
     # if len(connection_types) == 0:
@@ -52,9 +43,9 @@ def main(request, calc_result=None):
         request,
         'configurator/index.html',
         {
+            'connectors': connectors,
             'connection_types': connection_types,
-            'connection_types_json': json_serialized,
-            'calc_result': calc_result,
+            'connection_types_json': json_serialized
         }
     )
 

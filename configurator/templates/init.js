@@ -11,8 +11,10 @@ $(function () {
     var actualConnection = -1;
 
     $.jCanvas.defaults.fromCenter = false;
-    var fillStyle = '#FFF';
+    var fillStyle = '#f2e8dd';
     var strokeStyle = '#000';
+    var minAngle = parseInt($("#angle input").attr("min"));
+    var maxAngle = parseInt($("#angle input").attr("max"));
 
     // functions called on page load
     initCanvas();
@@ -48,7 +50,7 @@ $(function () {
         var m1_input = 40;
         var m2_input = 40;
 
-        $( "#m1 input" ).blur(function() {
+        $( "#m1 input" ).on('input', function() {
             m2_input = $("#m2 input").val();
             if(m2_input == m1_input) {
                 m2_input = $(this).val();
@@ -56,16 +58,22 @@ $(function () {
                 scaleMaterial2(m2_input);
             }
             m1_input = $(this).val()
-            scaleMaterial1(m1_input);
+                scaleMaterial1(m1_input);
         });
 
-        $( "#m2 input" ).blur(function() {
+        $( "#m2 input" ).on('input', function() {
             m2_input = $(this).val()
-            scaleMaterial2(m2_input);
+                scaleMaterial2(m2_input);
         });
 
-        $( "#angle input" ).blur(function() {
-            rotateMaterial($(this).val());
+        $( "#angle input" ).on('input', function() {
+            var angle = $(this).val();
+            if(minAngle <= angle && angle <= maxAngle) {
+                $("div.errors").html("");
+                rotateMaterial(angle);
+            } else {
+                $("div.errors").html("Angle must be between 40 and 140 degreees");
+            }
         });
 
         $('.connection li').hover(function(e) {
@@ -97,7 +105,12 @@ $(function () {
         // Submit post on submit
         $('#calculationForm').on('submit', function(event){
             event.preventDefault();
-            create_post();
+            if(actualConnection != -1) {
+                create_post();
+                $("div.errors").html("");  
+            } else {
+                $("div.errors").html("Please provide a connection!");
+            }
         });
     }
 
@@ -128,7 +141,7 @@ $(function () {
 
     function updateResultTable(json) {
         var htmlBoilerplate = '<div><span class="{0}">{0}: </span><span class="{0}-val">{1}</span></div>';
-        var typeSelector = "table.connectors tr.{0} td.{1} ";
+        var typeSelector = "div.sec-{0} td.{1} ";
         $("div.results").show();
         $.each(json, function(i, obj) {
             var cncSelector = typeSelector.format(i, "cnc");
@@ -457,17 +470,16 @@ $(function () {
     }
 
     function getMatches(string, regex, index) {
-    index || (index = 1); // default to the first capturing group
-    var matches = [];
-    var match;
-    while (match = regex.exec(string)) {
-        matches.push(match[index]);
-    }
-    return matches;
+        index || (index = 1); // default to the first capturing group
+        var matches = [];
+        var match;
+        while (match = regex.exec(string)) {
+            matches.push(match[index]);
+        }
+        return matches;
     }
 
     function searchPos(inputstr) {
-
         matches = reg.exec(inputstr);
         return matches;
     }
