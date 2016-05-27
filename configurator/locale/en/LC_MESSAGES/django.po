@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-05-25 14:57+0200\n"
+"POT-Creation-Date: 2016-05-27 10:22+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,8 +17,57 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: templates/configurator/index.html:10 views.py:143
+#: services.py:545 templates/configurator/index.html.py:10
 msgid "Configurator"
+msgstr ""
+
+#: services.py:554
+#, python-format
+msgid "Material thickness  I: %smm"
+msgstr ""
+
+#: services.py:555
+#, python-format
+msgid "Material thickness II: %smm"
+msgstr ""
+
+#: services.py:556
+#, python-format
+msgid "Angle: %s°"
+msgstr ""
+
+#: services.py:567 services.py:570
+msgid "Possible"
+msgstr ""
+
+#: services.py:571
+msgid "0mm board"
+msgstr ""
+
+#: services.py:572
+msgid "2mm board"
+msgstr ""
+
+#: services.py:573
+msgid "4mm board"
+msgstr ""
+
+#: services.py:589
+#, python-format
+msgid "Situation: %s"
+msgstr ""
+
+#: services.py:590
+#, python-format
+msgid "Connector: %s"
+msgstr ""
+
+#: services.py:592
+msgid "Connector description"
+msgstr ""
+
+#: services.py:594
+msgid "Installation"
 msgstr ""
 
 #: templates/configurator/index.html:31
@@ -43,53 +92,4 @@ msgstr ""
 
 #: templates/configurator/index.html:78
 msgid "Connector"
-msgstr ""
-
-#: views.py:149
-msgid "Possible"
-msgstr ""
-
-#: views.py:154
-msgid "0mm board"
-msgstr ""
-
-#: views.py:155
-msgid "2mm board"
-msgstr ""
-
-#: views.py:156
-msgid "4mm board"
-msgstr ""
-
-#: views.py:170
-#, python-format
-msgid "Situation: %s"
-msgstr ""
-
-#: views.py:171
-#, python-format
-msgid "Connector: %s"
-msgstr ""
-
-#: views.py:173
-#, python-format
-msgid "Material thickness I: %smm"
-msgstr ""
-
-#: views.py:174
-#, python-format
-msgid "Material thickness II: %smm"
-msgstr ""
-
-#: views.py:175
-#, python-format
-msgid "Angle: %s°"
-msgstr ""
-
-#: views.py:176
-msgid "Connector description:"
-msgstr ""
-
-#: views.py:178
-msgid "Installation:"
 msgstr ""

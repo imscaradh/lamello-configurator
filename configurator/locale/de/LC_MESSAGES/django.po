@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-05-25 14:57+0200\n"
+"POT-Creation-Date: 2016-05-27 10:22+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -18,9 +18,63 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-#: templates/configurator/index.html:10 views.py:143
+#: services.py:545 templates/configurator/index.html.py:10
 msgid "Configurator"
 msgstr "Konfigurator"
+
+#: services.py:554
+#, fuzzy, python-format
+#| msgid "Material thickness I: %smm"
+msgid "Material thickness  I: %smm"
+msgstr "Materialstärke I: %smm"
+
+#: services.py:555
+#, python-format
+msgid "Material thickness II: %smm"
+msgstr "Materialstärke II: %smm"
+
+#: services.py:556
+#, python-format
+msgid "Angle: %s°"
+msgstr "Winkel: %s°"
+
+#: services.py:567 services.py:570
+msgid "Possible"
+msgstr "Möglich"
+
+#: services.py:571
+msgid "0mm board"
+msgstr "0mm Aufsteckplatte"
+
+#: services.py:572
+msgid "2mm board"
+msgstr "2mm Aufsteckplatte"
+
+#: services.py:573
+msgid "4mm board"
+msgstr "4mm Aufsteckplatte"
+
+#: services.py:589
+#, python-format
+msgid "Situation: %s"
+msgstr "Situation: %s"
+
+#: services.py:590
+#, python-format
+msgid "Connector: %s"
+msgstr "Verbinder: %s"
+
+#: services.py:592
+#, fuzzy
+#| msgid "Connector description:"
+msgid "Connector description"
+msgstr "Verbinder Beschreibung"
+
+#: services.py:594
+#, fuzzy
+#| msgid "Installation:"
+msgid "Installation"
+msgstr "Montage Beschreibung"
 
 #: templates/configurator/index.html:31
 msgid "Connection"
@@ -45,52 +99,3 @@ msgstr "Bestätigen"
 #: templates/configurator/index.html:78
 msgid "Connector"
 msgstr "Verbindungsname"
-
-#: views.py:149
-msgid "Possible"
-msgstr "Möglich"
-
-#: views.py:154
-msgid "0mm board"
-msgstr "0mm Aufsteckplatte"
-
-#: views.py:155
-msgid "2mm board"
-msgstr "2mm Aufsteckplatte"
-
-#: views.py:156
-msgid "4mm board"
-msgstr "4mm Aufsteckplatte"
-
-#: views.py:170
-#, python-format
-msgid "Situation: %s"
-msgstr "Situation: %s"
-
-#: views.py:171
-#, python-format
-msgid "Connector: %s"
-msgstr "Verbinder: %s"
-
-#: views.py:173
-#, python-format
-msgid "Material thickness I: %smm"
-msgstr "Materialstärke I: %smm"
-
-#: views.py:174
-#, python-format
-msgid "Material thickness II: %smm"
-msgstr "Materialstärke II: %smm"
-
-#: views.py:175
-#, python-format
-msgid "Angle: %s°"
-msgstr "Winkel: %s°"
-
-#: views.py:176
-msgid "Connector description:"
-msgstr "Verbinder Beschreibung:"
-
-#: views.py:178
-msgid "Installation:"
-msgstr "Montage Beschreibung:"

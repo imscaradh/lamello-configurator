@@ -126,6 +126,6 @@ def pdf(request):
         pdf = PDFService(m1, m2, angle, situation, data, connector, cncPossible, cncPosition, zeta0, zeta2, zeta4,
                          zeta0a, zeta0b, zeta2a, zeta2b, zeta4a, zeta4b)
 
-        return pdf.generatePDF()
+        return pdf.generatePDF
     else:
         return error_msg
