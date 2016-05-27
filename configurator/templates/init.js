@@ -15,6 +15,7 @@ $(function () {
     var strokeStyle = '#000';
     var minAngle = parseInt($("#angle input").attr("min"));
     var maxAngle = parseInt($("#angle input").attr("max"));
+    var unit = 'mm';
 
     // functions called on page load
     initCanvas();
@@ -55,15 +56,15 @@ $(function () {
             if(m2_input == m1_input) {
                 m2_input = $(this).val();
                 $("#m2 input").val(m2_input); 
-                scaleMaterial2(m2_input);
+                scaleMaterial2((unit == 'mm') ? m2_input : m2_input * 25.4);
             }
-            m1_input = $(this).val()
-                scaleMaterial1(m1_input);
+            m1_input = $(this).val();
+            scaleMaterial1((unit == 'mm') ? m1_input : m1_input * 25.4);
         });
 
         $( "#m2 input" ).on('input', function() {
-            m2_input = $(this).val()
-                scaleMaterial2(m2_input);
+            m2_input = $(this).val();
+            scaleMaterial2((unit == 'mm') ? m2_input : m2_input * 25.4);
         });
 
         $( "#angle input" ).on('input', function() {
@@ -91,7 +92,7 @@ $(function () {
         });
 
         $("div.unit input[name='unit']").change(function(e) {		
-            var unit = $(e.target).val();
+            unit = $(e.target).val();
             $("span.lbl.unit").html(unit);		
 
             m1_input = (unit == "mm") ? m1_input * 25.4 : m1_input / 25.4;
