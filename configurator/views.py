@@ -21,8 +21,8 @@ def main(request):
     c3 = ConnectionType(name="T-Connection", x1=140, y1=80, width1=40, height1=160, x2=80, y2=40, width2=160,
                         height2=40)
     c3.save()
-    c4 = ConnectionType(name="Miter", x1=160, y1=40, width1=40, height1=200, x2=80, y2=170, width2=100, height2=40,
-                        x3=180, y3=170, width3=100, height3=40)
+    c4 = ConnectionType(name="Miter", x1=240, y1=40, width1=40, height1=230, x2=100, y2=150, width2=165, height2=40,
+                        x3=255, y3=150, width3=165, height3=40)
     c4.save()
     connection_types = ConnectionType.objects.all()
     json_serialized = serializers.serialize('json', connection_types)

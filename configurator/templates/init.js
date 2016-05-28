@@ -193,8 +193,8 @@ $(function () {
 
     function drawText(material) {
         var m = canvas.getLayer(material);
-        var m2Xoffset = (material != 'm1') ? Math.cos(($( "#angle input" ).val() - 90) / 180 * Math.PI) * m.width + 30 : m.width + 10;
-        var m2Yoffset = (material != 'm1') ? Math.sin(($( "#angle input" ).val() - 90) / 180 * Math.PI) * m.width : 0;
+        var xOffset = (material != 'm1') ? (Math.cos(($( "#angle input" ).val() - 90) / 180 * Math.PI) * m.width) / 2 : m.width / 2 - 7;
+        var yOffset = (material != 'm1') ? (Math.sin(($( "#angle input" ).val() - 90) / 180 * Math.PI) * m.width) / 2 : m.height / 2;
         var layerName = material + "-text";
         canvas.removeLayer(layerName).drawLayers();
         canvas.drawText({
@@ -202,8 +202,8 @@ $(function () {
             name: layerName,
             fillStyle: strokeStyle,
             strokeWidth: 2,
-            x: m.x - m.translateX + m2Xoffset, 
-            y: m.y - m.translateY + m2Yoffset + m.height / 2 - 8,
+            x: m.x - m.translateX + xOffset,
+            y: m.y - m.translateY + yOffset,
             fontSize: 16,
             fontFamily: 'Verdana, sans-serif',
             text: (material == 'm1') ? 'a' : 'b'
