@@ -3,6 +3,7 @@ from django.http import HttpResponse
 from .models import ConnectionType, Connector
 from django.core import serializers
 from .services import ConnectorService, PDFService
+from django.utils.translation import ugettext as _
 
 import json
 import logging
