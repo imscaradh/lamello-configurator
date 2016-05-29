@@ -141,25 +141,26 @@ $(function () {
     };
 
     function updateResultTable(json) {
-        var htmlBoilerplate = '<div><span class="{0}">{0}: </span><span class="{0}-val">{1}</span></div>';
         var typeSelector = "div.sec-{0} td.{1} ";
         $("div.results").show();
         $.each(json, function(i, obj) {
             var cncSelector = typeSelector.format(i, "cnc");
-            var cncPossible = htmlBoilerplate.format("Possible", obj.cnc.possible);
-            var cncPosition = htmlBoilerplate.format("Position", obj.cnc.position.toFixed(2));
-            $(cncSelector).html("");
-            $(cncSelector).append(cncPossible);
-            $(cncSelector).append(cncPosition);
+            var cncPossible = obj.cnc.possible;
+            var cncPosition = obj.cnc.position.toFixed(2);
+            $(cncSelector + ".cnc-possible").html(cncPossible);
+            $(cncSelector + ".cnc-val").html(cncPosition);
 
-            var zetaSelector = typeSelector.format(i, "zeta");
-            var zeta0 = htmlBoilerplate.format(" 0mm", obj.zeta['0mm']['possible'] + ", " + obj.zeta['0mm']['val'][0].toFixed(2));
-            var zeta2 = htmlBoilerplate.format(" 2mm", obj.zeta['2mm']['possible'] + ", " + obj.zeta['2mm']['val'][0].toFixed(2));
-            var zeta4 = htmlBoilerplate.format(" 4mm", obj.zeta['4mm']['possible'] + ", " + obj.zeta['4mm']['val'][0].toFixed(2));
-            $(zetaSelector).html("");
-            $(zetaSelector).append(zeta0);
-            $(zetaSelector).append(zeta2);
-            $(zetaSelector).append(zeta4);
+            for (j = 0; j <= 4; j+=2) {
+                var zetaSelector = typeSelector.format(i, "zeta");
+                var zetaPossible = obj.zeta[j + 'mm']['possible'];
+                var zetaVal1 = obj.zeta[j + 'mm']['val'][0].toFixed(2);
+                var zetaVal2 = obj.zeta[j + 'mm']['val'][1].toFixed(2);
+
+                $(zetaSelector + ".pl-"+j+"mm td.possible").html(zetaPossible);
+                $(zetaSelector + ".pl-"+j+"mm td.a").html(zetaVal1);
+                $(zetaSelector + ".pl-"+j+"mm td.b").html(zetaVal2);
+            }
+            
         });
 
     };

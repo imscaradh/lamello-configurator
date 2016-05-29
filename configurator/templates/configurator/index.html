@@ -74,14 +74,50 @@
     <div class="sec-{{ connector.name }}">
         <h4>{% trans "Connector" %}: {{ connector.name }}</h4>
         <table class="connectors">
-            <thead>
-                <th class="conn-cnc">CNC</th> 
-                <th class="conn-zeta">Zeta</th> 
+            <thead class="conn">
+                <th class="conn-cnc">CNC:</th> 
+                <th class="conn-zeta">Zeta:</th> 
             </thead>
             <tbody>
                 <tr>
-                    <td class="cnc"></td>
-                    <td class="zeta"></td>
+                    <td class="cnc">
+                        <div>
+                            <span>Possible: </span><span class="cnc-possible"></span>
+                        </div>
+                        <div>
+                            <span>Value: </span><span class="cnc-val"></span> 
+                        </div>
+                    </td>
+                    <td class="zeta">
+                        <table class="zeta-plates">
+                            <thead class="zeta">
+                                <th></th>
+                                <th>Possible</th>
+                                <th>a</th>
+                                <th>b</th>
+                            </thead>
+                            <tbody>
+                                <tr class="pl-0mm">
+                                    <td>0 mm:</td>
+                                    <td class="possible"></td>
+                                    <td class="a"></td>
+                                    <td class="b"></td>
+                                </tr>
+                                <tr class="pl-4mm">
+                                    <td>2 mm:</td>
+                                    <td class="possible"></td>
+                                    <td class="a"></td>
+                                    <td class="b"></td>
+                                </tr>
+                                <tr class="pl-4mm">
+                                    <td>4 mm:</td>
+                                    <td class="possible"></td>
+                                    <td class="a"></td>
+                                    <td class="b"></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </td>
                 </tr>
             </tbody>
         </table> 
