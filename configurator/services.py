@@ -8,7 +8,7 @@ from reportlab.lib import colors
 from reportlab.lib.pagesizes import portrait, A4
 from reportlab.lib.styles import getSampleStyleSheet
 from reportlab.lib.units import cm
-from reportlab.platypus import Image, SimpleDocTemplate, TableStyle, Table, ImageAndFlowables
+from reportlab.platypus import Image, SimpleDocTemplate, TableStyle, Table
 from reportlab.platypus.para import Paragraph
 from django.utils.translation import ugettext_lazy as _
 
@@ -85,6 +85,7 @@ class ConnectorService:
 
 
 class BisecService(ConnectorService):
+
     def __init__(self, m1_width, m2_width, angle):
         ConnectorService.__init__(self, m1_width, m2_width, angle)
 
@@ -162,6 +163,7 @@ class BisecService(ConnectorService):
 
 
 class StumbEdgeService(ConnectorService):
+
     def __init__(self, m1_width, m2_width, angle):
         ConnectorService.__init__(self, m1_width, m2_width, angle)
 
@@ -273,7 +275,7 @@ class StumbEdgeService(ConnectorService):
 
         tmp_cnc = (max(self.links) + min(self.rechts)) / 2
         if (range_schmalfl > 0 and tmp_cnc >= max(self.links) and tmp_cnc <= min(self.rechts)
-            and self.m1_width >= float(self.connector.min_m1)):
+                and self.m1_width >= float(self.connector.min_m1)):
             self.results['cnc']['possible'] = True
             self.results['cnc']['position'] = tmp_cnc
 
@@ -285,6 +287,7 @@ class StumbEdgeService(ConnectorService):
 
 
 class TConnectionService(ConnectorService):
+
     def __init__(self, m1_width, m2_width, angle):
         ConnectorService.__init__(self, m1_width, m2_width, angle)
 
@@ -483,8 +486,7 @@ class MiterService(ConnectorService):
         cnc_tconn = self.t_service_result['cnc']
 
         # TOOD: Possible simplification?
-        if (m_range >= 11 and cnc_tconn['possible'] and self.m1_width >= 9.8) or (
-                        self.angle >= 21 and cnc_tconn['possible']):
+        if (m_range >= 11 and cnc_tconn['possible'] and self.m1_width >= 9.8) or (self.angle >= 21 and cnc_tconn['possible']):
             self.results['cnc']['possible'] = True
 
             if self.m1_width >= 21:
@@ -502,25 +504,25 @@ class MiterService(ConnectorService):
 
 
 class PDFService:
-    def __init__(self, m1, m2, angle, situtaion, data, connector, cncPossible, cncPosition, zeta0, zeta2, zeta4, zeta0a,
-                 zeta0b, zeta2a, zeta2b, zeta4a, zeta4b):
-        self.m1 = m1
-        self.m2 = m2
-        self.angle = angle
-        self.situation = situtaion
-        self.imgData = data
-        self.connector = connector
-        self.cncPossible = cncPossible
-        self.cncPosition = cncPosition
-        self.zeta0 = zeta0
-        self.zeta2 = zeta2
-        self.zeta4 = zeta4
-        self.zeta0a = zeta0a
-        self.zeta0b = zeta0b
-        self.zeta2a = zeta2a
-        self.zeta2b = zeta2b
-        self.zeta4a = zeta4a
-        self.zeta4b = zeta4b
+
+    def __init__(self, data):
+        self.m1 = data['m1']
+        self.m2 = data['m2']
+        self.angle = data['angle']
+        self.situation = data['situation']
+        self.imgData = data['dataURL']
+        self.connector = data['connector']
+        self.cncPossible = data['cncPossible']
+        self.cncPosition = data['cncPosition']
+        self.zeta0 = data['zeta0']
+        self.zeta2 = data['zeta2']
+        self.zeta4 = data['zeta4']
+        self.zeta0a = data['zeta0a']
+        self.zeta0b = data['zeta0b']
+        self.zeta2a = data['zeta2a']
+        self.zeta2b = data['zeta2b']
+        self.zeta4a = data['zeta4a']
+        self.zeta4b = data['zeta4b']
 
     @property
     def generatePDF(self):
@@ -530,7 +532,7 @@ class PDFService:
         info = connectorinfo.info
 
         logo_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'static/img/logo.jpg')
-        logo = Image(logo_path, width=6 * cm, height=3 * cm, hAlign='LEFT', kind='proportional')
+        logo = Image(logo_path, width=3 * cm, height=3 * cm, hAlign='LEFT', kind='proportional')
 
         im = Image(io.BytesIO(base64.b64decode(self.imgData.split(',')[1])), hAlign='LEFT', width=13 * cm,
                    height=13 * cm,
