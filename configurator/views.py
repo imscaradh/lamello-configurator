@@ -9,6 +9,12 @@ import logging
 
 
 def main(request):
+    """Function for main page of lamello configurator.
+    The used database entities Connector and ConnectonType are going to fetched.
+    To use the connection types in javacript, we convert them into a json object
+    and pass it to the rendering engine too.
+    """
+
     if len(ConnectionType.objects.all()) == 0:
         init_db()
 
@@ -28,6 +34,10 @@ def main(request):
 
 
 def calc(request):
+    """All the calculations are requested through this function. 
+
+    """
+
     error_msg = HttpResponse(status=500)
 
     if request.method == 'POST' and request.POST is not None:
@@ -38,9 +48,6 @@ def calc(request):
         unit = request.POST['unit']
 
         connection_type = request.POST['connection_type']
-
-        if None in (unit, m1_width, m2_width, angle, connection_type):
-            return error_msg
 
         try:
             angle = float(angle)
@@ -70,6 +77,7 @@ def calc(request):
 
 
 def pdf(request):
+    """The pdf generation will be performed below."""
     error_msg = HttpResponse(status=500)
     if request.method == 'POST' and request.POST is not None:
         pdf = PDFService(request.POST)
