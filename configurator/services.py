@@ -529,7 +529,8 @@ class PDFService:
         con = self.connector.replace("-", "")
         allconnectorinfos = Connector.objects.all()
         connectorinfo = allconnectorinfos.filter(name="%s" % con).first()
-        info = connectorinfo.info
+        # TODO: EN/DE
+        info = connectorinfo.info_de
 
         logo_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'static/img/logo.jpg')
         logo = Image(logo_path, width=3 * cm, height=3 * cm, hAlign='LEFT', kind='proportional')

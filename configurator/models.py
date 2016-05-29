@@ -26,7 +26,8 @@ class Connector(models.Model):
     p3 = models.DecimalField(default=0, max_digits=19, decimal_places=3)
     p4 = models.DecimalField(default=0, max_digits=19, decimal_places=3)
     min_m1 = models.DecimalField(default=0, max_digits=19, decimal_places=3)
-    info = models.CharField(max_length=512, default="")
+    info_de = models.CharField(max_length=1024, default="")
+    info_en = models.CharField(max_length=1024, default="")
 
 
 def init_db():
@@ -44,12 +45,15 @@ def init_db():
 
     Connector.objects.all().delete()
     p1 = Connector(name="P10", p1=8.46, p2=4.9, p3=10, p4=2.7, min_m1=11,
-                   info="Clamex P-10 ist eine Ergänzung zum P-System Verbindungssystem für dünnere Materialstärken ab 13mm")
+                   info_de="Clamex P-10 ist eine Ergänzung zum P-System Verbindungssystem für dünnere Materialstärken ab 13mm",
+                   info_en="")
     p1.save()
     p2 = Connector(name="P14", p1=12.46, p2=4.9, p3=14, p4=2.7, min_m1=15,
-                   info="Clamex P-14, der Nachfolger des erfolgreichen Clamex P-15, ist ein zerlegbarer Verbindungs \
-                            beschlag mit sekundenschneller formschlüssiger P-System Verankerung")
+                   info_de="Clamex P-14, der Nachfolger des erfolgreichen Clamex P-15, ist ein zerlegbarer Verbindungs \
+                            beschlag mit sekundenschneller formschlüssiger P-System Verankerung",
+                   info_en="")
     p2.save()
     p3 = Connector(name="P1014", p1=12.46, p2=4.9, p3=14, p4=2.7, min_m1=15,
-                   info="Clamex P Medius ist der Mittelwandverbinder passend zum Clamex P-14 Verbinder für Materialstärken ab 16mm")
+                   info_de="Clamex P Medius ist der Mittelwandverbinder passend zum Clamex P-14 Verbinder für Materialstärken ab 16mm",
+                   info_en="")
     p3.save()
