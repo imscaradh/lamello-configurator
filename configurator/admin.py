@@ -1,5 +1,6 @@
 from django.contrib import admin
+from configurator.models import ConnectionType, Connector
 
-# Register your models here.
 
-
+admin.site.register(ConnectionType)
+admin.site.register(Connector)

@@ -34,8 +34,7 @@ def main(request):
 
 
 def calc(request):
-    """All the calculations are requested through this function. 
-
+    """All the calculations are requested through this function.
     """
 
     error_msg = HttpResponse(status=500)

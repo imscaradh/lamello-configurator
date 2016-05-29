@@ -41,7 +41,6 @@ def init_db():
     c4 = ConnectionType(name="Miter", x1=240, y1=40, width1=40, height1=230, x2=100, y2=150, width2=165, height2=40,
                         x3=255, y3=150, width3=165, height3=40)
     c4.save()
-    connection_types = ConnectionType.objects.all()
 
     Connector.objects.all().delete()
     p1 = Connector(name="P10", p1=8.46, p2=4.9, p3=10, p4=2.7, min_m1=11,
