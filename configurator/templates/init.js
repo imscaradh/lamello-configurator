@@ -11,8 +11,8 @@ $(function () {
     var actualConnection = -1;
 
     $.jCanvas.defaults.fromCenter = false;
-    var fillStyle = '#f2e8dd';
-    var strokeStyle = '#000';
+    var fillStyle = '#bf0b3b';
+    var strokeStyle = '#FFF';
     var minAngle = parseInt($("#angle input").attr("min"));
     var maxAngle = parseInt($("#angle input").attr("max"));
     var unit = 'mm';
@@ -193,15 +193,24 @@ $(function () {
 
     function drawText(material) {
         var m = canvas.getLayer(material);
-        var xOffset = (material != 'm1') ? (Math.cos(($( "#angle input" ).val() - 90) / 180 * Math.PI) * m.width) / 2 : m.width / 2 - 7;
-        var yOffset = (material != 'm1') ? (Math.sin(($( "#angle input" ).val() - 90) / 180 * Math.PI) * m.width) / 2 : m.height / 2;
+        var angle = $("#angle input").val();
+
+        var xOffset = 0;
+        var yOffset = 0;
+        if (material != 'm1' && actualConnection != 2) {
+            xOffset = Math.cos((angle - 90) / 180 * Math.PI) * (m.width / 4);
+            yOffset = Math.sin((angle - 90) / 180 * Math.PI) * (m.width / 4) + 10;
+        } else {
+            xOffset = m.width / 2 - 7;
+            yOffset = m.height / 2 - 8;
+        }
         var layerName = material + "-text";
         canvas.removeLayer(layerName).drawLayers();
         canvas.drawText({
             layer: true,
             name: layerName,
-            fillStyle: strokeStyle,
-            strokeWidth: 2,
+            fillStyle: '#000',
+            strokeWidth: 1,
             x: m.x - m.translateX + xOffset,
             y: m.y - m.translateY + yOffset,
             fontSize: 16,
@@ -363,18 +372,17 @@ $(function () {
             x1: m1.x,       y1: y2,
             x2: model.x2,   y2: model.y2 
         });
-        // Hide rect ends
         canvas.drawLine({
             layer: true,
             name: 'bisec-hidem1',
             strokeStyle: fillStyle,
             strokeWidth: 2,
-            x1: m1.x + 1,   y1: m1.y + m1.height,
-            x2: model.x2 - 1,   y2: model.y2 
+            x1: m1.x + 0.6,   y1: m1.y + m1.height,
+            x2: model.x2 - 0.6,   y2: model.y2 
         });
 
-        var x2 = model.x2 - Math.sin(beta / 180 * Math.PI) * (m2.height-1);
-        var y2 = model.y2 + Math.cos(beta / 180 * Math.PI) * (m2.height-1);
+        var x2 = model.x2 - Math.sin(beta / 180 * Math.PI) * (m2.height-0.6);
+        var y2 = model.y2 + Math.cos(beta / 180 * Math.PI) * (m2.height-0.6);
         canvas.drawLine({
             layer: true,
             name: 'bisec-hidem2',
