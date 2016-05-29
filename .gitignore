@@ -64,3 +64,4 @@ styles.css
 CACHE
 .tern-port
 configurator/migrations/
+debug.log
