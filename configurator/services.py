@@ -11,6 +11,7 @@ from reportlab.lib.units import cm
 from reportlab.platypus import Image, SimpleDocTemplate, TableStyle, Table
 from reportlab.platypus.para import Paragraph
 from django.utils.translation import ugettext_lazy as _
+from django.utils import translation
 
 from .models import Connector
 
@@ -529,8 +530,10 @@ class PDFService:
         con = self.connector.replace("-", "")
         allconnectorinfos = Connector.objects.all()
         connectorinfo = allconnectorinfos.filter(name="%s" % con).first()
-        # TODO: EN/DE
-        info = connectorinfo.info_de
+        if translation.get_language() == 'de':
+            info = connectorinfo.info_de
+        else:
+            info = connectorinfo.info_en
 
         logo_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'static/img/logo.jpg')
         logo = Image(logo_path, width=3 * cm, height=3 * cm, hAlign='LEFT', kind='proportional')
@@ -593,7 +596,7 @@ class PDFService:
         story.append(Paragraph(_('Connector: %s') % self.connector, style['Heading2']))
         story.append(situationtable)
         story.append(Paragraph(_('Connector description'), style['Heading2']))
-        story.append(Paragraph("%s:" % info, style['BodyText']))
+        story.append(Paragraph("%s" % info, style['BodyText']))
         story.append(Paragraph(_('Installation'), style['Heading2']))
         story.append(table)
 

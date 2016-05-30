@@ -2,6 +2,11 @@ from django.db import models
 
 
 class ConnectionType(models.Model):
+
+    """Model class for a specific connection type. The connection type contains two main components. One is the rectangle for m1, the other
+    the rectange for m2. The third component only exists for specific connection types such as the T-Connection.
+    """
+
     name = models.CharField(max_length=30)
     width1 = models.IntegerField(default=0)
     height1 = models.IntegerField(default=0)
@@ -18,6 +23,13 @@ class ConnectionType(models.Model):
 
 
 class Connector(models.Model):
+
+    """Model for the connectors. They are precofigured. At the moment there are the following predefined connecotors:
+        * P10
+        * P14
+        * P10/14
+    """
+
     connections = ["P10", "P14", "P1014"]
 
     name = models.CharField(max_length=30)
@@ -31,6 +43,10 @@ class Connector(models.Model):
 
 
 def init_db():
+    """This method fills up the database with the necessary data. For the connection types we are using well-calculated positions
+    to displaying the connection type as good as possible
+    """
+
     ConnectionType.objects.all().delete()
     c1 = ConnectionType(name="Stumb Edge", x1=40, y1=40, width1=40, height1=200, x2=80, y2=200, width2=200, height2=40)
     c1.save()
