@@ -34,7 +34,7 @@ def main(request):
 
 
 def calc(request):
-    """All the calculations are requested through this function.
+    """All the calculations are requested through this function. The arguments are checked and passed to the matching calculation service.
     """
 
     error_msg = HttpResponse(status=500)
@@ -76,7 +76,8 @@ def calc(request):
 
 
 def pdf(request):
-    """The pdf generation will be performed below."""
+    """The pdf generation will be performed below. It will pass through the data to the PDF service.
+    """
     error_msg = HttpResponse(status=500)
     if request.method == 'POST' and request.POST is not None:
         pdf = PDFService(request.POST)
