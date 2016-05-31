@@ -34,6 +34,10 @@ $(function () {
     // -----------------------------------------------
 
     var originHeight;
+
+    /**
+     * Initialisation of the Canvas with the height and width of the div in the index.html
+     */
     function initCanvas() {
         var ctx = ctx = canvas[0].getContext('2d');
         ctx.canvas.width = $(".preview").width();
@@ -41,12 +45,25 @@ $(function () {
         ctx.canvas.height = originHeight;
     }
 
+    /**
+     * When the pagesize or the situationimage changes, this function will resize the canvas
+     * @param height: the value of the change
+     */
     function resizeCanvas(height) {
         var ctx = ctx = canvas[0].getContext('2d');
         ctx.canvas.height = originHeight + height;
         canvas.drawLayers();
     }
 
+    /**
+     * Initialisation of all form actions.
+     * Form Actions:
+     * - change the material thickness
+     * - change the angle
+     * - function call for the preview, when hover the situations
+     * - select the situation, when click on it
+     * - change mm to inches
+     */
     function initFormActions() {
         var m1_input = 40;
         var m2_input = 40;
@@ -102,6 +119,10 @@ $(function () {
         });
     }
 
+    /**
+     * Initialisation of the form submit. When click the button it calls the function create_post to send data
+     * for calculation
+     */
     function initFormSubmitActions() {
         // Submit post on submit
         $('#calculationForm').on('submit', function(event){
@@ -115,7 +136,9 @@ $(function () {
         });
     }
 
-    // AJAX for posting
+    /**
+     * creates the post for the ajax call and send it to the calculation
+     */
     function create_post() {
         var serializedForm = $("#calculationForm").serialize();
         console.log("ajax submit with data [" + serializedForm + "] is in progress..."); 
@@ -140,6 +163,10 @@ $(function () {
         });
     };
 
+    /**
+     * When calculated a situation, this function update the result Table in the Configurator.
+     * @param json: Json with the results
+     */
     function updateResultTable(json) {
         var typeSelector = "div.sec-{0} td.{1} ";
         $("div.results").show();
@@ -163,8 +190,11 @@ $(function () {
             
         });
 
-    };
+    }
 
+    /**
+     * calls the drawMaterial for drawing the sitution on the canvas.
+     */
     function drawShape() {
         canvas.removeLayers().drawLayers();
 
@@ -177,6 +207,14 @@ $(function () {
         rotateMaterial($( "#angle input" ).val());
     }
 
+    /**
+     * Draws a rectangle on the canvas with the parameters below.
+     * @param name
+     * @param x
+     * @param y
+     * @param width
+     * @param height
+     */
     function drawMaterial(name, x, y, width, height) {
         canvas.drawRect({
             layer: true, 
@@ -192,6 +230,10 @@ $(function () {
         });
     }
 
+    /**
+     * calculates the position of the variables "a" and "b" in the sitationimage
+     * @param material
+     */
     function drawText(material) {
         var m = canvas.getLayer(material);
         var angle = $("#angle input").val();
@@ -220,6 +262,10 @@ $(function () {
         }).drawLayers();
     }
 
+    /**
+     * calculates the new position of x to scale the material m1 with the parameter width
+     * @param width
+     */
     function scaleMaterial1(width) {
         var m1 = canvas.getLayer('m1');
         var newX = (actualConnection < 2) ? m1.x - (width - m1.width) : m1.x - (width - m1.width) / 2;
@@ -232,6 +278,10 @@ $(function () {
         drawText('m1');
     }
 
+    /**
+     * calculates the new position of y to scale the material m2 with the parameter width
+     * @param height
+     */
     function scaleMaterial2(height) {
         var m2 = canvas.getLayer('m2');
 
@@ -271,7 +321,10 @@ $(function () {
         drawText('m2');
     }
 
-
+    /**
+     * calculates the new positions of x and y after the rotation around the angle. 
+     * @param angle
+     */
     function rotateMaterial(angle) {
         var m1 = canvas.getLayer('m1');
         var m2 = canvas.getLayer('m2');
@@ -340,6 +393,12 @@ $(function () {
         if (actualConnection != 3) drawText('m2');
     }
 
+    /**
+     * helper function to calculate positions for white lines for nice bisec-situation
+     * @param angle
+     * @param m1
+     * @param m2
+     */
     function drawBisecConnectorHelpers(angle, m1, m2) {
         var alpha = (180 - angle) / 2;
         var y2 = m1.y + m1.height + Math.tan(alpha / 180 * Math.PI) * m2.height;
