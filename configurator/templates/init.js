@@ -67,7 +67,7 @@ $(function () {
 
         $( "#m1 input" ).on('input', function() {
             m2_input = $("#m2 input").val();
-            if(m2_input == m1_input) {
+            if(m2_input == m1_input && actualConnection == 1) {
                 m2_input = $(this).val();
                 $("#m2 input").val(m2_input); 
                 scaleMaterial2((unit == 'mm') ? m2_input : m2_input * 25.4);
