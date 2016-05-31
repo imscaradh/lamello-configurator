@@ -45,6 +45,8 @@ class ConnectorService:
 
         self.gehrung = abs(90 - angle / 2)
 
+        # The following dict fill-up is used to pass our calculation results easily
+        # back to the frontend.
         self.results['cnc'] = {}
         self.results['cnc']['possible'] = False
         self.results['cnc']['position'] = 0
@@ -59,6 +61,7 @@ class ConnectorService:
         self.results['zeta']['2mm']['val'] = 0
         self.results['zeta']['4mm']['val'] = 0
 
+        # TODO: Check if no better solution is present for the stumb value assignment
         if self.angle == 90 or self.angle == 180 or self.angle == 0:
             self.stumb = 0.0000000001
         else:
@@ -103,10 +106,15 @@ class ConnectorService:
         raise NotImplementedError("Please Implement this method")
 
     def check(self):
+        """Main calculation method. This is the entrypoint for each service.
+        This is where the implementations for each concrete service differ.
+        """
         raise NotImplementedError("Please Implement this method")
 
 
 class BisecService(ConnectorService):
+
+    """Functions for bisection calculations."""
 
     def __init__(self, m1_width, m2_width, angle):
         ConnectorService.__init__(self, m1_width, m2_width, angle)
@@ -188,6 +196,8 @@ class BisecService(ConnectorService):
 
 
 class StumbEdgeService(ConnectorService):
+
+    """Calculations for stumb edge connection."""
 
     def __init__(self, m1_width, m2_width, angle):
         ConnectorService.__init__(self, m1_width, m2_width, angle)
@@ -315,6 +325,8 @@ class StumbEdgeService(ConnectorService):
 
 class TConnectionService(ConnectorService):
 
+    """Calculations for T-Connection"""
+
     def __init__(self, m1_width, m2_width, angle):
         ConnectorService.__init__(self, m1_width, m2_width, angle)
 
@@ -414,6 +426,10 @@ class TConnectionService(ConnectorService):
         return {'possible': cond1 and cond2 and cond3, 'val': [val1, val2]}
 
     def check(self):
+        """The t-connection calculations are similiar to the stumb edge calculations.
+        To check if cnc usage is possible, we check if schmalflaeche and flaeche is bigger than zero
+        and verify that the material 1 width is bigger than the minimal material 1 width
+        """
         schmalfl = self.calc_schmalfl()
         fl = self.calc_fl()
         self.links.append(schmalfl['links'])
@@ -434,6 +450,9 @@ class TConnectionService(ConnectorService):
 
 
 class MiterService(ConnectorService):
+
+    """Miter connection calculations. Speciality: We are using some functionality of TConnectionService.
+    """
     t_service = None
 
     def __init__(self, m1_width, m2_width, angle):
@@ -500,7 +519,10 @@ class MiterService(ConnectorService):
         return {'possible': possible, 'val': self.t_service_result['zeta']['4mm']['val']}
 
     def check(self):
-        """Calculate the schmalfl and concatenate the results into our result dict."""
+        """Calculate the schmalfl and concatenate the results into our result dict.
+        To check if a cnc usage is possible, we compare range and material 1 and angle
+        with fixed values.
+        """
         t_service = TConnectionService(self.m1_width, self.m2_width, self.angle)
         t_service.set_connector(self.connector.name)
         self.t_service_schmalfl = t_service.calc_schmalfl()
@@ -513,7 +535,7 @@ class MiterService(ConnectorService):
         self.m_rechts = schmalfl['rechts']
         cnc_tconn = self.t_service_result['cnc']
 
-        # TOOD: Possible simplification?
+        # TODO: Outsource fixed values
         if (m_range >= 11 and cnc_tconn['possible'] and self.m1_width >= 9.8) or (self.angle >= 21 and cnc_tconn['possible']):
             self.results['cnc']['possible'] = True
 
@@ -554,15 +576,6 @@ class PDFService:
 
     @property
     def generatePDF(self):
-        """The code below generats the PDF. Reportlab is use for the generation. The datas comes from the ajax-call.
-
-        The PDF contains three tables:
-        - titletable: contains Title and Logo
-        - situationtable: contains the situationimage and the two materialthikness and the angle
-        - table: contains the zetaP2 and CNC Position for the installation
-
-        All parts of the PDF append in a story and will build in the end.
-        """
         con = self.connector.replace("-", "")
         allconnectorinfos = Connector.objects.all()
         connectorinfo = allconnectorinfos.filter(name="%s" % con).first()
