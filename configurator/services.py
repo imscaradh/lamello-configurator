@@ -576,6 +576,13 @@ class PDFService:
 
     @property
     def generatePDF(self):
+        """The code below generats the PDF. Reportlab is use for the generation. The datas comes from the ajax-call.
+        The PDF contains three tables:
+        - titletable: contains Title and Logo
+        - situationtable: contains the situationimage and the two materialthikness and the angle
+        - table: contains the zetaP2 and CNC Position for the installation
+        All parts of the PDF append in a story and will build in the end.
+        """
         con = self.connector.replace("-", "")
         allconnectorinfos = Connector.objects.all()
         connectorinfo = allconnectorinfos.filter(name="%s" % con).first()
