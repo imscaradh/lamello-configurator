@@ -7,7 +7,7 @@ $(function () {
     var resultJson = null;
     var dataModel;
     var actualConnection = -1;
-    var fillStyle = '#bf0b3b';
+    var fillStyle = '#003366';
     var strokeStyle = '#FFF';
     var minAngle = parseInt($("#angle input").attr("min"));
     var maxAngle = parseInt($("#angle input").attr("max"));
@@ -242,19 +242,19 @@ $(function () {
             xOffset = Math.cos((angle - 90) / 180 * Math.PI) * (m.width / 4);
             yOffset = Math.sin((angle - 90) / 180 * Math.PI) * (m.width / 4) + 10;
         } else {
-            xOffset = m.width / 2 - 7;
-            yOffset = m.height / 2 - 8;
+            xOffset = m.width / 2 - 6;
+            yOffset = m.height / 2 - 7;
         }
         var layerName = material + "-text";
         canvas.removeLayer(layerName).drawLayers();
         canvas.drawText({
             layer: true,
             name: layerName,
-            fillStyle: '#000',
+            fillStyle: '#FFF',
             strokeWidth: 1,
             x: m.x - m.translateX + xOffset,
             y: m.y - m.translateY + yOffset,
-            fontSize: 16,
+            fontSize: 14,
             fontFamily: 'Verdana, sans-serif',
             text: (material == 'm1') ? 'a' : 'b'
         }).drawLayers();
