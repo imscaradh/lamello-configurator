@@ -396,6 +396,10 @@ $(function () {
     }
 
 
+    /**
+     * This function get all datas for the PDF generation. These datas were send by a ajax call to the pdf service. 
+     * When the call was successful it will save the PDF-Document. 
+     */
     function pdfGeneration() {
         $('.pdf-btn').click(function(e) {
             var m1 = $('#m1 input').val();
