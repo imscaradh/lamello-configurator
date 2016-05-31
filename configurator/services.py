@@ -17,6 +17,10 @@ from .models import Connector
 
 
 class ConnectorService:
+
+    """Basic service declaration for properties which are used for all services.
+    The other services inhert those basic properties and functions.
+    """
     m1_width = 0
     m2_width = 0
     angle = 90
@@ -32,6 +36,7 @@ class ConnectorService:
     connector = None
 
     def __init__(self, m1_width, m2_width, angle):
+        """Constructor for all new services. Here all the necessary properties are instanciated correctly."""
         self.m1_width = m1_width
         self.m2_width = m2_width
         self.angle = angle
@@ -61,24 +66,40 @@ class ConnectorService:
 
     @staticmethod
     def factory(type, m1_width, m2_width, angle):
+        """To instanciate the services on a more abstract level, we are using the factory pattern.
+        The type parameter must contains the correct service name.
+        """
         if type == "Stumb Edge": return StumbEdgeService(m1_width, m2_width, angle)
         if type == "Bisectrix": return BisecService(m1_width, m2_width, angle)
         if type == "T-Connection": return TConnectionService(m1_width, m2_width, angle)
         if type == "Miter": return MiterService(m1_width, m2_width, angle)
 
     def set_connector(self, connector_name):
+        """To set the connect after initialisation, we are using this setter method.
+        If there is an connecor service set up, it's necessary to set it's connector to perform
+        further calculations.
+        """
         self.connector = Connector.objects.get(name=connector_name)
 
         if self.connector is None:
             raise RuntimeError("Please set a connector name!")
 
     def zeta_0mm(self):
+        """Calculation for zeta 0mm plates. This should be delegated to concrete subclasses.
+        Delegation or abstraction is done this way in python
+        """
         raise NotImplementedError("Please Implement this method")
 
     def zeta_2mm(self):
+        """Calculation for zeta 2mm plates. This should be delegated to concrete subclasses.
+        Delegation or abstraction is done this way in python
+        """
         raise NotImplementedError("Please Implement this method")
 
     def zeta_4mm(self):
+        """Calculation for zeta 4mm plates. This should be delegated to concrete subclasses.
+        Delegation or abstraction is done this way in python
+        """
         raise NotImplementedError("Please Implement this method")
 
     def check(self):
@@ -142,6 +163,9 @@ class BisecService(ConnectorService):
         return self.zeta_2mm()
 
     def check(self):
+        """Calculates horizontally and vertially values for bisectrix connections. To uese the minimum or maximum of left and right values,
+        we are defining ranges as dicts and fetching the min/max from them (located in basic service)
+        """
         horizontal = self.calc_h()
         vertical = self.calc_v()
         self.links.append(horizontal['links'])
@@ -265,6 +289,8 @@ class StumbEdgeService(ConnectorService):
         return {'possible': cond1 and cond2 and cond3, 'val': [val1, val2]}
 
     def check(self):
+        """Here we are going to calculate the schmalflaeche and flaeche of the two parts.
+        """
         schmalfl = self.calc_schmalfl()
         fl = self.calc_fl()
         self.links.append(schmalfl['links'])
@@ -474,6 +500,7 @@ class MiterService(ConnectorService):
         return {'possible': possible, 'val': self.t_service_result['zeta']['4mm']['val']}
 
     def check(self):
+        """Calculate the schmalfl and concatenate the results into our result dict."""
         t_service = TConnectionService(self.m1_width, self.m2_width, self.angle)
         t_service.set_connector(self.connector.name)
         self.t_service_schmalfl = t_service.calc_schmalfl()
