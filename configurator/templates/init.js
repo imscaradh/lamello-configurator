@@ -3,19 +3,16 @@ $(function () {
     // -----------------------------------------------
     // 			function calls and configuration
     // -----------------------------------------------
-    var data = {{ connection_types_json|safe }};
     var canvas = $("#connectionPreview");
     var resultJson = null;
-    var model;
-
+    var dataModel;
     var actualConnection = -1;
-
-    $.jCanvas.defaults.fromCenter = false;
     var fillStyle = '#bf0b3b';
     var strokeStyle = '#FFF';
     var minAngle = parseInt($("#angle input").attr("min"));
     var maxAngle = parseInt($("#angle input").attr("max"));
     var unit = 'mm';
+    $.jCanvas.defaults.fromCenter = false;
 
     // functions called on page load
     initCanvas();
@@ -187,7 +184,7 @@ $(function () {
                 $(zetaSelector + ".pl-"+j+"mm td.a").html(zetaVal1);
                 $(zetaSelector + ".pl-"+j+"mm td.b").html(zetaVal2);
             }
-            
+
         });
 
     }
@@ -198,11 +195,12 @@ $(function () {
     function drawShape() {
         canvas.removeLayers().drawLayers();
 
-        model = data[actualConnection].fields;
+        var data = {{ connection_types_json|safe }};
+        dataModel = data[actualConnection].fields;
 
-        if(model.height3 != 0) { drawMaterial('m3', model.x3, model.y3, model.width3, model.height3); }
-        if(model.height2 != 0) { drawMaterial('m2', model.x2, model.y2, model.width2, model.height2); }
-        if(model.height1 != 0) { drawMaterial('m1', model.x1, model.y1, model.width1, model.height1); }
+        if(dataModel.height3 != 0) { drawMaterial('m3', dataModel.x3, dataModel.y3, dataModel.width3, dataModel.height3); }
+        if(dataModel.height2 != 0) { drawMaterial('m2', dataModel.x2, dataModel.y2, dataModel.width2, dataModel.height2); }
+        if(dataModel.height1 != 0) { drawMaterial('m1', dataModel.x1, dataModel.y1, dataModel.width1, dataModel.height1); }
 
         rotateMaterial($( "#angle input" ).val());
     }
@@ -274,7 +272,7 @@ $(function () {
             width: width,
             x: newX 
         }).drawLayers(); 
-        model.x1 = m1.x;
+        dataModel.x1 = m1.x;
         drawText('m1');
     }
 
@@ -288,13 +286,13 @@ $(function () {
         var newY = 0;
         switch (actualConnection) {
             case 0:
-                newY = model.y2 - (height - m2.height); 
+                newY = dataModel.y2 - (height - m2.height); 
                 break;
             case 1:
-                newY = model.y2;
+                newY = dataModel.y2;
                 break;
             case 2:
-                newY = model.y2 - (height - m2.height); 
+                newY = dataModel.y2 - (height - m2.height); 
                 break;
             case 3:
                 newY = m2.y - (height - m2.height);
@@ -305,7 +303,7 @@ $(function () {
                     y: newY
                 })
                 .drawLayers(); 
-                model.y3 = m3.y;
+                dataModel.y3 = m3.y;
                 break;
         }
 
@@ -315,8 +313,8 @@ $(function () {
         })
         .drawLayers(); 
 
-        model.y2 = m2.y;
-        model.height2 = height;
+        dataModel.y2 = m2.y;
+        dataModel.height2 = height;
         rotateMaterial($( "#angle input" ).val());
         drawText('m2');
     }
@@ -341,33 +339,33 @@ $(function () {
                 var beta = 180 - angle;
                 translateX = -m2.width / 2;
                 translateY = (angle > 90) ? -m2.height / 2 : m2.height / 2;
-                newX = model.x2 - m2.width / 2;
+                newX = dataModel.x2 - m2.width / 2;
                 newY = (angle > 90) ? 
                     m1.y + m1.height - m2.height / Math.cos(alpha / 180 * Math.PI) -m2.height / 2 : 
-                    model.y2 + m2.height / 2;
+                    dataModel.y2 + m2.height / 2;
                 break;
             case 1:
                 translateX = -m2.width / 2;
                 translateY = -m2.height / 2;
-                newX = model.x2 - m2.width / 2;
-                newY = model.y2 - m2.height / 2;
+                newX = dataModel.x2 - m2.width / 2;
+                newY = dataModel.y2 - m2.height / 2;
 
                 drawBisecConnectorHelpers(angle, m1, m2);
                 break;
             case 2:
                 canvas.moveLayer('m2', 1).drawLayers();
                 var a = Math.abs(90 - parseInt(angle));
-                newY = model.y2 + Math.tan(a / 180 * Math.PI) * m1.width / 2;
+                newY = dataModel.y2 + Math.tan(a / 180 * Math.PI) * m1.width / 2;
                 break;
             case 3:
                 // TODO: Prevent edge displaying
-                translateX = model.x1 - (model.x2 + model.width2 / 2);
-                newX = model.x2 + translateX;
+                translateX = dataModel.x1 - (dataModel.x2 + dataModel.width2 / 2);
+                newX = dataModel.x2 + translateX;
                 canvas.setLayer('m3', {
                     rotate: rotationAngle,
                     translateX: -translateX,
-                    x: model.x3 - translateX,
-                    y: model.y3
+                    x: dataModel.x3 - translateX,
+                    y: dataModel.y3
                 }).drawLayers(); 
                 drawText('m3');
                 break;
@@ -404,8 +402,8 @@ $(function () {
         var y2 = m1.y + m1.height + Math.tan(alpha / 180 * Math.PI) * m2.height;
 
         var beta = angle - 90;
-        var x3 = model.x2 - Math.sin(beta / 180 * Math.PI) * m2.height;
-        var y3 = model.y2 + Math.cos(beta / 180 * Math.PI) * m2.height;
+        var x3 = dataModel.x2 - Math.sin(beta / 180 * Math.PI) * m2.height;
+        var y3 = dataModel.y2 + Math.cos(beta / 180 * Math.PI) * m2.height;
 
         canvas.removeLayer('bisec-helpers').drawLayers();
         canvas.removeLayer('bisec').drawLayers();
@@ -422,7 +420,7 @@ $(function () {
             x1: m1.x,       y1: m1.y + m1.height,
             x2: m1.x,       y2: y2,
             x3: x3,         y3: y3,
-            x4: model.x2,   y4:model.y2 
+            x4: dataModel.x2,   y4:dataModel.y2 
         });
         canvas.drawLine({
             layer: true,
@@ -430,7 +428,7 @@ $(function () {
             strokeStyle: strokeStyle,
             strokeWidth: 1.2,
             x1: m1.x,       y1: y2,
-            x2: model.x2,   y2: model.y2 
+            x2: dataModel.x2,   y2: dataModel.y2 
         });
         canvas.drawLine({
             layer: true,
@@ -438,17 +436,17 @@ $(function () {
             strokeStyle: fillStyle,
             strokeWidth: 2,
             x1: m1.x + 0.6,   y1: m1.y + m1.height,
-            x2: model.x2 - 0.6,   y2: model.y2 
+            x2: dataModel.x2 - 0.6,   y2: dataModel.y2 
         });
 
-        var x2 = model.x2 - Math.sin(beta / 180 * Math.PI) * (m2.height-0.6);
-        var y2 = model.y2 + Math.cos(beta / 180 * Math.PI) * (m2.height-0.6);
+        var x2 = dataModel.x2 - Math.sin(beta / 180 * Math.PI) * (m2.height-0.6);
+        var y2 = dataModel.y2 + Math.cos(beta / 180 * Math.PI) * (m2.height-0.6);
         canvas.drawLine({
             layer: true,
             name: 'bisec-hidem2',
             strokeStyle: fillStyle,
             strokeWidth: 3,
-            x1: model.x2,   y1: model.y2,
+            x1: dataModel.x2,   y1: dataModel.y2,
             x2: x2,         y2: y2 
         });
         canvas.moveLayer('bisec', 999).drawLayers();
@@ -470,7 +468,7 @@ $(function () {
 
             var connectorToExport = $(e.target).attr('name');
             var section = $("div.sec-" + connectorToExport);
-            
+
             var cncPossible = section.find("td.cnc .cnc-possible").html() == "true" ? "Yes" : "No";
             var cncPosition = section.find("td.cnc .cnc-val").html();
 
@@ -485,26 +483,26 @@ $(function () {
             var zeta4b = section.find("td.zeta tr.pl-4mm td.b").html();
 
             var data_json = {
-                    csrfmiddlewaretoken: '{{ csrf_token }}',
-                    m1: m1,
-                    m2: m2,
-                    unit: unit,
-                    angle: angle,
-                    situation: situation,
-                    dataURL: dataURL,
-                    connector: connectorToExport,
-                    cncPossible: cncPossible,
-                    cncPosition: cncPosition,
-                    zeta0: zeta0Possible,
-                    zeta2: zeta2Possible,
-                    zeta4: zeta4Possible,
-                    zeta0a: zeta0a,
-                    zeta0b: zeta0b,
-                    zeta2a: zeta2a,
-                    zeta2b: zeta2b,
-                    zeta4a: zeta4a,
-                    zeta4b: zeta4b
-                };
+                csrfmiddlewaretoken: '{{ csrf_token }}',
+                m1: m1,
+                m2: m2,
+                unit: unit,
+                angle: angle,
+                situation: situation,
+                dataURL: dataURL,
+                connector: connectorToExport,
+                cncPossible: cncPossible,
+                cncPosition: cncPosition,
+                zeta0: zeta0Possible,
+                zeta2: zeta2Possible,
+                zeta4: zeta4Possible,
+                zeta0a: zeta0a,
+                zeta0b: zeta0b,
+                zeta2a: zeta2a,
+                zeta2b: zeta2b,
+                zeta4a: zeta4a,
+                zeta4b: zeta4b
+            };
             console.debug(data_json);
 
             $.ajax({
@@ -530,6 +528,8 @@ $(function () {
     }
 });
 
+// This prototype definition is an improvemnt to use a format method for strings
+// like known in Java or C
 String.prototype.format = function() {
     var str = this;
     for (var i = 0; i < arguments.length; i++) {       

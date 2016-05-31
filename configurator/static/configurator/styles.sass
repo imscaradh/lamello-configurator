@@ -1,3 +1,8 @@
+$lamello-red:           #bf0b3b
+$button-bg:             #f7f7f7
+$button-border:         #232323
+$button-bg-hover:       #e2e2e2
+
 .theme-configurator
   width: 100%
   position: relative
@@ -28,14 +33,19 @@ input.btn,
 label.btn,
 ul.dropdown-menu,
 input.form-control
-  border: 1px solid #232323
+  border: 1px solid $button-border
   box-shadow: none 
-  background: #f5f5f5
+  background: $button-bg
   border-radius: 1px
+
   &.active, &:focus, &:active:focus
-    border: 1px solid #232323
-    background: white !important
+    border: 1px solid $button-border
+    background: $button-bg-hover !important
     outline: none
+    box-shadow: none
+
+  &.active:hover, &:hover
+    border: 1px solid $lamello-red
 
 .form
   .preview
@@ -61,7 +71,7 @@ input.form-control
 
 .errors
   margin-top: 16px
-  color: red
+  color: $lamello-red
 
 .results
   display: none
@@ -78,6 +88,6 @@ input.form-control
       width: 10%
       vertical-align: top
   div[class^="sec-"]
-    border-top: 1px solid #d9534f
-    margin-bottom: 40px
+    border-top: 1px solid $lamello-red
+    padding: 10px 25px 40px 25px 
 
