@@ -528,6 +528,8 @@ $(function () {
     }
 });
 
+// This prototype definition is an improvemnt to use a format method for strings
+// like known in Java or C
 String.prototype.format = function() {
     var str = this;
     for (var i = 0; i < arguments.length; i++) {       
