@@ -62,26 +62,32 @@ $(function () {
      * - change mm to inches
      */
     function initFormActions() {
-        var m1_input = 40;
-        var m2_input = 40;
+        var m1_input = 40.00;
+        var m2_input = 40.00;
 
-        $( "#m1 input" ).on('input', function() {
-            m2_input = $("#m2 input").val();
-            if(m2_input == m1_input && actualConnection == 1) {
+        var angleSelector = $("#angle input");
+        var m1Selector = $("#m1 input");
+        var m2Selector = $("#m2 input");
+
+        m1Selector.on('input', function() {
+            m2_input = m2Selector.val();
+            if(m2_input == m1_input || actualConnection == 1) {
                 m2_input = $(this).val();
-                $("#m2 input").val(m2_input); 
+                m2Selector.val(m2_input); 
                 scaleMaterial2((unit == 'mm') ? m2_input : m2_input * 25.4);
             }
             m1_input = $(this).val();
             scaleMaterial1((unit == 'mm') ? m1_input : m1_input * 25.4);
+            rotateMaterial(angleSelector.val());
         });
 
-        $( "#m2 input" ).on('input', function() {
+        m2Selector.on('input', function() {
             m2_input = $(this).val();
             scaleMaterial2((unit == 'mm') ? m2_input : m2_input * 25.4);
+            rotateMaterial(angleSelector.val());
         });
 
-        $( "#angle input" ).on('input', function() {
+        angleSelector.on('input', function() {
             var angle = $(this).val();
             if(minAngle <= angle && angle <= maxAngle) {
                 $("div.errors").html("");
@@ -92,6 +98,7 @@ $(function () {
         });
 
         $('.connection li').hover(function(e) {
+            // TODO: Catch key press
             var $target = $(e.target);
             console.info("hovered " + $target.text());
             actualConnection = $(this).index();
@@ -240,7 +247,7 @@ $(function () {
         var yOffset = 0;
         if (material != 'm1' && actualConnection != 2) {
             xOffset = Math.cos((angle - 90) / 180 * Math.PI) * (m.width / 4);
-            yOffset = Math.sin((angle - 90) / 180 * Math.PI) * (m.width / 4) + 10;
+            yOffset = Math.sin((angle - 90) / 180 * Math.PI) * (m.width / 4) + m.height / 4;
         } else {
             xOffset = m.width / 2 - 6;
             yOffset = m.height / 2 - 7;
