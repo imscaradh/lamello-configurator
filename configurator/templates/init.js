@@ -62,29 +62,47 @@ $(function () {
      * - change mm to inches
      */
     function initFormActions() {
-        var m1_input = 40.00;
-        var m2_input = 40.00;
+        var m1_input = 1.00;
+        var m2_input = 1.00;
+        var realityOffset = 40;
 
         var angleSelector = $("#angle input");
         var m1Selector = $("#m1 input");
         var m2Selector = $("#m2 input");
 
-        m1Selector.on('input', function() {
-            m2_input = m2Selector.val();
-            if(m2_input == m1_input || actualConnection == 1) {
-                m2_input = $(this).val();
-                m2Selector.val(m2_input); 
-                scaleMaterial2((unit == 'mm') ? m2_input : m2_input * 25.4);
+
+        /*
+         * This helper function is used to convert the input value
+         * into a useful value to perform the canvas updates
+         */
+        function getValueToScale(value) {
+            var result = parseInt(value) + realityOffset;
+            if (unit != 'mm') {
+                result *= 25.4;
             }
-            m1_input = $(this).val();
-            scaleMaterial1((unit == 'mm') ? m1_input : m1_input * 25.4);
-            rotateMaterial(angleSelector.val());
+            return result;
+        };
+
+        m1Selector.on('input', function() {
+            if ($(this).val() > 0) {   
+                m2_input = m2Selector.val();
+                if (m2_input == m1_input || actualConnection == 1) {
+                    m2_input = $(this).val();
+                    m2Selector.val(m2_input); 
+                    scaleMaterial2(getValueToScale(m2_input));
+                }
+                m1_input = $(this).val();
+                scaleMaterial1(getValueToScale(m1_input));
+                rotateMaterial(angleSelector.val());
+            }
         });
 
         m2Selector.on('input', function() {
-            m2_input = $(this).val();
-            scaleMaterial2((unit == 'mm') ? m2_input : m2_input * 25.4);
-            rotateMaterial(angleSelector.val());
+            if ($(this).val() > 0) {   
+                m2_input = $(this).val();
+                scaleMaterial2(getValueToScale(m2_input));
+                rotateMaterial(angleSelector.val());
+            }
         });
 
         angleSelector.on('input', function() {
@@ -208,6 +226,9 @@ $(function () {
         if(dataModel.height3 != 0) { drawMaterial('m3', dataModel.x3, dataModel.y3, dataModel.width3, dataModel.height3); }
         if(dataModel.height2 != 0) { drawMaterial('m2', dataModel.x2, dataModel.y2, dataModel.width2, dataModel.height2); }
         if(dataModel.height1 != 0) { drawMaterial('m1', dataModel.x1, dataModel.y1, dataModel.width1, dataModel.height1); }
+
+        $("#m1 input").val('1.00');
+        $("#m2 input").val('1.00');
 
         rotateMaterial($( "#angle input" ).val());
     }
