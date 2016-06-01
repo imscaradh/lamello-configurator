@@ -7,8 +7,8 @@ $(function () {
     var resultJson = null;
     var dataModel;
     var actualConnection = -1;
-    var fillStyle = '#003366';
-    var strokeStyle = '#FFF';
+    var fillStyle = '#e6ca9b';
+    var strokeStyle = '#3e3e3e';
     var minAngle = parseInt($("#angle input").attr("min"));
     var maxAngle = parseInt($("#angle input").attr("max"));
     var unit = 'mm';
@@ -250,7 +250,7 @@ $(function () {
         canvas.drawText({
             layer: true,
             name: layerName,
-            fillStyle: '#FFF',
+            fillStyle: strokeStyle,
             strokeWidth: 1,
             x: m.x - m.translateX + xOffset,
             y: m.y - m.translateY + yOffset,
