@@ -4,7 +4,8 @@ from django.db import models
 class ConnectionType(models.Model):
 
     """Model class for a specific connection type. The connection type contains two main components. One is the rectangle for m1, the other
-    the rectange for m2. The third component only exists for specific connection types such as the T-Connection.
+    the rectange for m2. The third component only exists for specific connection types such as the T-Connection or for future connection types
+    with more complex drawings.
     """
 
     name = models.CharField(max_length=30)

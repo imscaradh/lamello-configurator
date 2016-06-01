@@ -27,6 +27,7 @@ class ConnectorService:
     gehrung = 0
     stumb = 0
 
+    # Fixed value from excel. This value is Lamello-specific.
     links_max = 5.9
     links = []
     rechts = []

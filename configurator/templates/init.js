@@ -20,7 +20,7 @@ $(function () {
     initFormSubmitActions();
     pdfGeneration();
 
-    // functions called on page resize
+    // Call function(s) on window resize. This is used to recalculate the canvas.
     $( window ).resize(function() {
         initCanvas();
     });
@@ -53,17 +53,323 @@ $(function () {
     }
 
     /**
-     * Initialisation of all form actions.
-     * Form Actions:
-     * - change the material thickness
-     * - change the angle
-     * - function call for the preview, when hover the situations
-     * - select the situation, when click on it
-     * - change mm to inches
+     * calls the drawMaterial for drawing the sitution on the canvas. This is done for each 3 parts
+     * of the situation preview if there are 3 configured. After loading, a rotation will be performed
+     * (to fit the case if we switch from one situation to another)
+     */
+    function drawShape() {
+        canvas.removeLayers().drawLayers();
+
+        var data = {{ connection_types_json|safe }};
+        dataModel = data[actualConnection].fields;
+
+        if(dataModel.height3 != 0) { drawMaterial('m3', dataModel.x3, dataModel.y3, dataModel.width3, dataModel.height3); }
+        if(dataModel.height2 != 0) { drawMaterial('m2', dataModel.x2, dataModel.y2, dataModel.width2, dataModel.height2); }
+        if(dataModel.height1 != 0) { drawMaterial('m1', dataModel.x1, dataModel.y1, dataModel.width1, dataModel.height1); }
+
+        rotateMaterial($( "#angle input" ).val());
+    }
+
+    /**
+     * Draws a rectangle on the canvas with the parameters below. A new layer will be created
+     * to modify the rectangle easily.
+     *
+     * @param name: The layer-name
+     * @param x: The x position in the canvas
+     * @param y: The y position in the canvas
+     * @param width: The width of rectangle to draw
+     * @param height: The height of the rectangle to draw
+     */
+    function drawMaterial(name, x, y, width, height) {
+        canvas.drawRect({
+            layer: true, 
+            name: name,
+            fillStyle: fillStyle,
+            strokeStyle: strokeStyle,
+            strokeWidth: 1,
+            rotate: 0,
+            x: x, 
+            y: y,
+            width: width,
+            height: height 
+        });
+    }
+
+    /**
+     * calculates the position of the variables "a" and "b" in the sitationimage. Here we have more complex calculations
+     * for the b label: Because the rotation modifies the material with the b label, we have to transform this too. 
+     * This is done with sin and cos functions, but it's not very nice at the moment (x and y positions are not in the middle
+     * of the left-middle side of the rect). The two labels are layered analogous to the rectangles.
+     *
+     * @param material: Material name (is used for layering)
+     */
+    function drawText(material) {
+        var m = canvas.getLayer(material);
+        var angle = $("#angle input").val();
+
+        var xOffset = 0;
+        var yOffset = 0;
+        if (material != 'm1' && actualConnection != 2) {
+            xOffset = Math.cos((angle - 90) / 180 * Math.PI) * (m.width / 4);
+            yOffset = Math.sin((angle - 90) / 180 * Math.PI) * (m.width / 4) + m.height / 4;
+        } else {
+            xOffset = m.width / 2 - 6;
+            yOffset = m.height / 2 - 7;
+        }
+        var layerName = material + "-text";
+        canvas.removeLayer(layerName).drawLayers();
+        canvas.drawText({
+            layer: true,
+            name: layerName,
+            fillStyle: strokeStyle,
+            strokeWidth: 1,
+            x: m.x - m.translateX + xOffset,
+            y: m.y - m.translateY + yOffset,
+            fontSize: 14,
+            fontFamily: 'Verdana, sans-serif',
+            text: (material == 'm1') ? 'a' : 'b'
+        }).drawLayers();
+    }
+
+    /**
+     * calculates the new position of x to scale the material m1 with the parameter width
+     *
+     * @param width: The new width of material 1
+     */
+    function scaleMaterial1(width) {
+        var m1 = canvas.getLayer('m1');
+        var newX = (actualConnection < 2) ? m1.x - (width - m1.width) : m1.x - (width - m1.width) / 2;
+
+        canvas.setLayer('m1', {
+            width: width,
+            x: newX 
+        }).drawLayers(); 
+        dataModel.x1 = m1.x;
+        drawText('m1');
+    }
+
+    /**
+     * calculates the new position of y to scale the material m2 with the parameter height
+     *
+     * @param height: The new material 1 height
+     */
+    function scaleMaterial2(height) {
+        var m2 = canvas.getLayer('m2');
+
+        var newY = 0;
+        // each situation has another calcultion for the y coordinate of the second material
+        switch (actualConnection) {
+            // Stumb edge: Because we have to scale "away" from the bottom-side of the rectangle,
+            // we have to do some maths
+            case 0:
+                newY = dataModel.y2 - (height - m2.height); 
+                break;
+            // Bisectrix: The scaling does not need a special y coordinate
+            case 1:
+                newY = dataModel.y2;
+                break;
+            // T-connection: Because we are scaling "away+ from the bottom-side of the rectangle,
+            // we have to do some maths
+            case 2:
+                newY = dataModel.y2 - (height - m2.height); 
+                break;
+            // Miter: Here we have a very special case, because there are 2 rectangles to scale.
+            // Moreover we have to calculate a new y coordinate because we scale "away" from the
+            // bottom-side of the rectangle.
+            case 3:
+                newY = m2.y - (height - m2.height);
+                var m3 = canvas.getLayer('m3');
+                var newX3 = m3.y - (height - m3.height);
+                canvas.setLayer('m3', {
+                    height: height,
+                    y: newY
+                })
+                .drawLayers(); 
+                dataModel.y3 = m3.y;
+                break;
+        }
+
+        // Perform the scaling
+        canvas.setLayer('m2', {
+            height: height,
+            y: newY
+        })
+        .drawLayers(); 
+
+        // To display the oder stuff correctly, we have to perform a rotation and redraw the text
+        // label for material 2
+        dataModel.y2 = m2.y;
+        dataModel.height2 = height;
+        rotateMaterial($( "#angle input" ).val());
+        drawText('m2');
+    }
+
+    /**
+     * calculates the new positions of x and y after the rotation around the angle. 
+     * @param angle: The input angle which should be displayed in the preview
+     */
+    function rotateMaterial(angle) {
+        var m1 = canvas.getLayer('m1');
+        var m2 = canvas.getLayer('m2');
+        var m3 = canvas.getLayer('m3');
+
+        var rotationAngle = parseInt(angle) + 90;
+        var translateX = m2.translateX;
+        var translateY = m2.translateY;
+        var newX = m2.x;
+        var newY = m2.y;
+
+        // each situation has another calcultion for the rotation
+        switch(actualConnection) {
+            // Stumb edge: We have to perform a rotation on the top-left corner. This is possible if we
+            // translate the rotation point from the middle to the top-left. This will be the case if
+            // the angle if bigger than 90 degrees. If it's lower, then we have to rotate around the 
+            // bottom-left corner.
+            case 0:
+                var alpha = angle - 90;
+                var beta = 180 - angle;
+                translateX = -m2.width / 2;
+                translateY = (angle > 90) ? -m2.height / 2 : m2.height / 2;
+                newX = dataModel.x2 - m2.width / 2;
+                newY = (angle > 90) ? 
+                    m1.y + m1.height - m2.height / Math.cos(alpha / 180 * Math.PI) -m2.height / 2 : 
+                    dataModel.y2 + m2.height / 2;
+                break;
+            // Bisectrix: For the bisectix the rotation will be performed on the top-left corner of m2. 
+            case 1:
+                translateX = -m2.width / 2;
+                translateY = -m2.height / 2;
+                newX = dataModel.x2 - m2.width / 2;
+                newY = dataModel.y2 - m2.height / 2;
+
+                drawBisecConnectorHelpers(angle, m1, m2);
+                break;
+            // T-connection: The t-connection rotation will be peformed on the middle-bottom side of 
+            // material 2.
+            case 2:
+                canvas.moveLayer('m2', 1).drawLayers();
+                var a = Math.abs(90 - parseInt(angle));
+                newY = dataModel.y2 + Math.tan(a / 180 * Math.PI) * m1.width / 2;
+                break;
+            // Miter: Because we are using two rectangles for representation of material 2, the 
+            // rotation is a bit more complex. The rotation is performed on the bottom-middle side.
+            case 3:
+                translateX = dataModel.x1 - (dataModel.x2 + dataModel.width2 / 2);
+                newX = dataModel.x2 + translateX;
+                canvas.setLayer('m3', {
+                    rotate: rotationAngle,
+                    translateX: -translateX,
+                    x: dataModel.x3 - translateX,
+                    y: dataModel.y3
+                }).drawLayers(); 
+                drawText('m3');
+                break;
+            default:
+                break;
+        }
+
+        // Draw the new m2 with the calculated values from above
+        canvas.setLayer('m2', {
+            rotate: rotationAngle,
+            translateX: translateX,
+            translateY: translateY,
+            x: newX,
+            y: newY
+        }).drawLayers(); 
+
+        //if the new height of m2 bigger than the old canvas size, the canvas must be resize
+        var height = m2.width * Math.sin((angle -90) / 180 * Math.PI);
+        if (height > 0 || (actualConnection == 1 && angle < 90)) {
+            resizeCanvas(Math.abs(height));
+        } else {
+            resizeCanvas(0);
+        }
+        drawText('m1');
+        if (actualConnection != 3) drawText('m2');
+    }
+
+    /**
+     * Helper function to draw additional lines for the bisectrix connection-type.
+     *
+     * @param angle: The actual angle of bisectrix configuration
+     * @param m1: Material 1 selector
+     * @param m2: Material 2 selector
+     */
+    function drawBisecConnectorHelpers(angle, m1, m2) {
+        var alpha = (180 - angle) / 2;
+        var y2 = m1.y + m1.height + Math.tan(alpha / 180 * Math.PI) * m2.height;
+
+        var beta = angle - 90;
+        var x3 = dataModel.x2 - Math.sin(beta / 180 * Math.PI) * m2.height;
+        var y3 = dataModel.y2 + Math.cos(beta / 180 * Math.PI) * m2.height;
+
+        // Remove all the helper lines first
+        canvas.removeLayer('bisec-helpers').drawLayers();
+        canvas.removeLayer('bisec').drawLayers();
+        canvas.removeLayer('bisec-hidem1').drawLayers();
+        canvas.removeLayer('bisec-hidem2').drawLayers();
+
+        // Draw the connection from the bottom-left edge of m1 to the 
+        // bottom-left edge of m2. To allow to fill the materials with 
+        // a specified color, we are closing this lines
+        canvas.drawLine({
+            layer: true,
+            name: 'bisec-helpers',
+            fillStyle: fillStyle,
+            strokeStyle: strokeStyle,
+            strokeWidth: 1,
+            closed: true,
+            x1: m1.x,       y1: m1.y + m1.height,
+            x2: m1.x,       y2: y2,
+            x3: x3,         y3: y3,
+            x4: dataModel.x2,   y4:dataModel.y2 
+        });
+
+        // This line is the bisectrix itselfs (connection between the two materials)
+        canvas.drawLine({
+            layer: true,
+            name: 'bisec',
+            strokeStyle: strokeStyle,
+            strokeWidth: 1.2,
+            x1: m1.x,       y1: y2,
+            x2: dataModel.x2,   y2: dataModel.y2 
+        });
+
+        // The following two lines are a workaround to hide the rectangle ends.
+        canvas.drawLine({
+            layer: true,
+            name: 'bisec-hidem1',
+            strokeStyle: fillStyle,
+            strokeWidth: 2,
+            x1: m1.x + 0.6,   y1: m1.y + m1.height,
+            x2: dataModel.x2 - 0.6,   y2: dataModel.y2 
+        });
+
+        var x2 = dataModel.x2 - Math.sin(beta / 180 * Math.PI) * (m2.height-0.6);
+        var y2 = dataModel.y2 + Math.cos(beta / 180 * Math.PI) * (m2.height-0.6);
+        canvas.drawLine({
+            layer: true,
+            name: 'bisec-hidem2',
+            strokeStyle: fillStyle,
+            strokeWidth: 3,
+            x1: dataModel.x2,   y1: dataModel.y2,
+            x2: x2,         y2: y2 
+        });
+        canvas.moveLayer('bisec', 999).drawLayers();
+    }
+
+    /**
+     * Aggregation of all input form actions
      */
     function initFormActions() {
+
+        // To prevent conversion inches <-> mm based on rounded values,
+        // we are storing the whole floating-point number as variables.
         var m1_input = 40.00;
         var m2_input = 40.00;
+
+        // This offset can be used to display the canvas situation preview 
+        // smaller or bigger than the real inputs for the material height/width
         var realityOffset = 10;
 
         var angleSelector = $("#angle input");
@@ -83,6 +389,13 @@ $(function () {
             return result;
         };
 
+        /*
+         * Here we are catching material 1 changes. To prevent the usage of
+         * a checkbox which allows to configure if the materials are of the same
+         * size, the material 2 input textfield is bind to the material 1 input
+         * textfield until there will be another value filled up into the material
+         * 2 input textfield.
+         */
         m1Selector.on('input', function() {
             if ($(this).val() > 0) {   
                 m2_input = m2Selector.val();
@@ -97,6 +410,10 @@ $(function () {
             }
         });
 
+        /*
+         * Here we are chatching material 2 changes. It works similiar to material 1 changes
+         * with the difference that we are not stiching this field to another.
+         */
         m2Selector.on('input', function() {
             if ($(this).val() > 0) {   
                 m2_input = $(this).val();
@@ -105,6 +422,10 @@ $(function () {
             }
         });
 
+        /*
+         * Here we are catching angle changes. It performs some basic validation and rotate
+         * the material 2 afterward.
+         */
         angleSelector.on('input', function() {
             var angle = $(this).val();
             if(minAngle <= angle && angle <= maxAngle) {
@@ -115,6 +436,9 @@ $(function () {
             }
         });
 
+        /*
+         * This method redraws the canvas according to the hovered situation.
+         */
         $('.connection li').hover(function(e) {
             // TODO: Catch key press
             var $target = $(e.target);
@@ -123,6 +447,10 @@ $(function () {
             drawShape();
         });
 
+        /*
+         * This method applies the selection (workaround to use the predefined dropdown-menu,
+         * which is no official html-input field
+         */
         $('.connection a').click(function(e) {
             var targetText = $(e.target).text();
             var connector_name = $(e.target).attr("name");
@@ -130,6 +458,10 @@ $(function () {
             $('input#connection_type').val(connector_name);
         });
 
+        /*
+         * Here we are listen if the unit is going to changed. The action call performs the 
+         * conversion and updates the input fields immediately.
+         */
         $("div.unit input[name='unit']").change(function(e) {		
             unit = $(e.target).val();
             $("span.lbl.unit").html(unit);		
@@ -159,7 +491,8 @@ $(function () {
     }
 
     /**
-     * creates the post for the ajax call and send it to the calculation
+     * creates the post for the ajax call and send it to the calculation. If the call was successfull, 
+     * We are going to fillup the html table with the calculated results (sent as json)
      */
     function create_post() {
         var serializedForm = $("#calculationForm").serialize();
@@ -210,281 +543,6 @@ $(function () {
                 $(zetaSelector + ".pl-"+j+"mm td.b").html(zetaVal2);
             }
         });
-    }
-
-    /**
-     * calls the drawMaterial for drawing the sitution on the canvas.
-     */
-    function drawShape() {
-        canvas.removeLayers().drawLayers();
-
-        var data = {{ connection_types_json|safe }};
-        dataModel = data[actualConnection].fields;
-
-        if(dataModel.height3 != 0) { drawMaterial('m3', dataModel.x3, dataModel.y3, dataModel.width3, dataModel.height3); }
-        if(dataModel.height2 != 0) { drawMaterial('m2', dataModel.x2, dataModel.y2, dataModel.width2, dataModel.height2); }
-        if(dataModel.height1 != 0) { drawMaterial('m1', dataModel.x1, dataModel.y1, dataModel.width1, dataModel.height1); }
-
-        rotateMaterial($( "#angle input" ).val());
-    }
-
-    /**
-     * Draws a rectangle on the canvas with the parameters below.
-     * @param name
-     * @param x
-     * @param y
-     * @param width
-     * @param height
-     */
-    function drawMaterial(name, x, y, width, height) {
-        canvas.drawRect({
-            layer: true, 
-            name: name,
-            fillStyle: fillStyle,
-            strokeStyle: strokeStyle,
-            strokeWidth: 1,
-            rotate: 0,
-            x: x, 
-            y: y,
-            width: width,
-            height: height 
-        });
-    }
-
-    /**
-     * calculates the position of the variables "a" and "b" in the sitationimage
-     * @param material
-     */
-    function drawText(material) {
-        var m = canvas.getLayer(material);
-        var angle = $("#angle input").val();
-
-        var xOffset = 0;
-        var yOffset = 0;
-        if (material != 'm1' && actualConnection != 2) {
-            xOffset = Math.cos((angle - 90) / 180 * Math.PI) * (m.width / 4);
-            yOffset = Math.sin((angle - 90) / 180 * Math.PI) * (m.width / 4) + m.height / 4;
-        } else {
-            xOffset = m.width / 2 - 6;
-            yOffset = m.height / 2 - 7;
-        }
-        var layerName = material + "-text";
-        canvas.removeLayer(layerName).drawLayers();
-        canvas.drawText({
-            layer: true,
-            name: layerName,
-            fillStyle: strokeStyle,
-            strokeWidth: 1,
-            x: m.x - m.translateX + xOffset,
-            y: m.y - m.translateY + yOffset,
-            fontSize: 14,
-            fontFamily: 'Verdana, sans-serif',
-            text: (material == 'm1') ? 'a' : 'b'
-        }).drawLayers();
-    }
-
-    /**
-     * calculates the new position of x to scale the material m1 with the parameter width
-     * @param width
-     */
-    function scaleMaterial1(width) {
-        var m1 = canvas.getLayer('m1');
-        var newX = (actualConnection < 2) ? m1.x - (width - m1.width) : m1.x - (width - m1.width) / 2;
-
-        canvas.setLayer('m1', {
-            width: width,
-            x: newX 
-        }).drawLayers(); 
-        dataModel.x1 = m1.x;
-        drawText('m1');
-    }
-
-    /**
-     * calculates the new position of y to scale the material m2 with the parameter width
-     * @param height
-     */
-    function scaleMaterial2(height) {
-        var m2 = canvas.getLayer('m2');
-
-        var newY = 0;
-        // each situation has another calcultion for scale the second material
-        switch (actualConnection) {
-            // Stumb edge
-            case 0:
-                newY = dataModel.y2 - (height - m2.height); 
-                break;
-            // Bisectrix
-            case 1:
-                newY = dataModel.y2;
-                break;
-            // T-connection
-            case 2:
-                newY = dataModel.y2 - (height - m2.height); 
-                break;
-            // Miter
-            case 3:
-                newY = m2.y - (height - m2.height);
-                var m3 = canvas.getLayer('m3');
-                var newX3 = m3.y - (height - m3.height);
-                canvas.setLayer('m3', {
-                    height: height,
-                    y: newY
-                })
-                .drawLayers(); 
-                dataModel.y3 = m3.y;
-                break;
-        }
-
-        canvas.setLayer('m2', {
-            height: height,
-            y: newY
-        })
-        .drawLayers(); 
-
-        dataModel.y2 = m2.y;
-        dataModel.height2 = height;
-        rotateMaterial($( "#angle input" ).val());
-        drawText('m2');
-    }
-
-    /**
-     * calculates the new positions of x and y after the rotation around the angle. 
-     * @param angle
-     */
-    function rotateMaterial(angle) {
-        var m1 = canvas.getLayer('m1');
-        var m2 = canvas.getLayer('m2');
-        var m3 = canvas.getLayer('m3');
-
-        var rotationAngle = parseInt(angle) + 90;
-        var translateX = m2.translateX;
-        var translateY = m2.translateY;
-        var newX = m2.x;
-        var newY = m2.y;
-        // each situation has another calcultion for the rotation
-        switch(actualConnection) {
-            // Stumb edge
-            case 0:
-                var alpha = angle - 90;
-                var beta = 180 - angle;
-                translateX = -m2.width / 2;
-                translateY = (angle > 90) ? -m2.height / 2 : m2.height / 2;
-                newX = dataModel.x2 - m2.width / 2;
-                newY = (angle > 90) ? 
-                    m1.y + m1.height - m2.height / Math.cos(alpha / 180 * Math.PI) -m2.height / 2 : 
-                    dataModel.y2 + m2.height / 2;
-                break;
-            // Bisectrix
-            case 1:
-                translateX = -m2.width / 2;
-                translateY = -m2.height / 2;
-                newX = dataModel.x2 - m2.width / 2;
-                newY = dataModel.y2 - m2.height / 2;
-
-                drawBisecConnectorHelpers(angle, m1, m2);
-                break;
-            // T-connection
-            case 2:
-                canvas.moveLayer('m2', 1).drawLayers();
-                var a = Math.abs(90 - parseInt(angle));
-                newY = dataModel.y2 + Math.tan(a / 180 * Math.PI) * m1.width / 2;
-                break;
-            // Miter
-            case 3:
-                // TODO: Prevent edge displaying
-                translateX = dataModel.x1 - (dataModel.x2 + dataModel.width2 / 2);
-                newX = dataModel.x2 + translateX;
-                canvas.setLayer('m3', {
-                    rotate: rotationAngle,
-                    translateX: -translateX,
-                    x: dataModel.x3 - translateX,
-                    y: dataModel.y3
-                }).drawLayers(); 
-                drawText('m3');
-                break;
-            default:
-                break;
-        }
-
-        //draw the new calculated m2
-        canvas.setLayer('m2', {
-            rotate: rotationAngle,
-            translateX: translateX,
-            translateY: translateY,
-            x: newX,
-            y: newY
-        }).drawLayers(); 
-
-        //if the new height of m2 bigger than the old canvas size, the canvas must be resize
-        var height = m2.width * Math.sin((angle -90) / 180 * Math.PI);
-        if (height > 0 || (actualConnection == 1 && angle < 90)) {
-            resizeCanvas(Math.abs(height));
-        } else {
-            resizeCanvas(0);
-        }
-        drawText('m1');
-        if (actualConnection != 3) drawText('m2');
-    }
-
-    /**
-     * helper function to calculate positions for white lines for nice bisec-situation
-     * @param angle
-     * @param m1
-     * @param m2
-     */
-    function drawBisecConnectorHelpers(angle, m1, m2) {
-        var alpha = (180 - angle) / 2;
-        var y2 = m1.y + m1.height + Math.tan(alpha / 180 * Math.PI) * m2.height;
-
-        var beta = angle - 90;
-        var x3 = dataModel.x2 - Math.sin(beta / 180 * Math.PI) * m2.height;
-        var y3 = dataModel.y2 + Math.cos(beta / 180 * Math.PI) * m2.height;
-
-        canvas.removeLayer('bisec-helpers').drawLayers();
-        canvas.removeLayer('bisec').drawLayers();
-        canvas.removeLayer('bisec-hidem1').drawLayers();
-        canvas.removeLayer('bisec-hidem2').drawLayers();
-        // Draw to lines here
-        canvas.drawLine({
-            layer: true,
-            name: 'bisec-helpers',
-            fillStyle: fillStyle,
-            strokeStyle: strokeStyle,
-            strokeWidth: 1,
-            closed: true,
-            x1: m1.x,       y1: m1.y + m1.height,
-            x2: m1.x,       y2: y2,
-            x3: x3,         y3: y3,
-            x4: dataModel.x2,   y4:dataModel.y2 
-        });
-        canvas.drawLine({
-            layer: true,
-            name: 'bisec',
-            strokeStyle: strokeStyle,
-            strokeWidth: 1.2,
-            x1: m1.x,       y1: y2,
-            x2: dataModel.x2,   y2: dataModel.y2 
-        });
-        canvas.drawLine({
-            layer: true,
-            name: 'bisec-hidem1',
-            strokeStyle: fillStyle,
-            strokeWidth: 2,
-            x1: m1.x + 0.6,   y1: m1.y + m1.height,
-            x2: dataModel.x2 - 0.6,   y2: dataModel.y2 
-        });
-
-        var x2 = dataModel.x2 - Math.sin(beta / 180 * Math.PI) * (m2.height-0.6);
-        var y2 = dataModel.y2 + Math.cos(beta / 180 * Math.PI) * (m2.height-0.6);
-        canvas.drawLine({
-            layer: true,
-            name: 'bisec-hidem2',
-            strokeStyle: fillStyle,
-            strokeWidth: 3,
-            x1: dataModel.x2,   y1: dataModel.y2,
-            x2: x2,         y2: y2 
-        });
-        canvas.moveLayer('bisec', 999).drawLayers();
     }
 
 
@@ -545,7 +603,6 @@ $(function () {
                 type : "POST",
                 data : data_json,
 
-                // handle a successful response
                 success: function(data) {
                     var blob=new Blob([data]);
                     var link=document.createElement('a');
@@ -554,7 +611,6 @@ $(function () {
                     link.click();
                 },
 
-                // handle a non-successful response
                 error : function() {
                     console.log("Fails");
                 }
