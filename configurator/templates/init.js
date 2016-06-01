@@ -62,9 +62,9 @@ $(function () {
      * - change mm to inches
      */
     function initFormActions() {
-        var m1_input = 1.00;
-        var m2_input = 1.00;
-        var realityOffset = 40;
+        var m1_input = 40.00;
+        var m2_input = 40.00;
+        var realityOffset = 10;
 
         var angleSelector = $("#angle input");
         var m1Selector = $("#m1 input");
@@ -196,7 +196,7 @@ $(function () {
             var cncSelector = typeSelector.format(i, "cnc");
             var cncPossible = obj.cnc.possible;
             var cncPosition = obj.cnc.position.toFixed(2);
-            $(cncSelector + ".cnc-possible").html(cncPossible);
+            $(cncSelector + ".cnc-possible").html(cncPossible + '');
             $(cncSelector + ".cnc-val").html(cncPosition);
 
             for (j = 0; j <= 4; j+=2) {
@@ -205,13 +205,11 @@ $(function () {
                 var zetaVal1 = obj.zeta[j + 'mm']['val'][0].toFixed(2);
                 var zetaVal2 = obj.zeta[j + 'mm']['val'][1].toFixed(2);
 
-                $(zetaSelector + ".pl-"+j+"mm td.possible").html(zetaPossible);
+                $(zetaSelector + ".pl-"+j+"mm td.possible").html(zetaPossible + '');
                 $(zetaSelector + ".pl-"+j+"mm td.a").html(zetaVal1);
                 $(zetaSelector + ".pl-"+j+"mm td.b").html(zetaVal2);
             }
-
         });
-
     }
 
     /**
@@ -226,9 +224,6 @@ $(function () {
         if(dataModel.height3 != 0) { drawMaterial('m3', dataModel.x3, dataModel.y3, dataModel.width3, dataModel.height3); }
         if(dataModel.height2 != 0) { drawMaterial('m2', dataModel.x2, dataModel.y2, dataModel.width2, dataModel.height2); }
         if(dataModel.height1 != 0) { drawMaterial('m1', dataModel.x1, dataModel.y1, dataModel.width1, dataModel.height1); }
-
-        $("#m1 input").val('1.00');
-        $("#m2 input").val('1.00');
 
         rotateMaterial($( "#angle input" ).val());
     }
