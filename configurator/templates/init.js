@@ -7,8 +7,8 @@ $(function () {
     var resultJson = null;
     var dataModel;
     var actualConnection = -1;
-    var fillStyle = '#bf0b3b';
-    var strokeStyle = '#FFF';
+    var fillStyle = '#e6ca9b';
+    var strokeStyle = '#3e3e3e';
     var minAngle = parseInt($("#angle input").attr("min"));
     var maxAngle = parseInt($("#angle input").attr("max"));
     var unit = 'mm';
@@ -62,26 +62,50 @@ $(function () {
      * - change mm to inches
      */
     function initFormActions() {
-        var m1_input = 40;
-        var m2_input = 40;
+        var m1_input = 40.00;
+        var m2_input = 40.00;
+        var realityOffset = 10;
 
-        $( "#m1 input" ).on('input', function() {
-            m2_input = $("#m2 input").val();
-            if(m2_input == m1_input) {
-                m2_input = $(this).val();
-                $("#m2 input").val(m2_input); 
-                scaleMaterial2((unit == 'mm') ? m2_input : m2_input * 25.4);
+        var angleSelector = $("#angle input");
+        var m1Selector = $("#m1 input");
+        var m2Selector = $("#m2 input");
+
+
+        /*
+         * This helper function is used to convert the input value
+         * into a useful value to perform the canvas updates
+         */
+        function getValueToScale(value) {
+            var result = parseInt(value) + realityOffset;
+            if (unit != 'mm') {
+                result *= 25.4;
             }
-            m1_input = $(this).val();
-            scaleMaterial1((unit == 'mm') ? m1_input : m1_input * 25.4);
+            return result;
+        };
+
+        m1Selector.on('input', function() {
+            if ($(this).val() > 0) {   
+                m2_input = m2Selector.val();
+                if (m2_input == m1_input || actualConnection == 1) {
+                    m2_input = $(this).val();
+                    m2Selector.val(m2_input); 
+                    scaleMaterial2(getValueToScale(m2_input));
+                }
+                m1_input = $(this).val();
+                scaleMaterial1(getValueToScale(m1_input));
+                rotateMaterial(angleSelector.val());
+            }
         });
 
-        $( "#m2 input" ).on('input', function() {
-            m2_input = $(this).val();
-            scaleMaterial2((unit == 'mm') ? m2_input : m2_input * 25.4);
+        m2Selector.on('input', function() {
+            if ($(this).val() > 0) {   
+                m2_input = $(this).val();
+                scaleMaterial2(getValueToScale(m2_input));
+                rotateMaterial(angleSelector.val());
+            }
         });
 
-        $( "#angle input" ).on('input', function() {
+        angleSelector.on('input', function() {
             var angle = $(this).val();
             if(minAngle <= angle && angle <= maxAngle) {
                 $("div.errors").html("");
@@ -92,6 +116,7 @@ $(function () {
         });
 
         $('.connection li').hover(function(e) {
+            // TODO: Catch key press
             var $target = $(e.target);
             console.info("hovered " + $target.text());
             actualConnection = $(this).index();
@@ -171,7 +196,7 @@ $(function () {
             var cncSelector = typeSelector.format(i, "cnc");
             var cncPossible = obj.cnc.possible;
             var cncPosition = obj.cnc.position.toFixed(2);
-            $(cncSelector + ".cnc-possible").html(cncPossible);
+            $(cncSelector + ".cnc-possible").html(cncPossible + '');
             $(cncSelector + ".cnc-val").html(cncPosition);
 
             for (j = 0; j <= 4; j+=2) {
@@ -180,13 +205,11 @@ $(function () {
                 var zetaVal1 = obj.zeta[j + 'mm']['val'][0].toFixed(2);
                 var zetaVal2 = obj.zeta[j + 'mm']['val'][1].toFixed(2);
 
-                $(zetaSelector + ".pl-"+j+"mm td.possible").html(zetaPossible);
+                $(zetaSelector + ".pl-"+j+"mm td.possible").html(zetaPossible + '');
                 $(zetaSelector + ".pl-"+j+"mm td.a").html(zetaVal1);
                 $(zetaSelector + ".pl-"+j+"mm td.b").html(zetaVal2);
             }
-
         });
-
     }
 
     /**
@@ -240,21 +263,21 @@ $(function () {
         var yOffset = 0;
         if (material != 'm1' && actualConnection != 2) {
             xOffset = Math.cos((angle - 90) / 180 * Math.PI) * (m.width / 4);
-            yOffset = Math.sin((angle - 90) / 180 * Math.PI) * (m.width / 4) + 10;
+            yOffset = Math.sin((angle - 90) / 180 * Math.PI) * (m.width / 4) + m.height / 4;
         } else {
-            xOffset = m.width / 2 - 7;
-            yOffset = m.height / 2 - 8;
+            xOffset = m.width / 2 - 6;
+            yOffset = m.height / 2 - 7;
         }
         var layerName = material + "-text";
         canvas.removeLayer(layerName).drawLayers();
         canvas.drawText({
             layer: true,
             name: layerName,
-            fillStyle: '#000',
+            fillStyle: strokeStyle,
             strokeWidth: 1,
             x: m.x - m.translateX + xOffset,
             y: m.y - m.translateY + yOffset,
-            fontSize: 16,
+            fontSize: 14,
             fontFamily: 'Verdana, sans-serif',
             text: (material == 'm1') ? 'a' : 'b'
         }).drawLayers();
