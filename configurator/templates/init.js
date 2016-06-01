@@ -307,16 +307,21 @@ $(function () {
         var m2 = canvas.getLayer('m2');
 
         var newY = 0;
+        // each situation has another calcultion for scale the second material
         switch (actualConnection) {
+            // Stumb edge
             case 0:
                 newY = dataModel.y2 - (height - m2.height); 
                 break;
+            // Bisectrix
             case 1:
                 newY = dataModel.y2;
                 break;
+            // T-connection
             case 2:
                 newY = dataModel.y2 - (height - m2.height); 
                 break;
+            // Miter
             case 3:
                 newY = m2.y - (height - m2.height);
                 var m3 = canvas.getLayer('m3');
@@ -356,7 +361,9 @@ $(function () {
         var translateY = m2.translateY;
         var newX = m2.x;
         var newY = m2.y;
+        // each situation has another calcultion for the rotation
         switch(actualConnection) {
+            // Stumb edge
             case 0:
                 var alpha = angle - 90;
                 var beta = 180 - angle;
@@ -367,6 +374,7 @@ $(function () {
                     m1.y + m1.height - m2.height / Math.cos(alpha / 180 * Math.PI) -m2.height / 2 : 
                     dataModel.y2 + m2.height / 2;
                 break;
+            // Bisectrix
             case 1:
                 translateX = -m2.width / 2;
                 translateY = -m2.height / 2;
@@ -375,11 +383,13 @@ $(function () {
 
                 drawBisecConnectorHelpers(angle, m1, m2);
                 break;
+            // T-connection
             case 2:
                 canvas.moveLayer('m2', 1).drawLayers();
                 var a = Math.abs(90 - parseInt(angle));
                 newY = dataModel.y2 + Math.tan(a / 180 * Math.PI) * m1.width / 2;
                 break;
+            // Miter
             case 3:
                 // TODO: Prevent edge displaying
                 translateX = dataModel.x1 - (dataModel.x2 + dataModel.width2 / 2);
@@ -396,6 +406,7 @@ $(function () {
                 break;
         }
 
+        //draw the new calculated m2
         canvas.setLayer('m2', {
             rotate: rotationAngle,
             translateX: translateX,
@@ -404,6 +415,7 @@ $(function () {
             y: newY
         }).drawLayers(); 
 
+        //if the new height of m2 bigger than the old canvas size, the canvas must be resize
         var height = m2.width * Math.sin((angle -90) / 180 * Math.PI);
         if (height > 0 || (actualConnection == 1 && angle < 90)) {
             resizeCanvas(Math.abs(height));
@@ -551,8 +563,9 @@ $(function () {
     }
 });
 
-// This prototype definition is an improvemnt to use a format method for strings
-// like known in Java or C
+/**
+ * This prototype definition is an improvemnt to use a format method for strings like known in Java or C
+ */
 String.prototype.format = function() {
     var str = this;
     for (var i = 0; i < arguments.length; i++) {       
