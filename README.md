@@ -1,17 +1,28 @@
 # Lamello Configurator
 The purpose of this project is to find out if a given connection is possible with help of Lamello-Connectors. It is build on Django.
 
-## Configuration
+## Requirements
+
+The following software should be installed:
+* git
+* Python 3
+* pip 
 
 To getting started it is recommended to use virutal envorinments for Python. For more information, please read [the documentation](http://docs.python-guide.org/en/latest/dev/virtualenvs/). 
 
+## Installation 
+
 All the following commands are executed on the level of this git repository.
 
-Run the following command to install all required dependencies automatically: 
+To install all the dependencies for the project, you can install them as the following: 
 
 ```bash
 pip install -r requirements.txt
 ```
+
+## Deployment
+
+### Manually
 
 To create the database, run the following commands:
 
