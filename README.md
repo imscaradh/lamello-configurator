@@ -5,8 +5,9 @@ The purpose of this project is to find out if a given connection is possible wit
 
 The following software should be installed:
 * git
-* Python 3
-* pip 
+* Python 3: https://www.python.org/
+* pip: https://pip.pypa.io/en/stable/
+* Docker (optional): https://www.docker.com/
 
 To getting started it is recommended to use virutal envorinments for Python. For more information, please read [the documentation](http://docs.python-guide.org/en/latest/dev/virtualenvs/). 
 
@@ -23,7 +24,6 @@ pip install -r requirements.txt
 ## Deployment
 
 ### Manually
-
 To create the database, run the following commands:
 
 ```bash
@@ -37,3 +37,11 @@ Afterwards, you should be able to run the webserver:
 ./manage.py runserver
 ```
 
+### Aggregated
+There is a script which chains all the installation and deployment steps from above. Simply call the script on terminal:
+```
+./entrypoint.sh
+```
+
+## Docker
+TODO
